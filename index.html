@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Examen blanc AZ-104</title>
+<meta name="description" content="Examen blanc gratuit et open source pour la certification Microsoft Azure Administrator (AZ-104), en français, avec les formats de questions de l'examen réel.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<script>
+  window.AZ = { questions: [], series: [], cases: [] };
+  window.tbl = (head, rows) => `<div class="tw"><table class="tbl"><tr>${head.map(h=>`<th>${h}</th>`).join("")}</tr>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</table></div>`;
+</script>
+<script src="questions/domaine1.js"></script>
+<script src="questions/domaine2.js"></script>
+<script src="questions/domaine3.js"></script>
+<script src="questions/domaine4.js"></script>
+<script src="questions/domaine5.js"></script>
+<script src="questions/series.js"></script>
+<script src="questions/etudes-de-cas.js"></script>
+</head>
+<body>
+<div class="app">
+  <header class="head" id="head" hidden>
+    <h1 class="qtitle" id="qtitle">Question 1</h1>
+    <div class="prog" id="prog">
+      <div class="lbl">Progression <button class="tog" id="togP" type="button" aria-pressed="true" aria-label="Afficher la progression"></button></div>
+      <div class="row" id="progRow"><div class="sec"><small id="progLbl"></small><div class="bar"><i id="progBar" style="width:0%"></i></div></div><div class="sec"><small>Réviser</small><div class="revbar" id="revBar"></div></div></div>
+    </div>
+    <div class="tim" id="tim">
+      <div class="lbl">Temps restant : <button class="tog" id="togT" type="button" aria-pressed="true" aria-label="Afficher le temps restant"></button></div>
+      <b id="timer">--:--:--</b>
+    </div>
+  </header>
+  <main id="main"></main>
+  <footer class="foot" id="foot" hidden></footer>
+</div>
+<div class="modal" id="modal" hidden><div class="panel" id="modalBox"></div></div>
+<script src="assets/app.js"></script>
+</body>
+</html>
