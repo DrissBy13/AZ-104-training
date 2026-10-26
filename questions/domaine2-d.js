@@ -99,12 +99,12 @@ AZ.questions.push(
  "stem": "<p>Vous devez transférer 25 To vers Azure. Votre équipe préfère des disques SSD qu'elle peut connecter en USB à un serveur.</p><p>Quelle offre Data Box convient le mieux ?</p>",
  "opts": [
   "Data Box Disk",
-  "Data Box Heavy",
+  "Data Box Next Gen 525",
   "Azure Import/Export avec vos propres bandes",
   "Data Box Gateway"
  ],
  "ans": 0,
- "expl": "<p><b>Data Box Disk</b> : des disques SSD chiffrés (environ 8 To utilisables chacun, jusqu'à 5 disques par commande, soit environ 35 To) connectés en USB ou SATA. Adapté à quelques dizaines de To.</p><p><b>Data Box</b> (appareil) vise ~80 To et <b>Data Box Heavy</b> environ 1 Po. <b>Data Box Gateway</b> est une appliance virtuelle de transfert en ligne. Import/Export n'accepte pas de bandes.</p>"
+ "expl": "<p><b>Data Box Disk</b> : des disques SSD chiffrés (environ 7 To utilisables chacun, jusqu'à 5 disques par commande, soit environ 35 To) connectés en USB ou SATA. Adapté à quelques dizaines de To.</p><p>Les appareils <b>Data Box Next Gen</b> visent des volumes bien plus grands (120 To ou 525 To utilisables). <b>Data Box Gateway</b> est une appliance virtuelle de transfert en ligne. Import/Export n'accepte pas de bandes.</p>"
 },
 {
  "id": "D2-136",

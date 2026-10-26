@@ -194,3 +194,9 @@ details.res .body{border-top:1px solid var(--line-2);padding:12px 14px}
 .bankbar{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);margin:4px 0 0}
 
 [hidden]{display:none!important}
+
+.qtop pre,.res pre{white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%}
+.qtop code,.fb code,.res code,.qtop,.fb,.opt .tx{overflow-wrap:anywhere}
+.qtop pre{font-family:var(--mono);font-size:13px;background:#f6f8fa;border:1px solid var(--line-2);padding:12px 14px;line-height:1.5;margin:0 0 14px}
+.aitem .tx,.fr>span,.chk span,.rad span{overflow-wrap:anywhere;min-width:0}
+.fr .sel{max-width:100%}
