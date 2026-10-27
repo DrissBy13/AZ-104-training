@@ -3,52 +3,43 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Examen blanc AZ-104</title>
-<meta name="description" content="Examen blanc gratuit et open source pour la certification Microsoft Azure Administrator (AZ-104), en français, avec les formats de questions de l'examen réel.">
+<title>Simulateur d'examen AZ-104</title>
+<meta name="description" content="Simulateur gratuit et open source de l'examen Microsoft Azure Administrator (AZ-104), en français et en anglais, avec les formats de questions de l'examen réel. Free, open-source AZ-104 exam simulator in English and French.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="assets/style.css">
+<script src="assets/i18n.js"></script>
+<script src="questions/manifest.js"></script>
 <script>
-  window.AZ = { questions: [], series: [], cases: [] };
-  window.tbl = (head, rows) => `<div class="tw"><table class="tbl"><tr>${head.map(h=>`<th>${h}</th>`).join("")}</tr>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</table></div>`;
+  /* Choix de la langue : paramètre ?lang=, sinon choix mémorisé, sinon langue du navigateur. */
+  (function () {
+    var saved = null, param = new URLSearchParams(location.search).get("lang");
+    try { saved = localStorage.getItem("az104-lang"); } catch (e) {}
+    var nav = (navigator.language || "fr").slice(0, 2).toLowerCase();
+    var lang = param || saved || (nav === "fr" ? "fr" : "en");
+    if (window.AZ_LANGS.indexOf(lang) < 0) lang = "fr";
+    if (param) { try { localStorage.setItem("az104-lang", lang); } catch (e) {} }
+    window.AZ_LANG = lang;
+    document.documentElement.lang = lang;
+    window.AZ = { questions: [], series: [], cases: [], extras: {} };
+    window.tbl = function (head, rows) {
+      return '<div class="tw"><table class="tbl"><tr>' + head.map(function (h) { return "<th>" + h + "</th>"; }).join("") + "</tr>" +
+        rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + c + "</td>"; }).join("") + "</tr>"; }).join("") + "</table></div>";
+    };
+    window.AZ_FILES.forEach(function (f) { document.write('<script src="questions/' + lang + "/" + f + '"><\/script>'); });
+  })();
 </script>
-<script src="questions/domaine1.js"></script>
-<script src="questions/domaine2.js"></script>
-<script src="questions/domaine3.js"></script>
-<script src="questions/domaine4.js"></script>
-<script src="questions/domaine5.js"></script>
-<script src="questions/domaine1-b.js"></script>
-<script src="questions/domaine1-c.js"></script>
-<script src="questions/domaine1-d.js"></script>
-<script src="questions/domaine1-e.js"></script>
-<script src="questions/domaine2-b.js"></script>
-<script src="questions/domaine2-c.js"></script>
-<script src="questions/domaine2-d.js"></script>
-<script src="questions/domaine3-b.js"></script>
-<script src="questions/domaine3-c.js"></script>
-<script src="questions/domaine3-d.js"></script>
-<script src="questions/domaine3-e.js"></script>
-<script src="questions/domaine4-b.js"></script>
-<script src="questions/domaine4-c.js"></script>
-<script src="questions/domaine4-d.js"></script>
-<script src="questions/domaine5-b.js"></script>
-<script src="questions/domaine5-c.js"></script>
-<script src="questions/domaine5-d.js"></script>
-<script src="questions/series.js"></script>
-<script src="questions/series-2.js"></script>
-<script src="questions/etudes-de-cas.js"></script>
-<script src="questions/etudes-de-cas-2.js"></script>
 </head>
 <body>
 <div class="app">
   <header class="head" id="head" hidden>
     <h1 class="qtitle" id="qtitle">Question 1</h1>
     <div class="prog" id="prog">
-      <div class="lbl">Progression <button class="tog" id="togP" type="button" aria-pressed="true" aria-label="Afficher la progression"></button></div>
-      <div class="row" id="progRow"><div class="sec"><small id="progLbl"></small><div class="bar"><i id="progBar" style="width:0%"></i></div></div><div class="sec"><small>Réviser</small><div class="revbar" id="revBar"></div></div></div>
+      <div class="lbl"><span id="progTitle"></span> <button class="tog" id="togP" type="button" aria-pressed="true"></button></div>
+      <div class="row" id="progRow"><div class="sec"><small id="progLbl"></small><div class="bar"><i id="progBar" style="width:0%"></i></div></div><div class="sec"><small id="revTitle"></small><div class="revbar" id="revBar"></div></div></div>
     </div>
     <div class="tim" id="tim">
-      <div class="lbl">Temps restant : <button class="tog" id="togT" type="button" aria-pressed="true" aria-label="Afficher le temps restant"></button></div>
+      <div class="lbl"><span id="timTitle"></span> <button class="tog" id="togT" type="button" aria-pressed="true"></button></div>
       <b id="timer">--:--:--</b>
     </div>
   </header>

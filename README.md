@@ -1,6 +1,8 @@
-# Examen blanc AZ-104 (en français)
+# Examen blanc AZ-104 (français / English)
 
-Un entraînement gratuit et open source à la certification **Microsoft Azure Administrator (AZ-104)**, en français, dans une interface qui reproduit celle de l'examen réel.
+Un entraînement gratuit et open source à la certification **Microsoft Azure Administrator (AZ-104)**, en français ou en anglais, dans une interface qui reproduit celle de l'examen réel.
+
+*A free, open-source AZ-104 practice exam in French or English. Use the FR / EN button on the home page.*
 
 **▶ S'entraîner en ligne : https://drissby13.github.io/AZ-104-training/**
 
@@ -8,12 +10,14 @@ Un entraînement gratuit et open source à la certification **Microsoft Azure Ad
 
 ## Ce que tu trouves ici
 
+- **Une page d'accueil** qui explique les règles de l'examen réel (durée, score, formats, séries sans retour en arrière) et celles du simulateur.
+- **Deux langues** : interface et questions en français ou en anglais (bouton FR / EN). Les 1 059 questions existent dans les deux langues, avec les mêmes réponses.
 - **Une banque de questions** sur les cinq domaines du programme AZ-104, tirées au hasard à chaque session. Le tirage privilégie les questions que tu n'as pas encore vues : en enchaînant les sessions, tu fais le tour de la banque.
 - **Deux modes**
   - **Examen blanc** : environ 45 questions indépendantes réparties selon le poids officiel des domaines, une série de questions Oui/Non et une étude de cas. Chronomètre de 100 minutes, score sur 1 000, réussite à 700.
   - **Entraînement** : tu choisis les domaines et le nombre de questions, sans chronomètre.
 - **Les formats de l'examen réel** : choix unique, choix multiple, glisser-déplacer, réorganiser l'ordre, écran actif (formulaire du portail), zone réactive, listes déroulantes (y compris dans des commandes PowerShell, Azure CLI ou KQL), grille Oui/Non, onglets Document, séries « Cette solution répond-elle à l'objectif ? » sans retour en arrière, et études de cas en onglets.
-- **Un bouton « Vérifier ma réponse »** (absent de l'examen réel) qui affiche tout de suite la correction : pourquoi la bonne réponse est juste, et pourquoi les autres ne le sont pas.
+- **Un bouton « Vérifier ma réponse »** (absent de l'examen réel) qui affiche tout de suite la correction : pourquoi la bonne réponse est juste, et pourquoi les autres ne le sont pas. Chaque correction montre aussi **où trouver la réponse dans le portail Azure** (une fenêtre du portail reconstituée, avec l'élément à repérer surligné) et un encadré **« À retenir »**.
 - **Les résultats par domaine** et une correction détaillée de chaque question à la fin.
 - **L'écran de révision**, le marquage « Revoir cette question plus tard » et la reprise d'une session interrompue (la progression est gardée dans ton navigateur).
 
@@ -39,16 +43,19 @@ Le site n'a besoin d'aucun serveur ni d'aucune installation :
 ## Structure du dépôt
 
 ```
-index.html                 la page, qui charge les fichiers de questions
-assets/app.js              le moteur d'examen
-assets/style.css           l'interface
-questions/domaine1*.js     questions du domaine 1 (idem pour 2 à 5)
-questions/series.js        séries de questions Oui/Non
-questions/etudes-de-cas.js études de cas
-tools/validate.js          vérification automatique de la banque
+index.html                    la page, qui charge les fichiers de questions
+assets/app.js                 le moteur d'examen
+assets/i18n.js                textes de l'interface (FR / EN)
+assets/style.css              l'interface
+questions/manifest.js         liste des fichiers de questions et des langues
+questions/fr/domaine1*.js     questions du domaine 1 en français (idem pour 2 à 5)
+questions/en/domaine1*.js     les mêmes questions en anglais
+questions/<langue>/series*.js séries de questions Oui/Non
+questions/<langue>/etudes-de-cas*.js  études de cas
+tools/validate.js             vérification automatique de la banque (FR et EN)
 ```
 
-Chaque question est un objet JavaScript avec un identifiant unique (par exemple `D4-012`), affiché sous la question. Le format de chaque type de question est décrit dans [CONTRIBUTING.md](CONTRIBUTING.md).
+Chaque question est un objet JavaScript avec un identifiant unique (par exemple `D4-012`), affiché sous la question. Une question existe dans `questions/fr` et dans `questions/en` avec le même identifiant, les mêmes options dans le même ordre et la même réponse : le validateur le vérifie. Les champs `portal` (fenêtre du portail, l'astérisque en tête marque l'élément surligné) et `keep` (encadré « À retenir ») complètent l'explication. Le format de chaque type de question est décrit dans [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Signaler une erreur
 
