@@ -77,6 +77,6 @@ Les questions et leurs explications ont été rédigées avec l'assistance de l'
 
 ## Licence
 
-[MIT](LICENSE). Tu peux réutiliser, modifier et partager ce projet librement, en gardant la mention de la licence.
+[CC BY-NC-SA 4.0](LICENSE). Tu peux utiliser, partager et modifier ce projet gratuitement, en citant l'auteur et en gardant la même licence. Toute utilisation commerciale (vente, revente, intégration dans une offre payante) est interdite.
 
 Microsoft, Azure et AZ-104 sont des marques de Microsoft Corporation.
