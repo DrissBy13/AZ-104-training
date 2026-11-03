@@ -91,7 +91,7 @@ AZ.questions.push(
  "opts": [
   "Non, car un groupe ne peut être restauré que dans les 7 jours",
   "Oui, mais seulement s'il s'agissait d'un groupe de sécurité",
-  "Oui, car les groupes Microsoft 365 restent 30 jours dans Groupes supprimés",
+  "Oui : un groupe Microsoft 365 reste 30 jours supprimé",
   "Non, les groupes sont supprimés définitivement tout de suite"
  ],
  "ans": 2,
@@ -167,10 +167,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>Vous devez créer 150 utilisateurs <b>membres</b> dans Microsoft Entra ID à partir d'une liste fournie par les RH.</p><p>Quelles <b>deux</b> méthodes pouvez-vous utiliser ?</p><p>Chaque réponse correcte présente une solution complète.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
  "opts": [
-  "L'opération Inviter des utilisateurs en bloc",
-  "Un script PowerShell Microsoft Graph avec New-MgUser",
-  "L'opération Créer des utilisateurs en bloc du portail, avec le modèle CSV",
-  "Une stratégie Azure Policy avec l'effet DeployIfNotExists"
+  "L'opération Inviter des utilisateurs en bloc (invités)",
+  "Un script Microsoft Graph PowerShell (New-MgUser)",
+  "Créer des utilisateurs en bloc (modèle CSV)",
+  "Une stratégie Azure Policy DeployIfNotExists"
  ],
  "ans": [
   1,
@@ -208,10 +208,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Un invité nommé partenaire@fabrikam.com a accepté son invitation. Il doit maintenant pouvoir gérer les machines virtuelles du groupe de ressources RG-Projet.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Attribuer à l'invité le rôle Contributeur de machines virtuelles sur RG-Projet",
+  "Contributeur de machines virtuelles sur RG-Projet",
   "Convertir l'invité en membre avant toute attribution",
   "Attribuer à l'invité une licence Microsoft Entra ID P2",
-  "Ajouter fabrikam.com comme domaine personnalisé"
+  "Ajouter fabrikam.com comme domaine personnalisé du locataire"
  ],
  "ans": 0,
  "expl": "<p>Un utilisateur invité est un principal de sécurité comme un autre : on peut lui <b>attribuer des rôles Azure</b> directement. Contributeur de machines virtuelles sur RG-Projet suffit.</p><p>Il n'est pas nécessaire de le convertir en membre. Ajouter fabrikam.com comme domaine personnalisé est impossible (ce domaine appartient à une autre organisation). Aucune licence P2 n'est requise pour un rôle Azure.</p>",
@@ -294,7 +294,7 @@ AZ.questions.push(
   "Un groupe de sécurité attribuable à un rôle",
   "Une unité administrative de gestion restreinte",
   "Un verrou de ressource en lecture seule",
-  "Une affectation de refus Azure"
+  "Une affectation de refus Azure sur le groupe"
  ],
  "ans": 1,
  "expl": "<p>Une <b>unité administrative de gestion restreinte</b> protège ses objets : seuls les administrateurs attribués <b>sur cette unité</b> peuvent les modifier. Même un administrateur d'utilisateurs au niveau du locataire ne peut plus les gérer.</p><p>Un groupe attribuable à un rôle sert à attribuer des rôles Entra à un groupe. Les verrous et les affectations de refus concernent les ressources Azure, pas les objets de l'annuaire.</p>",
@@ -329,10 +329,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez attribuer le rôle Microsoft Entra <b>Administrateur du support technique</b> à un groupe plutôt qu'à chaque utilisateur.</p><p>Quelle propriété le groupe doit-il avoir ?</p>",
  "opts": [
-  "Contenir uniquement des invités",
+  "Contenir uniquement des utilisateurs invités",
   "Avoir une appartenance dynamique",
-  "Avoir l'option « Des rôles Microsoft Entra peuvent être attribués au groupe » activée à sa création",
-  "Être un groupe Microsoft 365"
+  "L'option « rôles Microsoft Entra attribuables » à la création",
+  "Être un groupe Microsoft 365 avec une boîte aux lettres partagée"
  ],
  "ans": 2,
  "expl": "<p>Seuls les groupes créés avec l'option <b>« Des rôles Microsoft Entra peuvent être attribués au groupe »</b> (isAssignableToRole) peuvent recevoir un rôle Entra. Cette option ne se choisit qu'à la création et ne peut plus être modifiée.</p><p>Ces groupes ne peuvent pas avoir d'appartenance dynamique, pour éviter qu'un simple changement d'attribut donne un rôle d'administrateur. Le type peut être sécurité ou Microsoft 365.</p>",
@@ -472,8 +472,8 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous voulez créer un rôle personnalisé à partir du rôle intégré <b>Contributeur de machines virtuelles</b>, en retirant le droit de supprimer des VM.</p><p>Quelle est la méthode la plus rapide dans le portail ?</p>",
  "opts": [
-  "Cloner le rôle intégré, puis retirer l'autorisation dans l'éditeur",
-  "Modifier directement le rôle intégré",
+  "Cloner le rôle intégré, puis retirer l'autorisation",
+  "Modifier directement la définition du rôle intégré",
   "Créer un rôle vide et ajouter les autorisations une par une",
   "Attribuer le rôle intégré avec une condition de refus"
  ],
@@ -606,10 +606,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez autoriser les membres du groupe Exploitation à attribuer uniquement le rôle <b>Lecteur des données blob du stockage</b>, et uniquement à des identités managées, sur storage1.</p><p>Quelle solution respecte le principe du privilège minimum ?</p>",
  "opts": [
-  "Leur attribuer Contributeur de compte de stockage sur storage1",
-  "Leur attribuer Administrateur de l'accès utilisateur sur l'abonnement",
-  "Leur attribuer Administrateur du contrôle d'accès en fonction du rôle avec une condition qui limite les rôles et les types de principaux",
-  "Leur attribuer Propriétaire sur storage1"
+  "Contributeur de compte de stockage sur storage1",
+  "Administrateur de l'accès utilisateur sur l'abonnement",
+  "Administrateur RBAC avec une condition sur les rôles",
+  "Propriétaire sur storage1, sans condition"
  ],
  "ans": 2,
  "expl": "<p>Le rôle <b>Administrateur du contrôle d'accès en fonction du rôle</b> (Role Based Access Control Administrator) permet d'attribuer des rôles, et accepte des <b>conditions</b> de délégation : quels rôles peuvent être attribués, et à quels types de principaux.</p><p>Propriétaire et Administrateur de l'accès utilisateur permettraient d'attribuer n'importe quel rôle. Contributeur de compte de stockage ne permet pas d'attribuer de rôle.</p>",
@@ -649,10 +649,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous attribuez sur l'abonnement Sub1 la stratégie intégrée <b>Emplacements autorisés</b> avec la seule valeur France Central. Un administrateur essaie de créer un groupe de ressources en West Europe.</p><p>Que se passe-t-il ?</p>",
  "opts": [
-  "La création est refusée",
+  "La création est refusée par la stratégie",
   "Le groupe de ressources est créé en France Central à la place",
   "La création réussit et le groupe est marqué non conforme",
-  "La création réussit, car cette stratégie ne s'applique pas aux groupes de ressources"
+  "La création réussit : la stratégie ignore les groupes"
  ],
  "ans": 3,
  "expl": "<p>La stratégie <b>Emplacements autorisés</b> exclut les groupes de ressources : elle ne s'applique qu'aux ressources. Pour contrôler la région des groupes de ressources, il existe une stratégie distincte : <b>Emplacements autorisés pour les groupes de ressources</b>.</p><p>Azure Policy ne change jamais la région d'une ressource à votre place.</p>",
@@ -687,8 +687,8 @@ AZ.questions.push(
  "opts": [
   "Lancer une analyse de conformité à la demande",
   "Redémarrer les ressources concernées",
-  "Supprimer et recréer l'affectation",
-  "Créer une tâche de correction"
+  "Supprimer et recréer l'affectation de la stratégie",
+  "Créer une tâche de correction sur l'affectation"
  ],
  "ans": 0,
  "expl": "<p>Une <b>analyse à la demande</b> se lance avec <code>az policy state trigger-scan</code> ou <code>Start-AzPolicyComplianceScan</code>. Sinon, l'évaluation complète a lieu toutes les 24 heures, et une nouvelle affectation est évaluée dans les minutes qui suivent sa création.</p><p>Recréer l'affectation ne fait pas mieux. Une tâche de correction modifie des ressources (Modify ou DeployIfNotExists), elle ne sert pas à une simple évaluation en Audit. Redémarrer les ressources n'a aucun effet.</p>",
@@ -812,9 +812,9 @@ AZ.questions.push(
  "stem": "<p>Une stratégie attribuée à Sub1 a l'effet <b>Audit</b>. Vous voulez qu'elle bloque désormais les créations non conformes, sans créer une nouvelle définition.</p><p>Quelle est la bonne pratique ?</p>",
  "opts": [
   "Ajouter un verrou ReadOnly sur Sub1",
-  "Créer une tâche de correction",
-  "Paramétrer l'effet dans la définition, puis modifier le paramètre dans l'affectation",
-  "Ajouter l'abonnement aux exclusions"
+  "Créer une tâche de correction sur l'affectation",
+  "Paramétrer l'effet, puis le changer dans l'affectation",
+  "Ajouter l'abonnement aux exclusions de l'affectation"
  ],
  "ans": 2,
  "expl": "<p>Beaucoup de stratégies intégrées ont un paramètre <b>effect</b> (Audit, Deny, Disabled…). On choisit la valeur dans l'<b>affectation</b> : on peut commencer en Audit pour mesurer l'impact, puis passer à Deny sans toucher à la définition.</p><p>Un verrou bloque toutes les modifications, pas seulement les non conformes. Une tâche de correction ne bloque rien. Une exclusion retirerait l'abonnement de l'évaluation.</p>",
@@ -847,10 +847,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>Vous devez appliquer les étiquettes <b>Environnement</b> et <b>Service</b> à toutes les ressources de l'abonnement Sub1, et rejeter toute ressource créée sans l'étiquette Environnement.</p><p>Quelles <b>deux</b> stratégies intégrées devez-vous attribuer ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
  "opts": [
-  "Emplacements autorisés",
-  "Exiger une étiquette sur les ressources (Environnement)",
-  "Référence SKU de machine virtuelle autorisée",
-  "Hériter d'une étiquette du groupe de ressources si elle est manquante (Service)"
+  "Emplacements autorisés pour les ressources",
+  "Exiger une étiquette (Environnement)",
+  "Références SKU de machine virtuelle autorisées",
+  "Hériter d'une étiquette du groupe (Service)"
  ],
  "ans": [
   1,
@@ -970,10 +970,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Le groupe de ressources RG1 a un verrou <b>Suppression impossible</b>. La machine virtuelle VM1 de RG1 a un verrou <b>Lecture seule</b>.</p><p>Quel verrou s'applique effectivement à VM1 ?</p>",
  "opts": [
-  "Lecture seule, car le verrou le plus restrictif s'applique",
-  "Le verrou créé le plus récemment",
+  "Lecture seule, le verrou le plus restrictif",
+  "Le verrou créé le plus récemment sur la ressource",
   "Suppression impossible, car le verrou du parent l'emporte",
-  "Aucun, car les deux verrous s'annulent"
+  "Aucun, car les deux verrous s'annulent mutuellement"
  ],
  "ans": 0,
  "expl": "<p>Les verrous sont hérités, et quand plusieurs s'appliquent, c'est le <b>plus restrictif</b> qui l'emporte. Lecture seule est plus restrictif que Suppression impossible : VM1 ne peut être ni supprimée ni modifiée.</p><p>Les verrous ne s'annulent jamais, et l'ordre de création ne compte pas.</p>",
@@ -1011,8 +1011,8 @@ AZ.questions.push(
  "stem": "<p>Vous appliquez un verrou <b>Lecture seule</b> sur l'application web WebApp1 (Azure App Service).</p><p>Quelle conséquence devez-vous anticiper ?</p>",
  "opts": [
   "Les utilisateurs ne peuvent plus accéder au site",
-  "Vous ne pouvez plus modifier la configuration de WebApp1 ni la mettre à l'échelle",
-  "Le contenu du site est supprimé",
+  "Plus de modification de configuration ni de mise à l'échelle",
+  "Le contenu du site est supprimé à la pose du verrou",
   "WebApp1 passe automatiquement au niveau Gratuit"
  ],
  "ans": 1,
@@ -1053,8 +1053,8 @@ AZ.questions.push(
  "opts": [
   "Administrateur général dans Microsoft Entra ID uniquement",
   "Contributeur sur Sub-Finance uniquement",
-  "Propriétaire de Sub-Finance et Contributeur de groupe d'administration sur MG-Finance",
-  "Lecteur sur Sub-Finance uniquement"
+  "Propriétaire de Sub-Finance et Contributeur sur MG-Finance",
+  "Lecteur sur Sub-Finance et sur MG-Finance"
  ],
  "ans": 2,
  "expl": "<p>Déplacer un abonnement demande des droits des deux côtés : sur l'<b>abonnement</b> (Propriétaire) et sur le <b>groupe d'administration cible</b> (Contributeur de groupe d'administration ou Propriétaire), ainsi que sur le parent actuel s'il ne s'agit pas de la racine.</p><p>Lecteur et Contributeur ne suffisent pas. Administrateur général est un rôle Entra : il doit d'abord élever son accès pour agir sur les groupes d'administration.</p>",
@@ -1089,10 +1089,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Dans le portail, votre organisation a plusieurs abonnements. Vous devez regrouper les abonnements Dev et Test pour leur appliquer les mêmes stratégies, sans toucher aux abonnements de production.</p><p>Que devez-vous créer ?</p>",
  "opts": [
-  "Un groupe de ressources commun",
+  "Un groupe de ressources commun aux deux",
   "Une étiquette Non-Prod sur chaque abonnement",
   "Un locataire Microsoft Entra séparé",
-  "Un groupe d'administration Non-Prod contenant Dev et Test"
+  "Un groupe d'administration Non-Prod"
  ],
  "ans": 3,
  "expl": "<p>Un <b>groupe d'administration</b> regroupe des abonnements pour leur appliquer des stratégies et des rôles hérités. Non-Prod contiendra Dev et Test, et les abonnements de production resteront ailleurs.</p><p>Un groupe de ressources est dans un seul abonnement. Un locataire séparé est beaucoup trop lourd. Les stratégies ne s'appliquent pas « par étiquette d'abonnement ».</p>",
@@ -1165,10 +1165,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Le service financier veut recevoir chaque jour un fichier CSV des coûts Azure de l'abonnement Sub1, pour l'importer dans son propre outil.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Une alerte de budget quotidienne",
-  "Un export planifié dans Gestion des coûts vers un compte de stockage",
+  "Une alerte de budget quotidienne par e-mail",
+  "Un export planifié de Gestion des coûts",
   "Un paramètre de diagnostic de l'abonnement vers Log Analytics",
-  "Une recommandation Azure Advisor"
+  "Une recommandation Azure Advisor sur les coûts"
  ],
  "ans": 1,
  "expl": "<p>Les <b>exports</b> de Gestion des coûts écrivent les données de coût dans un <b>compte de stockage</b>, à une fréquence choisie (quotidienne, hebdomadaire, mensuelle), au format CSV ou Parquet.</p><p>Une alerte de budget envoie un message, pas un fichier de données. Advisor ne produit pas de fichier de coûts. Le paramètre de diagnostic de l'abonnement envoie le journal d'activité, pas les coûts.</p>",
@@ -1315,10 +1315,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous déplacez la machine virtuelle VM1 vers un autre groupe de ressources du même abonnement. VM1 utilise un disque managé, une interface réseau et une adresse IP publique, tous dans RG1. Le réseau virtuel reste dans RG1.</p><p>Que se passe-t-il pour l'adresse IP publique de VM1 ?</p>",
  "opts": [
-  "Elle change automatiquement d'adresse",
+  "Elle change automatiquement d'adresse pendant le déplacement",
   "Elle reste dans RG1 et ne peut plus être associée à VM1",
   "Elle doit être supprimée avant le déplacement",
-  "Elle peut être déplacée avec VM1 et garde la même adresse"
+  "Elle se déplace avec VM1 et garde son adresse"
  ],
  "ans": 3,
  "expl": "<p>Un déplacement entre groupes de ressources ne change ni la région ni la configuration : l'adresse IP publique peut être déplacée avec la VM, et son adresse ne change pas. Le réseau virtuel peut rester dans RG1 : une interface réseau peut référencer un réseau virtuel d'un autre groupe de ressources.</p>",
@@ -1437,8 +1437,8 @@ AZ.questions.push(
  "opts": [
   "Une clé d'accès partagé du coffre de clés",
   "Un verrou en lecture seule sur le coffre de clés",
-  "Une identité managée, avec un rôle d'accès aux secrets sur le coffre",
-  "Un compte utilisateur Microsoft Entra dédié"
+  "Une identité managée avec un rôle sur les secrets",
+  "Un compte utilisateur Microsoft Entra dédié à l'application"
  ],
  "ans": 2,
  "expl": "<p>Une <b>identité managée</b> donne à la VM une identité Microsoft Entra dont Azure gère les informations d'identification. On lui attribue ensuite un rôle, par exemple <b>Utilisateur des secrets Key Vault</b>, sur le coffre.</p><p>Un compte utilisateur obligerait à stocker un mot de passe. Les coffres de clés n'ont pas de « clé d'accès partagé ». Un verrou ne donne aucun accès.</p>",
@@ -1525,9 +1525,9 @@ AZ.questions.push(
  "stem": "<p>Votre entreprise veut que l'abonnement Sub2 soit facturé sur une autre carte bancaire et géré par une autre équipe financière, tout en restant dans le même locataire Microsoft Entra.</p><p>Quelle affirmation est vraie ?</p>",
  "opts": [
   "Un locataire ne peut avoir qu'un seul abonnement",
-  "Il faut fusionner Sub2 dans Sub1",
+  "Il faut fusionner Sub2 dans Sub1 pour la facturation",
   "Il faut créer un second locataire Microsoft Entra",
-  "Un abonnement a un compte de facturation propre, indépendant du locataire"
+  "Un abonnement a sa propre facturation"
  ],
  "ans": 3,
  "expl": "<p>La <b>facturation</b> et l'<b>annuaire</b> sont deux choses distinctes. Plusieurs abonnements d'un même locataire peuvent être rattachés à des comptes ou profils de facturation différents, avec des moyens de paiement différents.</p><p>Un locataire peut contenir de nombreux abonnements, et chaque abonnement fait confiance à un seul locataire. Les abonnements ne se « fusionnent » pas.</p>",
@@ -1561,9 +1561,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>L'abonnement Sub1 atteint une limite de quota : vous ne pouvez pas créer plus de 20 vCPU de la famille DSv5 en France Central.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Demander une augmentation de quota depuis la page Utilisation + quotas",
-  "Acheter une réservation",
-  "Créer un nouveau groupe de ressources",
+  "Demander une augmentation de quota (Utilisation + quotas)",
+  "Acheter une réservation pour la famille de VM",
+  "Créer un nouveau groupe de ressources pour les VM",
   "Supprimer les étiquettes des VM existantes"
  ],
  "ans": 0,
@@ -1594,10 +1594,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez empêcher un utilisateur invité de voir la liste des autres utilisateurs et groupes de votre annuaire. Il doit seulement voir les propriétés de son propre compte.</p><p>Quel réglage devez-vous choisir pour <b>Restrictions d'accès des utilisateurs invités</b> ?</p>",
  "opts": [
-  "Les utilisateurs invités disposent du même accès que les membres",
+  "Les utilisateurs invités disposent du même accès que les membres du locataire",
   "L'accès des utilisateurs invités est limité aux propriétés et aux appartenances de leurs propres objets d'annuaire",
   "Les utilisateurs invités ont un accès limité aux propriétés et aux appartenances des objets d'annuaire",
-  "Aucun invité ne peut se connecter"
+  "Aucun utilisateur invité ne peut plus se connecter au locataire"
  ],
  "ans": 1,
  "expl": "<p>Le réglage le plus restrictif, <b>« limité aux propriétés et aux appartenances de leurs propres objets »</b>, empêche l'invité d'énumérer les utilisateurs, groupes et autres objets de l'annuaire.</p><ul><li>« Même accès que les membres » est le plus permissif.</li><li>« Accès limité » (le réglage par défaut) empêche d'énumérer les utilisateurs, mais laisse voir certaines informations, comme les membres des groupes non masqués.</li><li>« Aucun invité ne peut se connecter » n'est pas une option de ce réglage.</li></ul>",
@@ -1692,7 +1692,7 @@ AZ.questions.push(
  "opts": [
   "Elles sont transférées au responsable de l'utilisateur",
   "Elles apparaissent comme attributions de groupe",
-  "Elles apparaissent avec le type « Inconnu » et le nom « Identité introuvable »",
+  "Type « Inconnu », nom « Identité introuvable »",
   "Elles sont supprimées automatiquement avec l'utilisateur"
  ],
  "ans": 2,
@@ -1754,9 +1754,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez retrouver qui a attribué le rôle Propriétaire à User11 sur l'abonnement Sub1, la semaine dernière.</p><p>Où devez-vous chercher ?</p>",
  "opts": [
-  "Dans le journal d'activité de Sub1, opération « Créer une attribution de rôle »",
-  "Dans les métriques de Sub1",
-  "Dans Azure Advisor",
+  "Dans le journal d'activité de Sub1",
+  "Dans les métriques de l'abonnement Sub1",
+  "Dans Azure Advisor, onglet Sécurité",
   "Dans les journaux de connexion de Microsoft Entra ID"
  ],
  "ans": 0,
@@ -1795,7 +1795,7 @@ AZ.questions.push(
  "stem": "<p>Un développeur doit pouvoir créer des groupes de ressources et des ressources dans l'abonnement Sub-Dev, mais ne doit jamais pouvoir créer de passerelle VPN.</p><p>Quelle combinaison répond au besoin ?</p>",
  "opts": [
   "Rôle Lecteur sur Sub-Dev",
-  "Rôle Contributeur sur Sub-Dev et stratégie Azure Policy qui refuse le type de ressource passerelle de réseau virtuel",
+  "Contributeur et une stratégie qui refuse les passerelles",
   "Rôle Contributeur de réseau sur Sub-Dev",
   "Rôle Propriétaire sur Sub-Dev et verrou ReadOnly"
  ],
@@ -1835,9 +1835,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez permettre aux utilisateurs de modifier leur photo de profil et leur numéro de téléphone mobile dans Microsoft Entra ID, mais pas leur service ni leur poste.</p><p>Ces attributs sont synchronisés depuis l'Active Directory local. Où les utilisateurs doivent-ils modifier leur service ?</p>",
  "opts": [
-  "Dans le portail Mon compte",
-  "Dans une stratégie Azure Policy",
-  "Dans l'Active Directory local, l'attribut étant synchronisé",
+  "Dans le portail Mon compte de l'utilisateur",
+  "Dans une stratégie Azure Policy sur les utilisateurs",
+  "Dans l'Active Directory local (attribut synchronisé)",
   "Dans les propriétés de l'utilisateur dans Microsoft Entra ID"
  ],
  "ans": 2,
@@ -1910,7 +1910,7 @@ AZ.questions.push(
  "stem": "<p>User12 doit pouvoir créer, déplacer et supprimer les groupes d'administration de l'organisation, mais pas gérer les ressources des abonnements.</p><p>Quel rôle Azure devez-vous lui attribuer sur le groupe d'administration racine ?</p>",
  "opts": [
   "Contributeur de groupe d'administration",
-  "Contributeur",
+  "Contributeur sur chaque abonnement",
   "Administrateur de l'accès utilisateur",
   "Lecteur de groupe d'administration"
  ],

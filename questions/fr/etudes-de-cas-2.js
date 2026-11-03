@@ -110,7 +110,7 @@ AZ.cases.push(
    "opts": [
     "Une unité administrative contoso.com",
     "Les restrictions d'accès des utilisateurs invités",
-    "Les restrictions de collaboration, en autorisant uniquement contoso.com",
+    "Collaboration limitée à contoso.com",
     "Un domaine personnalisé contoso.com"
    ],
    "ans": 2,

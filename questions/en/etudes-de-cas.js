@@ -76,9 +76,9 @@ AZ.cases.push(
    "stem": "<p>You need to meet the requirement for allowed regions in Sub-Dev.</p><p>What should you configure?</p>",
    "opts": [
     "A read-only lock on Sub-Dev",
-    "An Allowed locations Azure Policy with the Deny effect, assigned to Sub-Dev",
-    "The Reader role for Dev-Team on all other regions",
-    "A budget on Sub-Dev"
+    "Allowed locations (Deny), assigned to Sub-Dev",
+    "The Reader role for Dev-Team on the other regions",
+    "A budget with an alert on Sub-Dev"
    ],
    "ans": 1,
    "expl": "<p>The built-in <b>Allowed locations</b> policy, Deny effect, assigned to <b>Sub-Dev</b>, blocks any creation outside France Central, whatever the user's role.</p><p>A ReadOnly lock would block all changes. Azure RBAC isn't configured by region. A budget alerts on costs but blocks nothing.</p>",

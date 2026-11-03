@@ -183,10 +183,10 @@ AZ.questions.push(
  ],
  "stem": "<p>You have an Azure subscription named Sub1 that contains a resource group named RG1.</p><p>You create a custom role named Role1 as shown in the Role1 exhibit (click the <b>Role1</b> tab). You assign Role1 to User1 on RG1.</p><p>Which operations can User1 perform?</p>",
  "opts": [
-  "Start and restart the virtual machines in RG1, but not stop them",
-  "Start, restart, and stop (deallocate) the virtual machines in RG1",
-  "Create virtual machines in RG1",
-  "Start the virtual machines in every resource group of Sub1"
+  "Start and restart the VMs in RG1, but not stop them",
+  "Start, restart, and stop (deallocate) the VMs in RG1",
+  "Create and delete virtual machines in RG1",
+  "Start the VMs in every resource group of Sub1"
  ],
  "ans": 0,
  "expl": "<p>A custom role allows <b>only</b> the actions listed in <code>Actions</code>:</p><ul><li><code>virtualMachines/read</code>: view the VMs;</li><li><code>start/action</code>: start them;</li><li><code>restart/action</code>: restart them.</li></ul><p><code>powerOff/action</code> (stop) and <code>deallocate/action</code> (stop and deallocate) are missing: User1 cannot stop the VMs. <code>virtualMachines/write</code> is missing too: he cannot create any.</p><p>Finally, the role is <b>assigned on RG1</b>: it does not apply to the other resource groups of Sub1. <code>AssignableScopes</code> only says <i>where the role can be assigned</i>, not where it applies.</p>",
@@ -285,7 +285,7 @@ AZ.questions.push(
   "Department",
   "Job title",
   "Usage location",
-  "Manager"
+  "Line manager"
  ],
  "ans": 2,
  "expl": "<p>Microsoft 365 needs to know <b>in which country</b> the license will be used, because some services are not available everywhere. Without a <b>usage location</b> (usageLocation), the license assignment fails.</p><p>Department, job title, and manager are descriptive attributes: they do not block the assignment.</p><p>Tip: with group-based licensing, a user without a usage location inherits the tenant's location, but the error is still a classic on the exam.</p>",
@@ -441,7 +441,7 @@ AZ.questions.push(
  "stem": "<p>Admin1 is a Global Administrator of the Microsoft Entra tenant. Admin1 cannot see any Azure subscription in the portal.</p><p>Admin1 must be able to assign Azure roles in every subscription of the tenant.</p><p>What should you do?</p>",
  "opts": [
   "Assign the User Administrator role to Admin1",
-  "Enable Access management for Azure resources in the Microsoft Entra ID properties",
+  "Enable Access management for Azure resources",
   "Create a management group and add Admin1 to it",
   "Assign a Microsoft Entra ID P2 license to Admin1"
  ],
@@ -483,10 +483,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to be notified by email when the <b>forecasted</b> cost of the resource group RG1 for the current month exceeds 80% of €1,000.</p><p>What should you configure?</p>",
  "opts": [
-  "An Azure Advisor recommendation",
+  "An Azure Advisor cost recommendation",
   "An Azure Policy with the Audit effect",
-  "A budget on RG1 with an alert based on forecasted cost",
-  "A metric alert on RG1"
+  "A budget on RG1 with a forecasted-cost alert",
+  "A metric alert on the RG1 resource group"
  ],
  "ans": 2,
  "expl": "<p>A Cost Management <b>budget</b> sets an amount (here €1,000 per month) and <b>alert conditions</b> as a percentage, on <b>Actual</b> cost (already spent) or <b>Forecasted</b> cost (end-of-period projection). Here: type Forecasted, threshold 80%, with an email or an action group.</p><ul><li><b>Advisor</b> recommends savings, but does not alert on a threshold.</li><li><b>Azure Policy</b> controls resource configuration, not costs.</li><li><b>A metric alert</b> monitors technical values (CPU, requests…), not spending.</li></ul>",

@@ -1280,9 +1280,9 @@ AZ.questions.push(
  "stem": "<p>Vous devez permettre à User18 de gérer les verrous de toutes les ressources de l'abonnement Sub1, sans autre droit de gestion des ressources.</p><p>Quelles <b>deux</b> solutions conviennent ?</p><p>Chaque réponse correcte présente une solution complète.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
  "opts": [
   "Attribuer le rôle intégré Contributeur",
-  "Attribuer le rôle intégré Contributeur de stratégie de ressource",
-  "Attribuer un rôle personnalisé avec les actions Microsoft.Authorization/locks/*",
-  "Attribuer le rôle intégré Administrateur de l'accès utilisateur"
+  "Attribuer Contributeur de stratégie de ressource",
+  "Un rôle personnalisé avec locks/*",
+  "Attribuer Administrateur de l'accès utilisateur"
  ],
  "ans": [
   2,
@@ -1318,8 +1318,8 @@ AZ.questions.push(
  "stem": "<p>Vous devez permettre à un auditeur de voir la conformité Azure Policy de tout le groupe d'administration MG-Corp, sans rien modifier.</p><p>Quelles <b>deux</b> affirmations sont vraies ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
  "opts": [
   "Il doit être Administrateur général dans Microsoft Entra ID",
-  "Le rôle Lecteur sur MG-Corp lui permet de voir la conformité",
-  "L'attribution doit être faite sur MG-Corp pour couvrir tous les abonnements",
+  "Lecteur sur MG-Corp lui permet de voir la conformité",
+  "L'attribution doit être faite sur MG-Corp",
   "Il doit avoir le rôle Contributeur de stratégie de ressource"
  ],
  "ans": [
@@ -1358,10 +1358,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>Votre locataire contient des utilisateurs cloud et des utilisateurs synchronisés depuis l'AD local. Vous devez permettre à <b>tous</b> les utilisateurs de réinitialiser eux-mêmes leur mot de passe, et que le nouveau mot de passe fonctionne aussi sur les postes du domaine local.</p><p>Quelles <b>deux</b> actions devez-vous effectuer ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
  "opts": [
-  "Convertir les utilisateurs synchronisés en utilisateurs cloud",
-  "Créer une unité administrative pour les utilisateurs synchronisés",
-  "Activer la réécriture du mot de passe dans Microsoft Entra Connect",
-  "Activer SSPR pour Tous"
+  "Convertir les utilisateurs synchronisés en comptes cloud",
+  "Créer une unité administrative pour les comptes synchronisés",
+  "Activer la réécriture du mot de passe",
+  "Activer SSPR pour Tous les utilisateurs"
  ],
  "ans": [
   2,
@@ -1477,10 +1477,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous gérez 30 abonnements. Une même stratégie personnalisée doit être appliquée à tous, et les abonnements créés plus tard doivent être couverts automatiquement.</p><p>Quelle approche demande le moins d'effort ?</p>",
  "opts": [
-  "Utiliser un script planifié qui vérifie les abonnements chaque nuit",
-  "Enregistrer la définition et l'attribuer au groupe d'administration racine (ou à un groupe parent commun)",
-  "Appliquer un verrou sur chaque abonnement",
-  "Créer la définition dans chaque abonnement et l'attribuer 30 fois"
+  "Un script planifié qui vérifie les abonnements chaque nuit",
+  "Attribuer la définition au groupe d'administration racine",
+  "Appliquer un verrou ReadOnly sur chaque abonnement",
+  "Créer la définition dans chaque abonnement, 30 fois"
  ],
  "ans": 1,
  "expl": "<p>Une définition enregistrée dans un <b>groupe d'administration</b> parent, et attribuée à ce groupe, s'applique à tous les abonnements présents et futurs de la hiérarchie.</p><p>30 attributions manuelles oublieraient les nouveaux abonnements. Un script refait ce qu'Azure Policy fait déjà. Un verrou ne remplace pas une stratégie.</p>",
@@ -1515,7 +1515,7 @@ AZ.questions.push(
  "opts": [
   "Les ressources des abonnements dont il connaît l'ID",
   "Les ressources de son groupe de ressources par défaut",
-  "Aucune ressource Azure",
+  "Aucune ressource Azure, faute de rôle",
   "Toutes les ressources du locataire en lecture"
  ],
  "ans": 2,
@@ -1544,7 +1544,7 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez déléguer la gestion des stratégies Azure Policy (créer des définitions et des affectations) à l'équipe Gouvernance, sur le groupe d'administration MG-Corp, sans lui donner d'accès aux ressources.</p><p>Quel rôle devez-vous attribuer ?</p>",
  "opts": [
-  "Contributeur",
+  "Contributeur sur le groupe d'administration",
   "Propriétaire",
   "Administrateur de la sécurité",
   "Contributeur de stratégie de ressource"
@@ -1581,9 +1581,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une stratégie avec l'effet DeployIfNotExists est attribuée à Sub1 avec une identité managée attribuée par le système. La tâche de correction échoue avec une erreur d'autorisation.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Attribuer à l'identité managée de l'affectation les rôles listés dans roleDefinitionIds de la définition, sur Sub1",
-  "Passer l'effet en Audit",
-  "Supprimer l'identité managée",
+  "Donner à l'identité de l'affectation les rôles de roleDefinitionIds",
+  "Passer l'effet de la stratégie en Audit, puis relancer la correction",
+  "Supprimer l'identité managée de l'affectation",
   "Attribuer le rôle Propriétaire à votre propre compte"
  ],
  "ans": 0,
@@ -1619,7 +1619,7 @@ AZ.questions.push(
  "stem": "<p>Votre locataire Microsoft Entra compte 25 utilisateurs. Vous devez vous assurer qu'aucun utilisateur n'ait le rôle Administrateur général sans en avoir besoin.</p><p>Quelle recommandation Microsoft devez-vous suivre ?</p>",
  "opts": [
   "Supprimer tous les administrateurs généraux",
-  "Limiter le nombre d'administrateurs généraux, idéalement à moins de cinq, et utiliser des rôles moins privilégiés",
+  "Moins de cinq administrateurs généraux, rôles moins privilégiés",
   "Donner le rôle Administrateur général à tous les administrateurs",
   "Attribuer Administrateur général à un groupe dynamique"
  ],
@@ -1650,10 +1650,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Les développeurs de Contoso doivent accéder au portail Azure avec leurs comptes de l'entreprise partenaire Fabrikam, qui dispose de son propre locataire Microsoft Entra. Vous ne devez gérer aucun mot de passe pour eux.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Synchroniser le locataire Fabrikam avec Microsoft Entra Connect",
+  "Synchroniser le locataire Fabrikam avec Entra Connect",
   "Créer des comptes membres dans votre locataire",
-  "Les inviter comme utilisateurs invités B2B et leur attribuer des rôles",
-  "Créer des principaux de service pour chaque développeur"
+  "Les inviter en B2B et leur attribuer des rôles",
+  "Créer un principal de service par développeur"
  ],
  "ans": 2,
  "expl": "<p>Avec <b>Microsoft Entra B2B</b>, les invités s'authentifient dans leur propre locataire (Fabrikam) : vous ne gérez pas leurs mots de passe. Vous leur attribuez ensuite des rôles Azure comme à tout utilisateur.</p><p>Des comptes membres obligent à gérer des mots de passe. Microsoft Entra Connect synchronise un AD local, pas un autre locataire. Les principaux de service sont des identités d'applications.</p>",
@@ -1718,9 +1718,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez permettre à une application de créer des utilisateurs dans Microsoft Entra ID sans intervention humaine.</p><p>Que devez-vous lui accorder ?</p>",
  "opts": [
-  "La permission d'application User.ReadWrite.All de Microsoft Graph, avec le consentement administrateur",
-  "Une clé d'accès du compte de stockage",
-  "Une identité managée sans autre configuration",
+  "La permission d'application User.ReadWrite.All (consentement)",
+  "Une clé d'accès du compte de stockage de l'application",
+  "Une identité managée, sans autre configuration",
   "Le rôle Azure Contributeur sur l'abonnement"
  ],
  "ans": 0,
@@ -1758,8 +1758,8 @@ AZ.questions.push(
  "stem": "<p>Vous gérez trois environnements (Dev, Test, Prod) avec des stratégies, des budgets et des équipes différentes. Vous voulez séparer clairement leurs limites de facturation et de quotas.</p><p>Quelle organisation Microsoft recommande-t-elle ?</p>",
  "opts": [
   "Un seul abonnement avec des étiquettes Env",
-  "Un abonnement par environnement, regroupés dans des groupes d'administration",
-  "Un seul groupe de ressources pour tout",
+  "Un abonnement par environnement, en groupes d'administration",
+  "Un seul groupe de ressources pour tous les environnements",
   "Un locataire Microsoft Entra par environnement"
  ],
  "ans": 1,
@@ -1788,10 +1788,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous gérez le groupe de ressources RG1 en France Central. La région France Central subit une panne complète.</p><p>Quel est l'impact sur la gestion des ressources de RG1 situées en West Europe ?</p>",
  "opts": [
-  "Aucun impact possible",
+  "Aucun impact possible sur RG1 ni sur ses ressources",
   "Les ressources de West Europe s'arrêtent",
-  "Les ressources de West Europe continuent de fonctionner, mais les opérations de gestion de RG1 peuvent être indisponibles",
-  "RG1 est déplacé automatiquement en West Europe"
+  "Les ressources tournent, la gestion de RG1 peut être indisponible",
+  "RG1 est déplacé automatiquement en West Europe avec ses métadonnées"
  ],
  "ans": 2,
  "expl": "<p>La région d'un groupe de ressources est celle où sont stockées ses <b>métadonnées</b>. Si elle est en panne, les ressources d'autres régions continuent de fonctionner, mais les opérations de gestion (déploiement, modification) qui dépendent de ces métadonnées peuvent échouer.</p><p>C'est pourquoi on place souvent le groupe de ressources dans la même région que ses ressources. Rien n'est déplacé automatiquement.</p>",
@@ -1825,9 +1825,9 @@ AZ.questions.push(
  "stem": "<p>Vous devez permettre à un utilisateur de voir les factures et de gérer les moyens de paiement d'un contrat client Microsoft (MCA).</p><p>À quel niveau ces autorisations sont-elles gérées ?</p>",
  "opts": [
   "Dans les rôles Microsoft Entra uniquement",
-  "Dans une stratégie Azure Policy",
+  "Dans une stratégie Azure Policy de facturation",
   "Dans le contrôle d'accès (IAM) d'un groupe de ressources",
-  "Dans les rôles du compte et du profil de facturation (Gestion des coûts + Facturation)"
+  "Dans les rôles du compte et du profil de facturation"
  ],
  "ans": 3,
  "expl": "<p>Pour un contrat client Microsoft, les droits de facturation (factures, moyens de paiement, création d'abonnements) se gèrent dans <b>Gestion des coûts + Facturation</b>, avec des rôles propres au compte de facturation, au profil de facturation et à la section de facture (Propriétaire, Contributeur, Lecteur du profil de facturation…).</p><p>Le contrôle d'accès d'un groupe de ressources ne couvre pas la facturation. Azure Policy n'accorde aucun droit.</p>",
@@ -1860,8 +1860,8 @@ AZ.questions.push(
  "stem": "<p>Un administrateur a configuré un budget mensuel de 10 000 € sur Sub1. Les dépenses atteignent 12 000 € à la fin du mois.</p><p>Que s'est-il passé pour les ressources de Sub1 ?</p>",
  "opts": [
   "Elles ont continué de fonctionner normalement",
-  "Les nouvelles créations ont été bloquées",
-  "Elles sont passées en lecture seule",
+  "Les nouvelles créations ont été bloquées par le budget",
+  "Elles sont passées en lecture seule au seuil",
   "Elles ont été arrêtées à 10 000 €"
  ],
  "ans": 0,
@@ -1895,10 +1895,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez permettre à un utilisateur de lire les secrets du coffre de clés KV2, qui utilise encore le modèle d'autorisation <b>Stratégie d'accès au coffre</b>.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Attribuer le rôle Lecteur sur KV2",
-  "Ajouter une stratégie d'accès avec l'autorisation Get sur les secrets pour cet utilisateur",
-  "Activer la suppression réversible",
-  "Attribuer le rôle Utilisateur des secrets Key Vault à l'utilisateur"
+  "Attribuer le rôle Lecteur sur le coffre KV2",
+  "Une stratégie d'accès Get sur les secrets",
+  "Activer la suppression réversible sur KV2",
+  "Utilisateur des secrets Key Vault sur KV2"
  ],
  "ans": 1,
  "expl": "<p>Avec le modèle <b>Stratégie d'accès au coffre</b>, l'accès aux données se donne par des <b>stratégies d'accès</b> (Get, List, Set… par type d'objet). Les rôles de données RBAC comme Utilisateur des secrets n'ont <b>pas d'effet</b> tant que le coffre n'est pas passé au modèle RBAC.</p><p>Lecteur ne donne accès qu'au plan de contrôle. La suppression réversible protège contre la suppression, elle ne donne pas d'accès.</p>",
@@ -1935,7 +1935,7 @@ AZ.questions.push(
  "opts": [
   "À l'administrateur qui a créé ID-App",
   "Au groupe de ressources des applications web",
-  "À ID-App, une seule fois, sur les ressources cibles",
+  "À ID-App, une seule fois, sur les cibles",
   "À chaque application web séparément"
  ],
  "ans": 2,
@@ -1972,9 +1972,9 @@ AZ.questions.push(
  "stem": "<p>Un auditeur demande la preuve que la stratégie « Les comptes de stockage doivent utiliser un lien privé » est respectée dans l'abonnement Sub1 depuis trois mois.</p><p>Que devez-vous lui fournir ?</p>",
  "opts": [
   "Les journaux de connexion de Microsoft Entra ID",
-  "La liste des verrous de Sub1",
+  "La liste des verrous de l'abonnement Sub1",
   "Le rapport des recommandations Advisor",
-  "L'historique de conformité d'Azure Policy pour cette affectation"
+  "L'historique de conformité de l'affectation"
  ],
  "ans": 3,
  "expl": "<p>Azure Policy conserve l'<b>historique de conformité</b> de chaque affectation (graphique et états). On peut aussi exporter les états avec Azure Resource Graph.</p><p>Les journaux de connexion, Advisor et les verrous n'indiquent pas la conformité à une stratégie.</p>",
@@ -2004,9 +2004,9 @@ AZ.questions.push(
  "stem": "<p>Les utilisateurs du groupe Stagiaires doivent pouvoir se connecter au portail Azure, mais ne doivent pas pouvoir consulter le centre d'administration Microsoft Entra.</p><p>Quel paramètre devez-vous activer ?</p>",
  "opts": [
   "Restreindre l'accès au centre d'administration Microsoft Entra",
-  "Bloquer la connexion des utilisateurs",
+  "Bloquer la connexion des utilisateurs non administrateurs",
   "Les utilisateurs peuvent inscrire des applications : Non",
-  "Exiger l'inscription SSPR"
+  "Exiger l'inscription SSPR à la prochaine connexion"
  ],
  "ans": 0,
  "expl": "<p>Le paramètre utilisateur <b>« Restreindre l'accès au centre d'administration Microsoft Entra »</b> empêche les non-administrateurs de parcourir l'annuaire dans le centre d'administration. Ce n'est pas une mesure de sécurité forte (Microsoft Graph et PowerShell restent utilisables), mais il répond au besoin.</p><p>Bloquer la connexion empêcherait tout accès. Les deux autres réglages n'ont pas d'effet sur la consultation de l'annuaire.</p>",
@@ -2037,9 +2037,9 @@ AZ.questions.push(
  "stem": "<p>Vous devez donner à User20 le droit de redémarrer les VM de tous les groupes de ressources de Sub1, actuels et futurs, mais aucun autre droit.</p><p>Quelle solution respecte le mieux le principe du privilège minimum ?</p>",
  "opts": [
   "Contributeur de machines virtuelles sur Sub1",
-  "Un rôle personnalisé avec virtualMachines/read et virtualMachines/restart/action, attribué sur Sub1",
+  "Un rôle personnalisé (read, restart) sur Sub1",
   "Un rôle personnalisé attribué sur chaque groupe de ressources",
-  "Contributeur sur Sub1"
+  "Contributeur sur l'abonnement Sub1"
  ],
  "ans": 1,
  "expl": "<p>Un rôle personnalisé limité à la lecture et au redémarrage des VM, attribué sur <b>Sub1</b>, couvre tous les groupes de ressources, y compris les futurs.</p><p>Contributeur de machines virtuelles permet aussi de créer, modifier et supprimer des VM. L'attribuer par groupe oublierait les nouveaux groupes. Contributeur donne tous les droits.</p>",
@@ -2074,9 +2074,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous voulez savoir si la stratégie Deny que vous allez attribuer bloquerait des ressources existantes, avant de l'appliquer réellement.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Lancer une tâche de correction",
-  "Créer un verrou ReadOnly temporaire",
-  "Attribuer la stratégie avec l'application de la stratégie désactivée (DoNotEnforce) et consulter la conformité",
+  "Lancer une tâche de correction sur l'affectation",
+  "Créer un verrou ReadOnly temporaire sur l'abonnement",
+  "Attribuer en DoNotEnforce et consulter la conformité",
   "Attribuer la stratégie en Deny et observer les erreurs"
  ],
  "ans": 2,
@@ -2112,7 +2112,7 @@ AZ.questions.push(
  "stem": "<p>Les administrateurs de votre organisation doivent prouver leur identité avec l'authentification multifacteur avant d'activer un rôle éligible dans Privileged Identity Management.</p><p>Où configurez-vous cette exigence ?</p>",
  "opts": [
   "Dans les paramètres de SSPR",
-  "Dans Azure Policy",
+  "Dans une stratégie Azure Policy",
   "Dans les paramètres de l'appareil",
   "Dans les paramètres du rôle dans PIM"
  ],
@@ -2154,8 +2154,8 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une stratégie Azure Policy interdit les adresses IP publiques. Un ingénieur doit créer une adresse IP publique pour Azure Bastion dans RG-Bastion, et uniquement là, pour une durée de 6 mois, avec une trace de la justification.</p><p>Que devez-vous créer ?</p>",
  "opts": [
-  "Une exemption de stratégie sur RG-Bastion avec une date d'expiration",
-  "Un verrou sur RG-Bastion",
+  "Une exemption avec une date d'expiration",
+  "Un verrou ReadOnly sur RG-Bastion",
   "Une seconde affectation avec l'effet Audit",
   "Un rôle personnalisé pour l'ingénieur"
  ],
@@ -2200,9 +2200,9 @@ AZ.questions.push(
  "stem": "<p>Vous devez permettre aux utilisateurs de voir leurs licences et applications, de modifier leur mot de passe et d'enregistrer leurs méthodes d'authentification.</p><p>Vers quel portail devez-vous les diriger ?</p>",
  "opts": [
   "Le portail Azure DevOps",
-  "Le portail Mon compte (myaccount.microsoft.com)",
+  "Le portail Mon compte",
   "Le centre d'administration Microsoft Entra",
-  "Le portail Azure"
+  "Le portail Azure, page Abonnements"
  ],
  "ans": 1,
  "expl": "<p>Le portail <b>Mon compte</b> permet à chaque utilisateur de gérer ses informations de sécurité, son mot de passe, ses appareils et de voir ses abonnements. Le portail Mes applications (myapps) liste les applications.</p><p>Le portail Azure et le centre d'administration Entra sont des outils d'administration.</p>",
@@ -2235,8 +2235,8 @@ AZ.questions.push(
  "opts": [
   "Désactiver chaque compte du groupe",
   "Appliquer un verrou ReadOnly sur l'abonnement",
-  "Supprimer l'attribution de rôle dans le contrôle d'accès (IAM) de l'abonnement",
-  "Supprimer le groupe"
+  "Supprimer l'attribution de rôle (IAM)",
+  "Supprimer le groupe de Microsoft Entra ID"
  ],
  "ans": 2,
  "expl": "<p>Supprimer l'<b>attribution</b> retire l'accès à tout le groupe en une opération, sans toucher au groupe lui-même, qui peut servir ailleurs.</p><p>Supprimer le groupe ou les comptes causerait d'autres dégâts. Un verrou ReadOnly bloquerait aussi les administrateurs légitimes, et ne retirerait pas le droit d'attribuer des rôles.</p>",
@@ -2266,9 +2266,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez trouver tous les groupes de ressources de vos abonnements qui ne contiennent aucune ressource, pour les supprimer.</p><p>Quel outil permet de le faire en une seule requête ?</p>",
  "opts": [
-  "Gestion des coûts",
+  "Gestion des coûts, par étiquette",
   "Azure Policy en mode Deny",
-  "Microsoft Entra ID",
+  "Microsoft Entra ID, journal d'audit",
   "Azure Resource Graph Explorer"
  ],
  "ans": 3,
@@ -2334,7 +2334,7 @@ AZ.questions.push(
  "stem": "<p>Votre locataire Microsoft Entra contient un utilisateur nommé Admin3 qui a le rôle Administrateur d'utilisateurs. Admin3 veut réinitialiser le mot de passe d'un Administrateur général.</p><p>Peut-il le faire ?</p>",
  "opts": [
   "Oui, mais seulement si l'Administrateur général l'y autorise",
-  "Non, seul un Administrateur général (ou Administrateur d'authentification privilégiée) peut le faire",
+  "Non : Administrateur général ou d'authentification privilégiée",
   "Oui, Administrateur d'utilisateurs peut réinitialiser tous les mots de passe",
   "Non, aucun mot de passe d'administrateur ne peut être réinitialisé"
  ],
@@ -2404,8 +2404,8 @@ AZ.questions.push(
  "opts": [
   "Un script exécuté manuellement par chaque administrateur",
   "Des étiquettes sur les abonnements",
-  "Des verrous sur la racine",
-  "Des initiatives Azure Policy et des modèles (Template Specs ou piles de déploiement)"
+  "Des verrous sur le groupe racine",
+  "Des initiatives Azure Policy et des modèles"
  ],
  "ans": 3,
  "expl": "<p>Azure Blueprints est en cours de retrait. Microsoft recommande de combiner les <b>initiatives Azure Policy</b> (gouvernance) et des <b>modèles</b> ARM ou Bicep publiés en Template Specs, ou des <b>piles de déploiement</b> (deployment stacks), qui peuvent en plus protéger les ressources avec des affectations de refus.</p>",
@@ -2438,10 +2438,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Dans le portail, l'option <b>Supprimer</b> du compte de stockage storage8 renvoie l'erreur : « The scope ... cannot perform delete operation because following scope(s) are locked ».</p><p>Que devez-vous faire pour supprimer storage8 ?</p>",
  "opts": [
-  "Retirer le verrou du compte de stockage ou de son parent (groupe de ressources ou abonnement)",
-  "Désactiver la suppression réversible",
-  "Vider d'abord tous les conteneurs",
-  "Attribuer le rôle Contributeur aux données blob du stockage"
+  "Retirer le verrou du compte ou de son parent",
+  "Désactiver la suppression réversible des blobs",
+  "Vider d'abord tous les conteneurs du compte",
+  "Attribuer Contributeur aux données blob du stockage"
  ],
  "ans": 0,
  "expl": "<p>Le message indique qu'un <b>verrou</b> s'applique, sur storage8 lui-même ou hérité de son groupe de ressources ou de son abonnement. Il faut le retirer (avec un rôle Propriétaire ou Administrateur de l'accès utilisateur), supprimer le compte, puis remettre le verrou si besoin.</p><p>Le contenu du compte, les rôles de données et la suppression réversible ne sont pas en cause.</p>",
@@ -2472,7 +2472,7 @@ AZ.questions.push(
  "stem": "<p>Vous devez attribuer automatiquement une licence Microsoft 365 à tous les utilisateurs dont le pays est la France, sans gestion manuelle des groupes.</p><p>Quelle combinaison devez-vous utiliser ?</p>",
  "opts": [
   "Un groupe Microsoft 365 à appartenance attribuée",
-  "Un groupe dynamique (user.country -eq \"France\") avec une licence attribuée au groupe",
+  "Un groupe dynamique (pays France) avec licence",
   "Une unité administrative France avec une licence",
   "Une stratégie Azure Policy sur l'emplacement"
  ],
@@ -2509,10 +2509,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Les dépenses d'un projet doivent être suivies à travers trois abonnements. Chaque ressource du projet porte l'étiquette Projet=Orion.</p><p>Comment obtenir le coût total du projet ?</p>",
  "opts": [
-  "Créer un groupe de ressources commun",
-  "Additionner manuellement les budgets des trois abonnements",
-  "Analyse des coûts à l'étendue du groupe d'administration ou du compte de facturation, filtrée sur l'étiquette Projet=Orion",
-  "Consulter Azure Advisor"
+  "Créer un groupe de ressources commun aux trois",
+  "Additionner à la main les budgets des trois abonnements",
+  "Analyse des coûts au niveau du groupe, filtre Projet=Orion",
+  "Consulter Azure Advisor, onglet Coût"
  ],
  "ans": 2,
  "expl": "<p>L'<b>analyse des coûts</b> peut s'ouvrir à une étendue qui couvre plusieurs abonnements (groupe d'administration, compte ou profil de facturation) et se filtrer sur une <b>étiquette</b>.</p><p>Les budgets sont des seuils, pas des dépenses. Un groupe de ressources ne peut pas couvrir plusieurs abonnements. Advisor ne donne pas les dépenses.</p>",
@@ -2545,10 +2545,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous déplacez l'abonnement Sub5 du groupe d'administration MG-Dev vers MG-Prod. MG-Prod a une stratégie Deny sur les tailles de VM.</p><p>Que se passe-t-il pour les VM existantes de Sub5 dont la taille est interdite dans MG-Prod ?</p>",
  "opts": [
-  "Elles sont arrêtées",
+  "Elles sont arrêtées par la stratégie",
   "Elles sont redimensionnées automatiquement",
-  "Le déplacement de l'abonnement est refusé",
-  "Elles continuent de fonctionner et deviennent non conformes"
+  "Le déplacement de l'abonnement est refusé par Azure Policy",
+  "Elles tournent et deviennent non conformes"
  ],
  "ans": 3,
  "expl": "<p>Après le déplacement, Sub5 hérite des stratégies de MG-Prod. Les VM existantes ne sont ni arrêtées ni modifiées : elles apparaissent <b>non conformes</b>. Les nouvelles VM de taille interdite seront refusées.</p><p>Azure Policy n'empêche pas le déplacement d'un abonnement.</p>",
@@ -2577,10 +2577,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Un utilisateur invité a été ajouté il y a un an pour un projet terminé. Vous devez supprimer automatiquement les invités inactifs.</p><p>Quelle fonctionnalité convient le mieux ?</p>",
  "opts": [
-  "Une révision d'accès des utilisateurs invités, avec l'application automatique des résultats",
-  "Une alerte de budget",
-  "Une stratégie d'expiration de groupe",
-  "Un verrou de ressource"
+  "Une révision d'accès des invités, résultats appliqués",
+  "Une alerte de budget sur les comptes invités",
+  "Une stratégie d'expiration des groupes Microsoft 365",
+  "Un verrou de ressource sur les comptes invités"
  ],
  "ans": 0,
  "expl": "<p>Les <b>révisions d'accès</b> peuvent cibler les invités, demander une validation (ou se baser sur l'inactivité) et <b>appliquer automatiquement</b> les résultats : retirer l'accès ou bloquer puis supprimer les comptes refusés.</p><p>L'expiration concerne des groupes Microsoft 365, pas des comptes. Les deux autres options n'ont pas de lien.</p>",
@@ -2618,8 +2618,8 @@ AZ.questions.push(
  "stem": "<p>Vous devez créer 20 groupes de ressources identiques (mêmes étiquettes, verrous et attributions de rôles) pour 20 projets, de façon reproductible.</p><p>Quelle méthode convient le mieux ?</p>",
  "opts": [
   "Créer chaque groupe à la main dans le portail",
-  "Un modèle Bicep déployé à l'étendue de l'abonnement",
-  "Utiliser Azure Advisor",
+  "Un modèle Bicep à l'étendue de l'abonnement",
+  "Utiliser Azure Advisor pour générer les groupes",
   "Copier les groupes avec l'option Cloner du portail"
  ],
  "ans": 1,
@@ -2654,10 +2654,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Votre organisation veut que les nouveaux abonnements soient placés automatiquement sous MG-Sandbox, et non sous la racine.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Une stratégie Azure Policy sur la racine",
-  "Une étiquette sur MG-Sandbox",
-  "Le groupe d'administration par défaut dans les paramètres de la hiérarchie",
-  "Un verrou sur la racine"
+  "Une stratégie Azure Policy sur le groupe racine",
+  "Une étiquette sur le groupe MG-Sandbox",
+  "Le groupe d'administration par défaut",
+  "Un verrou sur le groupe d'administration racine"
  ],
  "ans": 2,
  "expl": "<p>Les <b>paramètres de la hiérarchie</b> permettent de choisir le <b>groupe d'administration par défaut</b> où sont placés les nouveaux abonnements. On peut aussi y exiger une autorisation pour créer des groupes d'administration.</p>",
@@ -2721,9 +2721,9 @@ AZ.questions.push(
  "stem": "<p>Vous voulez empêcher les utilisateurs de consentir eux-mêmes aux applications tierces qui demandent l'accès à leurs données.</p><p>Où devez-vous configurer ce réglage ?</p>",
  "opts": [
   "Applications d'entreprise > Consentement et autorisations",
-  "Abonnement > Stratégies",
+  "Abonnement > Stratégies > Affectations",
   "Paramètres de l'appareil",
-  "Paramètres de collaboration externe"
+  "Utilisateurs > Paramètres de collaboration externe (invités)"
  ],
  "ans": 0,
  "expl": "<p>Le réglage <b>Consentement de l'utilisateur pour les applications</b> se trouve dans <b>Applications d'entreprise > Consentement et autorisations</b>. On peut le désactiver, ou le limiter aux éditeurs vérifiés et aux permissions à faible risque, et activer un workflow de demande d'approbation par un administrateur.</p>",
@@ -2758,9 +2758,9 @@ AZ.questions.push(
  "stem": "<p>Vous devez donner à une équipe externe l'accès à un seul groupe de ressources pendant 3 mois. L'accès doit disparaître automatiquement après.</p><p>Quelle solution, avec Microsoft Entra ID P2, demande le moins de gestion ?</p>",
  "opts": [
   "Un verrou sur le groupe de ressources",
-  "Une attribution de rôle Azure active dans PIM avec une date de fin",
+  "Une attribution active dans PIM avec une date de fin",
   "Une attribution classique, à supprimer dans 3 mois",
-  "Un budget de 3 mois"
+  "Un budget de 3 mois sur le groupe de ressources"
  ],
  "ans": 1,
  "expl": "<p>PIM permet de créer des attributions (actives ou éligibles) avec une <b>date de début et de fin</b>. À la date de fin, l'accès est retiré automatiquement.</p><p>Une attribution classique dépend de quelqu'un qui pense à la supprimer. Les deux autres options ne gèrent pas d'accès.</p>",
@@ -2795,9 +2795,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Un administrateur vous demande pourquoi le rôle intégré <b>Contributeur</b> ne lui permet pas d'attribuer des accès, alors qu'il donne « tous les droits ».</p><p>Quelle est la bonne explication ?</p>",
  "opts": [
-  "Contributeur est un rôle Microsoft Entra",
+  "Contributeur est un rôle Microsoft Entra, pas Azure",
   "Contributeur ne s'applique qu'aux groupes de ressources",
-  "Contributeur contient Actions * mais NotActions Microsoft.Authorization/*/Delete, */Write et elevateAccess/Action",
+  "Ses NotActions excluent Microsoft.Authorization (écriture)",
   "Contributeur ne contient que des actions de lecture"
  ],
  "ans": 2,
@@ -2833,9 +2833,9 @@ AZ.questions.push(
  "stem": "<p>Vous devez attribuer le même rôle personnalisé à un groupe dans 12 abonnements, sans répéter l'opération dans chaque abonnement.</p><p>Que devez-vous faire ?</p>",
  "opts": [
   "Attribuer le rôle au locataire Microsoft Entra",
-  "Créer 12 rôles personnalisés",
-  "Utiliser une étiquette commune",
-  "Inclure le groupe d'administration parent dans AssignableScopes et attribuer le rôle sur ce groupe d'administration"
+  "Créer 12 rôles personnalisés, un par abonnement",
+  "Utiliser une étiquette commune sur les abonnements",
+  "Le groupe parent dans AssignableScopes, puis l'attribuer"
  ],
  "ans": 3,
  "expl": "<p>Si les 12 abonnements sont sous le même <b>groupe d'administration</b>, le rôle personnalisé peut avoir ce groupe dans AssignableScopes (à condition de ne pas contenir de DataActions). Une seule attribution sur le groupe d'administration couvre les 12 abonnements.</p>",
@@ -2869,8 +2869,8 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous constatez qu'un utilisateur a été supprimé de Microsoft Entra ID il y a 40 jours. Il devait être restauré.</p><p>Que pouvez-vous faire ?</p>",
  "opts": [
-  "Recréer un nouveau compte : l'ancien est supprimé définitivement après 30 jours",
-  "Le restaurer depuis Utilisateurs supprimés",
+  "Recréer le compte : l'ancien est supprimé après 30 jours",
+  "Le restaurer depuis la page Utilisateurs supprimés, comme d'habitude",
   "Le restaurer depuis une sauvegarde Azure Backup",
   "Le restaurer depuis le journal d'audit"
  ],
@@ -2902,9 +2902,9 @@ AZ.questions.push(
  "stem": "<p>L'équipe finance demande que toutes les ressources sans étiquette CentreDeCout soient visibles dans un tableau de bord, sans bloquer aucun déploiement.</p><p>Quelle solution convient ?</p>",
  "opts": [
   "Un verrou sur chaque groupe de ressources",
-  "Une stratégie avec l'effet Audit, consultée dans la page Conformité",
+  "Une stratégie Audit, vue dans Conformité",
   "Un budget par centre de coût",
-  "Une stratégie avec l'effet Deny"
+  "Une stratégie avec l'effet Deny sur l'étiquette"
  ],
  "ans": 1,
  "expl": "<p>L'effet <b>Audit</b> marque les ressources sans l'étiquette comme non conformes, sans rien bloquer. La page <b>Conformité</b> d'Azure Policy sert de tableau de bord.</p><p>Deny bloquerait les déploiements, ce qui est exclu.</p>",
@@ -2937,10 +2937,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez permettre à un utilisateur de voir toutes les ressources d'un groupe de ressources, et de créer des tickets de support, sans rien modifier.</p><p>Quelle combinaison de rôles devez-vous attribuer sur le groupe de ressources ?</p>",
  "opts": [
-  "Lecteur seul",
-  "Contributeur",
+  "Lecteur seul sur l'abonnement",
+  "Contributeur sur l'abonnement de production",
   "Lecteur et Contributeur de demande de support",
-  "Propriétaire"
+  "Propriétaire sur l'abonnement"
  ],
  "ans": 2,
  "expl": "<p><b>Lecteur</b> permet de tout voir sans modifier. <b>Contributeur de demande de support</b> ajoute la création de demandes de support. Les rôles s'additionnent.</p><p>Contributeur et Propriétaire permettent de modifier. Lecteur seul ne permet pas d'ouvrir une demande de support.</p>",

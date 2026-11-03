@@ -132,10 +132,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Your organization buys 200 Microsoft 365 E3 licenses. You need to ensure that any user added to the Accounting security group automatically receives a license, and loses it when they leave the group.</p><p>What should you do?</p>",
  "opts": [
-  "Create a dynamic membership rule",
+  "Create a dynamic membership rule on Accounting",
   "Assign the License Administrator role",
   "Assign the license to the Accounting group",
-  "Create an Azure Policy"
+  "Create an Azure Policy on licenses"
  ],
  "ans": 2,
  "expl": "<p><b>Group-based licensing</b> lets you assign a license to a group: every member receives it, and loses it when leaving the group. This feature requires Microsoft Entra ID P1 (or a plan that includes it, such as Microsoft 365 E3).</p><ul><li>A <b>dynamic rule</b> manages who is a member of the group, not licenses.</li><li><b>Azure Policy</b> applies to Azure resources, not to users or licenses.</li><li>The <b>License Administrator</b> role gives someone the right to manage licenses; it automates nothing.</li></ul>",
@@ -178,8 +178,8 @@ AZ.questions.push(
  "opts": [
   "Company network IP address",
   "Verification code sent by email",
-  "Certificate of the user's computer",
-  "Notification in the Microsoft Authenticator app"
+  "Certificate installed on the user's computer",
+  "Notification in Microsoft Authenticator"
  ],
  "ans": [
   1,
@@ -268,10 +268,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Your Microsoft Entra tenant contains the users of three branches: Paris, Lyon, and Lille. You need to allow Admin2 to reset the passwords of the users in <b>Lyon only</b>.</p><p>The solution must follow the principle of least privilege. What should you do?</p>",
  "opts": [
-  "Create a Lyon administrative unit and assign Admin2 the Helpdesk Administrator role on it",
-  "Assign Admin2 the Helpdesk Administrator role for the whole tenant",
-  "Create a Lyon security group and make Admin2 an owner of the group",
-  "Create a Lyon management group and assign Admin2 the Contributor role on it"
+  "A Lyon administrative unit, Admin2 Helpdesk Administrator on it",
+  "Admin2 Helpdesk Administrator for the whole tenant",
+  "A Lyon security group with Admin2 as owner",
+  "A Lyon management group, with Admin2 as Contributor on it"
  ],
  "ans": 0,
  "expl": "<p>An <b>administrative unit</b> restricts the scope of a Microsoft Entra role to a set of users, groups, or devices. The <b>Helpdesk Administrator</b> role assigned on the Lyon unit lets Admin2 reset the passwords of Lyon users only.</p><ul><li>The same role for the <b>whole tenant</b> grants too much.</li><li>A <b>group owner</b> manages the group's members, not their passwords.</li><li>A <b>management group</b> organizes Azure subscriptions; it doesn't manage Entra users, and Contributor is an Azure role, not an Entra role.</li></ul>",
@@ -602,9 +602,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>User4 has the <b>Contributor</b> role on the subscription Sub1. He must also be able to assign Azure roles to other users on Sub1.</p><p>The solution must follow the principle of least privilege. Which additional role should you assign to him on Sub1?</p>",
  "opts": [
-  "Global Administrator",
+  "Global Administrator in Microsoft Entra ID",
   "User Access Administrator",
-  "Owner",
+  "Owner on the resource group",
   "Reader"
  ],
  "ans": 1,
@@ -784,10 +784,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Admin1 is a <b>Global Administrator</b> of your Microsoft Entra tenant. He must be able to manage access to <b>all</b> subscriptions and management groups in the tenant, including those on which he has no Azure role.</p><p>What should you do?</p>",
  "opts": [
-  "Enable “Access management for Azure resources” in the Microsoft Entra ID properties",
+  "Enable “Access management for Azure resources”",
   "Add Admin1 to the root management group",
-  "Assign Admin1 the Owner role on each subscription",
-  "Assign Admin1 the Privileged Role Administrator role"
+  "Assign Admin1 Owner on each subscription",
+  "Assign Admin1 Privileged Role Administrator"
  ],
  "ans": 0,
  "expl": "<p>The <b>Access management for Azure resources</b> setting (elevate access), in the Microsoft Entra ID properties, gives the Global Administrator the <b>User Access Administrator</b> role at the root scope <code>/</code>. He can then assign himself the roles he needs on any subscription or management group.</p><ul><li>To assign Owner on each subscription, he would already need rights on those subscriptions.</li><li><b>Privileged Role Administrator</b> manages Microsoft Entra roles, not Azure roles.</li><li>You don't “add” a user to a management group: you assign a role on it, which already requires rights.</li></ul>",
@@ -872,9 +872,9 @@ AZ.questions.push(
  "stem": "<p>You assign an Azure Policy with the <b>Deny</b> effect to the subscription Sub1. It forbids virtual machines larger than Standard_D4s_v5. Sub1 already contains VM1, of size Standard_D8s_v5.</p><p>What happens to VM1?</p>",
  "opts": [
   "VM1 is deleted at the next evaluation",
-  "VM1 keeps running and is flagged as non-compliant",
+  "VM1 keeps running, flagged as non-compliant",
   "VM1 is stopped and deallocated automatically",
-  "VM1 is resized to Standard_D4s_v5"
+  "VM1 is resized to Standard_D4s_v5 by Azure"
  ],
  "ans": 1,
  "expl": "<p>The <b>Deny</b> effect blocks <b>new</b> non-compliant creations and updates. It doesn't act on existing resources: VM1 keeps running and shows as <b>non-compliant</b> in the compliance dashboard.</p><p>Azure Policy never stops, resizes, or deletes an existing resource. To fix existing resources, you use a remediation task, and only with the Modify or DeployIfNotExists effects.</p>",
@@ -978,9 +978,9 @@ AZ.questions.push(
  "stem": "<p>You assign an Azure Policy with the <b>Modify</b> effect to add the Environment tag to existing resource groups. You create a remediation task, but it fails for lack of permissions.</p><p>What should you check?</p>",
  "opts": [
   "That you have the Reader role on the subscription",
-  "That the resource groups contain no resources",
-  "That the assignment has a managed identity with a sufficient role",
-  "That the policy is part of an initiative"
+  "That the targeted resource groups contain no resources",
+  "That the assignment has a managed identity with the right role",
+  "That the policy is part of an assigned initiative"
  ],
  "ans": 2,
  "expl": "<p>The <b>Modify</b> and <b>DeployIfNotExists</b> effects act on resources on your behalf. To do so, the assignment uses a <b>managed identity</b> (system-assigned or user-assigned) that must have a sufficient role, for example Tag Contributor or Contributor, on the scope.</p><p>The Reader role cannot remediate. A single policy works as well as an initiative. The content of the resource groups is irrelevant.</p>",
@@ -1059,7 +1059,7 @@ AZ.questions.push(
  "stem": "<p>You assign a policy to the subscription Sub1 that allows only the France Central region. The resource group RG-DR must be able to contain resources in France South.</p><p>What should you do, with minimal effort?</p>",
  "opts": [
   "Add RG-DR to the assignment's exclusions",
-  "Create a second assignment on RG-DR",
+  "Create a second assignment on RG-DR, in Audit",
   "Move RG-DR to another subscription",
   "Apply a read-only lock to RG-DR"
  ],
@@ -1097,10 +1097,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>The subscription Sub1 contains the resource group RG1. You need to ensure that every resource created in RG1 receives the <b>CostCenter</b> tag with the same value as RG1's.</p><p>Which <b>two</b> statements are true?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
-  "A remediation task is needed for the resources already in RG1",
-  "A lock on RG1 copies its tags to the resources",
+  "A remediation task is needed for existing resources",
+  "A lock on RG1 copies its tags to its resources",
   "Resources automatically inherit RG1's tags",
-  "The built-in policy “Inherit a tag from the resource group if missing” meets the need"
+  "The “Inherit a tag from the resource group” policy fits"
  ],
  "ans": [
   0,
@@ -1274,8 +1274,8 @@ AZ.questions.push(
  "opts": [
   "The group's resources must be deleted first",
   "Locks can only be deleted by their creator",
-  "A lock cannot be deleted for 24 hours",
-  "Contributor doesn't have the Microsoft.Authorization/locks/delete action"
+  "A lock can't be deleted for 24 hours",
+  "Contributor lacks the locks/delete action"
  ],
  "ans": 3,
  "expl": "<p>Creating or deleting a lock requires the <code>Microsoft.Authorization/locks/*</code> actions. They are included in the <b>Owner</b> and <b>User Access Administrator</b> roles, but <b>not</b> in Contributor, which excludes all Microsoft.Authorization actions.</p><p>Anyone with these rights can delete a lock, not only its creator. There is no 24-hour delay, and you delete a lock without touching the resources.</p>",
@@ -1390,10 +1390,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to be alerted when the <b>forecasted</b> spending of the subscription Sub1 for the month exceeds €5,000. Virtual machines must not be stopped automatically.</p><p>What should you create in Cost Management?</p>",
  "opts": [
-  "An Azure Policy with the Deny effect",
-  "A budget with an alert on forecasted cost",
-  "An Azure reservation",
-  "An activity log alert"
+  "An Azure Policy with the Deny effect on cost",
+  "A budget with a forecasted-cost alert",
+  "A one-year Azure reservation",
+  "An activity log alert on the subscription"
  ],
  "ans": 1,
  "expl": "<p>A <b>budget</b> in Cost Management can trigger alerts on <b>actual</b> or <b>forecasted</b> cost, as a percentage of the amount. A budget never stops a resource on its own; it notifies (email, action group).</p><p>Azure Policy knows nothing about costs. The activity log tracks operations, not spending. A reservation lowers costs but notifies nothing.</p>",
@@ -1532,8 +1532,8 @@ AZ.questions.push(
  "stem": "<p>You need to estimate the monthly cost of 3 virtual machines, a storage account, and a VPN gateway <b>before</b> deploying them.</p><p>Which tool should you use?</p>",
  "opts": [
   "Cost Management budgets",
-  "Azure Advisor",
-  "Cost analysis",
+  "Azure Advisor, Cost tab",
+  "The subscription's cost analysis",
   "The Azure pricing calculator"
  ],
  "ans": 3,
@@ -1610,9 +1610,9 @@ AZ.questions.push(
  "stem": "<p>You start moving several resources from RG1 to RG2.</p><p>During the move, what happens to RG1 and RG2?</p>",
  "opts": [
   "Nothing: both groups remain fully editable",
-  "Both groups are blocked for write and delete operations",
-  "Only RG2 is read-only",
-  "The moved resources are stopped"
+  "Both groups are locked for writes and deletes",
+  "Only RG2 is read-only during the move",
+  "The moved resources are stopped during the operation"
  ],
  "ans": 1,
  "expl": "<p>During a move, the source and target groups are <b>locked</b>: you cannot create, modify, or delete resources in them until the operation completes (four hours at most).</p><p>The resources themselves <b>keep running</b>: a VM stays started, a web app stays online.</p>",
@@ -1646,10 +1646,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Before moving 30 resources from RG1 to another subscription, you want to know whether the move will succeed, without moving anything.</p><p>What should you use?</p>",
  "opts": [
-  "A read-only lock on RG1",
-  "The activity log of RG1",
+  "A read-only lock on RG1 during the test",
+  "RG1's activity log after the move",
   "The validateMoveResources operation",
-  "An Azure Policy in Audit mode"
+  "An Azure Policy in Audit mode on RG1"
  ],
  "ans": 2,
  "expl": "<p>The <b>validateMoveResources</b> API tests the move: it checks that the resources support it and that dependencies are included, without changing anything. The portal also runs an automatic validation before any move.</p><p>The activity log shows what happened, not what will happen. A read-only lock would even make the move fail. Azure Policy doesn't test moves.</p>",
@@ -1878,7 +1878,7 @@ AZ.questions.push(
  "stem": "<p>You need to list, in a single query, every virtual machine across your organization's 40 subscriptions that doesn't have the <b>Owner</b> tag.</p><p>Which service should you use?</p>",
  "opts": [
   "Azure Resource Graph",
-  "The activity log",
+  "Each subscription's activity log",
   "Cost analysis",
   "Azure Advisor"
  ],
@@ -1913,9 +1913,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>User5 has the Contributor role on RG1. Yet he cannot delete some resources in RG1. In the <b>Access control (IAM)</b> tab of RG1, you find a <b>deny assignment</b>.</p><p>Which statement about deny assignments is true?</p>",
  "opts": [
-  "A deny assignment applies only to Microsoft Entra roles",
-  "Deny assignments are created by Azure, for example by deployment stacks",
-  "You can create a deny assignment yourself from the portal",
+  "A deny assignment only targets Microsoft Entra roles",
+  "They're created by Azure (for example deployment stacks)",
+  "You can create a deny assignment yourself in the portal",
   "A deny assignment is weaker than a role assignment"
  ],
  "ans": 1,
@@ -1951,7 +1951,7 @@ AZ.questions.push(
  "opts": [
   "Those of the role assigned first",
   "Reader, because the most restrictive role wins",
-  "Contributor, because permissions are additive",
+  "Contributor: permissions are additive",
   "None, because the two roles conflict"
  ],
  "ans": 2,
@@ -2146,10 +2146,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to prevent, across the whole management group MG-Prod, the creation of storage accounts that allow public network access. The rule must also apply to subscriptions added to MG-Prod later.</p><p>Where should you assign the policy?</p>",
  "opts": [
-  "To each resource group",
+  "To each resource group in MG-Prod",
   "To the Microsoft Entra tenant",
-  "To each subscription of MG-Prod",
-  "To the management group MG-Prod"
+  "To each subscription in MG-Prod",
+  "To the MG-Prod management group"
  ],
  "ans": 3,
  "expl": "<p>A policy assigned to the <b>MG-Prod management group</b> applies to all its subscriptions, current and <b>future</b>, through inheritance.</p><p>Assigning it subscription by subscription would miss new subscriptions. Resource groups are even lower. You don't assign Azure Policy to the Microsoft Entra tenant: the highest scope is the root management group.</p>",
@@ -2183,8 +2183,8 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You accidentally deleted the user User7 from Microsoft Entra ID 10 days ago.</p><p>What can you do?</p>",
  "opts": [
-  "Restore User7 from Deleted users, since it stays there for 30 days",
-  "Recreate User7: it automatically gets back its groups and licenses",
+  "Restore User7 from Deleted users (30 days)",
+  "Recreate User7: it gets its groups and licenses back",
   "Restore User7 from the Azure activity log",
   "Nothing: deletion is immediate and permanent"
  ],

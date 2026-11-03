@@ -45,10 +45,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You create the user John in on-premises Active Directory. Microsoft Entra Connect synchronizes the directory every 30 minutes. One hour later, you want to delete John from the Microsoft Entra portal.</p><p>What happens?</p>",
  "opts": [
-  "John is converted to a cloud account",
-  "The delete option isn't available: John must be deleted in on-premises AD",
-  "The deletion succeeds and John also disappears from on-premises AD",
-  "The deletion succeeds, but John reappears unchanged at the next sync"
+  "John is converted to a cloud-only account",
+  "Can't delete here: he must be deleted in on-premises AD",
+  "The deletion succeeds and John also disappears from on-prem AD",
+  "The deletion succeeds, but John returns at the next sync"
  ],
  "ans": 1,
  "expl": "<p>For a <b>synchronized</b> object, the source of authority is on-premises AD. The portal doesn't let you delete it or change its synchronized attributes: you must delete John in <b>on-premises AD</b>, and the deletion will be carried over at the next sync.</p><p>Entra never modifies on-premises AD this way, and doesn't convert the object to a cloud account.</p>",
@@ -129,9 +129,9 @@ AZ.questions.push(
  "stem": "<p>You added the custom domain contoso.com to Microsoft Entra ID. It remains in the <b>Unverified</b> state.</p><p>Which type of DNS record should you create at your public DNS host?</p>",
  "opts": [
   "A PTR record for contoso.com",
-  "An A record pointing to an Azure IP address",
-  "A TXT or MX record with the value provided by Microsoft",
-  "A CNAME record pointing to contoso.onmicrosoft.com"
+  "An A record to an Azure IP address",
+  "A TXT or MX record with Microsoft's value",
+  "A CNAME to contoso.onmicrosoft.com"
  ],
  "ans": 2,
  "expl": "<p>Microsoft provides a unique value like <code>MS=ms12345678</code> to publish in a <b>TXT</b> record (or, failing that, an <b>MX</b> record). Its presence proves that you control the domain.</p><p>A, CNAME, and PTR records are not used for this verification.</p>",
@@ -290,7 +290,7 @@ AZ.questions.push(
  "opts": [
   "Yes, but only if GRP-Assistants is dynamic",
   "No, unless GRP-Assistants is a Microsoft 365 group",
-  "No, group-based licensing applies only to direct members",
+  "No: group licensing only covers direct members",
   "Yes, licenses are inherited by nested groups"
  ],
  "ans": 2,
@@ -327,9 +327,9 @@ AZ.questions.push(
  "stem": "<p>You assign a Microsoft 365 E3 license to the group GRP-Sales, which has 120 members. You have only 100 licenses available.</p><p>What happens?</p>",
  "opts": [
   "No member receives a license",
-  "All 120 members receive a license and you are billed for the extra",
+  "All 120 get a license and the extra is billed",
   "Azure automatically buys 20 more licenses",
-  "100 members receive a license; the other 20 are in an assignment error state"
+  "100 get a license, 20 are in error"
  ],
  "ans": 3,
  "expl": "<p>Entra assigns licenses as long as some remain. The remaining users show as being in <b>error</b> (“not enough licenses”) in the group, and will be processed as soon as licenses are freed or purchased.</p><p>No license is bought or billed automatically.</p>",
@@ -364,9 +364,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>An employee left the company this morning. You need to block them from signing in immediately, without deleting their account, and invalidate their current sessions.</p><p>Which actions should you perform in Microsoft Entra ID?</p>",
  "opts": [
-  "Turn off “Account enabled”, then revoke sessions",
-  "Remove them from all groups",
-  "Remove their licenses",
+  "Disable the account, then revoke sessions",
+  "Remove them from every group in the tenant",
+  "Remove all their Microsoft 365 licenses",
   "Reset their password only"
  ],
  "ans": 0,
@@ -402,9 +402,9 @@ AZ.questions.push(
  "stem": "<p>A guest didn't receive the invitation email sent a week ago. Their account appears in the directory with the invitation state <b>Pending acceptance</b>.</p><p>What should you do?</p>",
  "opts": [
   "Assign them a Microsoft Entra ID P1 license",
-  "Resend the invitation from the guest's profile",
-  "Delete the guest's domain",
-  "Convert the account to a member"
+  "Resend the invitation from the profile",
+  "Delete and re-add the guest's domain",
+  "Convert the guest account to a member"
  ],
  "ans": 1,
  "expl": "<p>The profile of a guest whose invitation hasn't been accepted offers <b>Resend invitation</b>. You can also send them the redemption link directly.</p><p>The other actions don't let them accept the invitation.</p>",
@@ -503,10 +503,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Your organization's administrators have the Owner role on subscriptions permanently. You need to ensure that they activate this role only when they need it, for a limited time and with a justification.</p><p>What should you use?</p>",
  "opts": [
-  "Administrative units",
+  "Administrative units per team",
   "An Azure Policy in Deny mode",
-  "Microsoft Entra Privileged Identity Management (PIM)",
-  "Resource locks"
+  "Privileged Identity Management (PIM)",
+  "Locks on critical resources"
  ],
  "ans": 2,
  "expl": "<p><b>Privileged Identity Management</b> lets you make a role <b>eligible</b> instead of permanent: the administrator activates it for a limited time, with a justification, multifactor authentication, or approval if needed. PIM works for Microsoft Entra roles and Azure roles. It requires Microsoft Entra ID P2.</p><p>Locks, Azure Policy, and administrative units don't handle temporary role activation.</p>",
@@ -584,9 +584,9 @@ AZ.questions.push(
  "stem": "<p>A policy with the Deny effect regularly blocks developers' deployments. They don't understand why: the error message only quotes the policy's technical name.</p><p>What should you configure in the assignment?</p>",
  "opts": [
   "A non-compliance message",
-  "An exclusion",
-  "A managed identity",
-  "The Audit effect"
+  "An exclusion on the assignment",
+  "A managed identity on the assignment",
+  "The Audit effect instead of Deny"
  ],
  "ans": 0,
  "expl": "<p>An assignment's <b>non-compliance message</b> is shown in the deny error and in the compliance results. You use it to explain the rule, for example “Only the France Central region is allowed. Contact the Cloud team.”</p><p>An exclusion or the Audit effect would remove the block. The managed identity is for remediation.</p>",
@@ -704,8 +704,8 @@ AZ.questions.push(
  "opts": [
   "The deletion succeeds after confirmation",
   "The subnet is emptied but kept",
-  "The deletion fails, because the lock also applies to child resources",
-  "The deletion succeeds, because the lock protects only VNet1"
+  "It fails: the lock covers child resources",
+  "The deletion succeeds, since the lock only protects VNet1"
  ],
  "ans": 2,
  "expl": "<p>A lock applies to the resource <b>and its child resources</b>. A subnet is a child resource of the virtual network: its deletion is blocked.</p><p>You must remove the lock, delete the subnet, then put the lock back.</p>",
@@ -735,10 +735,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You try to create an Azure Container Apps environment in the subscription Sub2. The deployment fails with the error <b>MissingSubscriptionRegistration</b>.</p><p>What should you do?</p>",
  "opts": [
-  "Remove the locks from Sub2",
-  "Request a quota increase",
+  "Remove the locks from the Sub2 subscription",
+  "Request a quota increase in Sub2",
   "Assign the Reader role on Sub2",
-  "Register the Microsoft.App resource provider in Sub2"
+  "Register the Microsoft.App provider"
  ],
  "ans": 3,
  "expl": "<p>Each Azure service depends on a <b>resource provider</b> (Microsoft.Compute, Microsoft.Storage, Microsoft.App…). If it isn't registered in the subscription, the MissingSubscriptionRegistration error appears. You register it in <b>Subscription > Resource providers</b> or with <code>az provider register --namespace Microsoft.App</code>.</p><p>A quota, a lock, or a Reader role have nothing to do with this error.</p>",
@@ -771,9 +771,9 @@ AZ.questions.push(
  "stem": "<p>You need to move resources from the subscription Sub1 to the subscription Sub2.</p><p>Which <b>two</b> conditions must be met?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
   "Sub1 and Sub2 must be in the same management group",
-  "The resource providers of the moved resources must be registered in Sub2",
+  "The resources' providers must be registered in Sub2",
   "The resources must be stopped during the move",
-  "Sub1 and Sub2 must belong to the same Microsoft Entra tenant"
+  "Sub1 and Sub2 must be in the same tenant"
  ],
  "ans": [
   1,
@@ -852,10 +852,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Your company uses a mix of VMs, App Service, and Azure Functions Premium whose sizes change often. It wants a discount in exchange for an hourly spending commitment over 1 or 3 years, without being tied to a VM size or region.</p><p>What should you recommend?</p>",
  "opts": [
-  "Azure Hybrid Benefit",
-  "An Azure savings plan for compute",
-  "Spot VMs",
-  "A VM reservation"
+  "Azure Hybrid Benefit on the VMs",
+  "A savings plan for compute",
+  "Spot VMs for every workload",
+  "A VM reservation per size"
  ],
  "ans": 1,
  "expl": "<p>The <b>savings plan for compute</b> commits an hourly amount and applies the discount to several compute services, whatever the size and region. It suits workloads that change.</p><p>A <b>reservation</b> gives a larger discount, but for a specific size family and region. Spot VMs can be interrupted. Azure Hybrid Benefit depends on existing licenses.</p>",
@@ -943,10 +943,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to rename the resource group RG-Old to RG-Finance.</p><p>What should you do?</p>",
  "opts": [
-  "Change the Name tag of RG-Old",
+  "Change RG-Old's Name tag",
   "Use the portal's Rename option",
-  "Create RG-Finance, move the resources into it, then delete RG-Old",
-  "Use Set-AzResourceGroup -NewName"
+  "Create RG-Finance, move, delete RG-Old",
+  "Use Set-AzResourceGroup -NewName RG-Finance"
  ],
  "ans": 2,
  "expl": "<p>A resource group <b>can't be renamed</b>. The method is to create the new group, <b>move</b> the resources into it (those that support it), then delete the old one.</p><p>The Name tag is just metadata. Set-AzResourceGroup has no -NewName parameter.</p>",
@@ -1023,10 +1023,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You create a custom role that contains the data action <code>Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read</code>. You want its AssignableScopes to contain the management group MG-Data.</p><p>What happens?</p>",
  "opts": [
-  "The creation succeeds, but the role can only be assigned to groups",
-  "The creation fails: DataActions are reserved for built-in roles",
-  "The creation succeeds",
-  "The creation fails: a custom role with DataActions can't be assignable to a management group"
+  "Success, but the role can only be assigned to groups",
+  "Failure: DataActions are reserved for built-in roles",
+  "The creation succeeds with no restriction",
+  "Failure: DataActions not allowed on a management group"
  ],
  "ans": 3,
  "expl": "<p>A custom role can have a management group in its AssignableScopes, but then <b>without DataActions</b>. Here you must use subscriptions or resource groups as assignable scopes.</p><p>Another limit: only one management group per custom role. DataActions are perfectly possible in custom roles outside this case.</p>",
@@ -1061,10 +1061,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You just assigned the Contributor role to User14 on RG1. User14 says he still doesn't see RG1's resources in the portal.</p><p>What is the most likely cause?</p>",
  "opts": [
-  "Role assignments can take a few minutes to apply: he should refresh or sign in again",
+  "The assignment takes a few minutes: sign in again",
   "Contributor doesn't allow viewing resources",
   "He also needs a Microsoft Entra ID P2 license",
-  "The role must be assigned twice"
+  "The role must be assigned twice to take effect"
  ],
  "ans": 0,
  "expl": "<p>A new assignment can take up to about ten minutes to take effect. Signing out and back in (or refreshing the portal) forces a new token to be fetched.</p><p>No license is required for an Azure role. Contributor includes read access.</p>",
@@ -1100,7 +1100,7 @@ AZ.questions.push(
   "Global Administrator",
   "Virtual Machine Administrator Login",
   "Virtual Machine User Login",
-  "Virtual Machine Contributor"
+  "Virtual Machine Contributor (management)"
  ],
  "ans": 1,
  "expl": "<p>Signing in to a VM with an Entra account is controlled by two Azure roles: <b>Virtual Machine Administrator Login</b> (local administrator rights) and <b>Virtual Machine User Login</b> (standard user rights).</p><p><b>Virtual Machine Contributor</b> manages the VM resource, but doesn't allow signing in to its operating system. Global Administrator is an Entra role unrelated to VM sign-in.</p>",
@@ -1197,9 +1197,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to export the list of all users in your Microsoft Entra tenant to a CSV file, from the portal.</p><p>Which operation should you use?</p>",
  "opts": [
-  "Export the audit log",
+  "Export the Microsoft Entra ID audit log",
   "Create a Cost Management export",
-  "Download users (bulk operations)",
+  "Download users (bulk)",
   "Export the tenant's ARM template"
  ],
  "ans": 2,
@@ -1276,10 +1276,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You assign Sub1 a policy with the <b>Append</b> effect that adds an IP address rule to the firewall of storage accounts when they are created.</p><p>Which statement is true?</p>",
  "opts": [
-  "Append adds fields to the create or update request",
-  "Append deploys a separate resource",
-  "Append removes non-compliant fields",
-  "Append blocks the creation if the field is missing"
+  "Append adds fields to the request",
+  "Append deploys a separate resource after creation",
+  "Append removes non-compliant fields from the request",
+  "Append blocks creation if the field is missing"
  ],
  "ans": 0,
  "expl": "<p><b>Append</b> adds fields to the resource during creation or update, for example an IP rule or a property value. For tags, the <b>Modify</b> effect is now preferred.</p><p>Blocking is <b>Deny</b>. Deploying a separate resource is <b>DeployIfNotExists</b>. Append removes nothing.</p>",
@@ -1808,10 +1808,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Users in your tenant must use multifactor authentication to access the Azure portal, but not for other applications.</p><p>What should you configure?</p>",
  "opts": [
-  "A Conditional Access policy targeting the Microsoft Azure Management app (or Microsoft Admin Portals)",
+  "Conditional Access targeting Microsoft Azure Management",
   "Self-service password reset",
-  "Security defaults",
-  "An Azure Policy"
+  "The tenant's security defaults",
+  "An Azure Policy that targets administrator accounts"
  ],
  "ans": 0,
  "expl": "<p><b>Conditional Access</b> (Entra ID P1) applies conditions per application, user, location, or device. A policy that targets the Azure management apps and requires multifactor authentication meets the need.</p><p><b>Security defaults</b> apply to the whole tenant with no fine-tuning. Azure Policy governs resources. SSPR is for forgotten passwords.</p>",
@@ -1849,10 +1849,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>The resource group RG-Shared contains resources used by three projects. You need to split RG-Shared's bill among these projects based on their actual use of each resource.</p><p>What is the essential prerequisite for cost analysis to tell the projects apart?</p>",
  "opts": [
-  "Create one budget per project",
+  "Create one budget per project on the subscription",
   "Apply a Project tag to each resource",
   "Create one subscription per resource",
-  "Apply one lock per project"
+  "Apply one lock per project on the groups"
  ],
  "ans": 1,
  "expl": "<p><b>Tags</b> applied to each resource appear in cost data: you can then group or filter cost analysis by Project.</p><p>One subscription per resource would be unmanageable. A budget tracks an amount; it splits nothing. A lock has nothing to do with costs.</p>",
@@ -1895,8 +1895,8 @@ AZ.questions.push(
  "stem": "<p>Your company wants to lower the bill for 20 production Windows Server VMs that will run continuously for 3 years. It owns Windows Server licenses with Software Assurance.</p><p>Which <b>two</b> combined actions give the largest reduction?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
   "Enable Azure Hybrid Benefit on the VMs",
-  "Switch the disks to Standard HDD",
-  "Convert the VMs to Spot VMs",
+  "Switch all disks to Standard HDD",
+  "Convert the production VMs to Spot VMs",
   "Buy 3-year VM reservations"
  ],
  "ans": [
@@ -1936,7 +1936,7 @@ AZ.questions.push(
  "opts": [
   "The subscription's metrics",
   "The activity log, Security category",
-  "Azure Policy > Compliance, then the relevant assignment",
+  "Azure Policy > Compliance",
   "Azure Advisor > Reliability"
  ],
  "ans": 2,
@@ -1971,10 +1971,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A custom policy contains the following rule:</p><pre>\"if\": {\n  \"field\": \"type\",\n  \"equals\": \"Microsoft.Network/publicIPAddresses\"\n},\n\"then\": {\n  \"effect\": \"deny\"\n}</pre><p>It is assigned to RG1. What happens when an administrator creates a virtual machine in RG1 with the “New public IP address” option?</p>",
  "opts": [
-  "The VM is created with the public IP address and flagged non-compliant",
+  "The VM is created with the public IP and flagged non-compliant",
   "The VM is created without a public IP address",
-  "The policy doesn't apply to VMs",
-  "The deployment fails, because creating the public IP address is denied"
+  "The policy doesn't apply to virtual machines",
+  "Failure: creating the public IP is denied"
  ],
  "ans": 3,
  "expl": "<p>Creating a VM with a new public IP address also creates a <code>Microsoft.Network/publicIPAddresses</code> resource. That resource is denied, so the <b>deployment fails</b>.</p><p>Azure Policy doesn't change the deployment for you to remove the address. Deny doesn't create the resource. The rule targets the public IP address type, whatever the creation context.</p>",
@@ -2084,7 +2084,7 @@ AZ.questions.push(
  "stem": "<p>Your company acquires Fabrikam, which has its own Microsoft Entra tenant and 3 Azure subscriptions. You need to attach these subscriptions to your contoso.com tenant.</p><p>What should you plan for?</p>",
  "opts": [
   "Merge the two tenants from the portal",
-  "Change each subscription's directory, then recreate role assignments and managed identities",
+  "Change the subscriptions' directory, then recreate roles and identities",
   "Add fabrikam.com as a management group",
   "Move the resources one by one to your subscriptions, with no other impact"
  ],

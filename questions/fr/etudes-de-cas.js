@@ -76,9 +76,9 @@ AZ.cases.push(
    "stem": "<p>Vous devez répondre à l'exigence concernant les régions autorisées pour Sub-Dev.</p><p>Que devez-vous configurer ?</p>",
    "opts": [
     "Un verrou en lecture seule sur Sub-Dev",
-    "Une Azure Policy Emplacements autorisés avec l'effet Deny, attribuée à Sub-Dev",
-    "Le rôle Lecteur pour Dev-Team sur toutes les autres régions",
-    "Un budget sur Sub-Dev"
+    "Emplacements autorisés (Deny), attribuée à Sub-Dev",
+    "Le rôle Lecteur pour Dev-Team sur les autres régions",
+    "Un budget avec une alerte sur Sub-Dev"
    ],
    "ans": 1,
    "expl": "<p>La stratégie intégrée <b>Emplacements autorisés</b>, effet Deny, attribuée à <b>Sub-Dev</b>, bloque toute création hors de France Central, quel que soit le rôle de l'utilisateur.</p><p>Un verrou Lecture seule bloquerait toutes les modifications. Azure RBAC ne se configure pas par région. Un budget alerte sur les coûts mais ne bloque rien.</p>",

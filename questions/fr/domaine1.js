@@ -183,10 +183,10 @@ AZ.questions.push(
  ],
  "stem": "<p>Vous disposez d'un abonnement Azure nommé Sub1 qui contient un groupe de ressources nommé RG1.</p><p>Vous créez un rôle personnalisé nommé Role1, comme indiqué dans le document Role1 (cliquez sur l'onglet <b>Role1</b>). Vous attribuez Role1 à User1 sur RG1.</p><p>Quelles opérations User1 peut-il effectuer ?</p>",
  "opts": [
-  "Démarrer et redémarrer les machines virtuelles de RG1, sans pouvoir les arrêter",
-  "Démarrer, redémarrer et arrêter (libérer) les machines virtuelles de RG1",
-  "Créer des machines virtuelles dans RG1",
-  "Démarrer les machines virtuelles de tous les groupes de ressources de Sub1"
+  "Démarrer et redémarrer les VM de RG1, sans les arrêter",
+  "Démarrer, redémarrer et arrêter (libérer) les VM de RG1",
+  "Créer et supprimer des machines virtuelles dans RG1",
+  "Démarrer les VM de tous les groupes de ressources de Sub1"
  ],
  "ans": 0,
  "expl": "<p>Un rôle personnalisé ne permet <b>que</b> les actions listées dans <code>Actions</code> :</p><ul><li><code>virtualMachines/read</code> : voir les VM ;</li><li><code>start/action</code> : les démarrer ;</li><li><code>restart/action</code> : les redémarrer.</li></ul><p>Il manque <code>powerOff/action</code> (arrêter) et <code>deallocate/action</code> (arrêter et libérer) : User1 ne peut pas arrêter les VM. Il manque aussi <code>virtualMachines/write</code> : il ne peut pas en créer.</p><p>Enfin, le rôle est <b>attribué sur RG1</b> : il ne s'applique pas aux autres groupes de Sub1. <code>AssignableScopes</code> indique seulement <i>où le rôle peut être attribué</i>, pas où il s'applique.</p>",
@@ -285,7 +285,7 @@ AZ.questions.push(
   "Service",
   "Fonction",
   "Emplacement d'utilisation",
-  "Responsable"
+  "Responsable hiérarchique"
  ],
  "ans": 2,
  "expl": "<p>Microsoft 365 doit savoir <b>dans quel pays</b> la licence sera utilisée, car certains services ne sont pas disponibles partout. Sans <b>emplacement d'utilisation</b> (usageLocation), l'attribution d'une licence échoue.</p><p>Le service, la fonction et le responsable sont des attributs descriptifs : ils ne bloquent pas l'attribution.</p><p>Astuce : avec les licences par groupe, un utilisateur sans emplacement d'utilisation hérite de celui du locataire, mais l'erreur reste fréquente à l'examen.</p>",
@@ -441,7 +441,7 @@ AZ.questions.push(
  "stem": "<p>Admin1 est Administrateur général du locataire Microsoft Entra. Admin1 ne voit aucun abonnement Azure dans le portail.</p><p>Admin1 doit pouvoir attribuer des rôles Azure dans tous les abonnements du locataire.</p><p>Que devez-vous faire ?</p>",
  "opts": [
   "Attribuer à Admin1 le rôle Administrateur d'utilisateurs",
-  "Activer la Gestion de l'accès pour les ressources Azure dans les propriétés de Microsoft Entra ID",
+  "Activer la Gestion de l'accès pour les ressources Azure",
   "Créer un groupe d'administration et y ajouter Admin1",
   "Attribuer à Admin1 une licence Microsoft Entra ID P2"
  ],
@@ -483,10 +483,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez être averti par e-mail lorsque le coût <b>prévu</b> du groupe de ressources RG1 pour le mois en cours dépasse 80 % de 1 000 €.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Une recommandation Azure Advisor",
-  "Une Azure Policy avec l'effet Audit",
-  "Un budget sur RG1 avec une alerte basée sur le coût prévu",
-  "Une alerte de métrique sur RG1"
+  "Une recommandation Azure Advisor sur les coûts",
+  "Une stratégie Azure Policy avec l'effet Audit",
+  "Un budget sur RG1 avec une alerte sur le coût prévu",
+  "Une alerte de métrique sur le groupe de ressources RG1"
  ],
  "ans": 2,
  "expl": "<p>Un <b>budget</b> de Gestion des coûts fixe un montant (ici 1 000 € par mois) et des <b>conditions d'alerte</b> en pourcentage, sur le coût <b>Réel</b> (déjà dépensé) ou <b>Prévu</b> (projection de fin de période). Ici : type Prévu, seuil 80 %, avec un e-mail ou un groupe d'actions.</p><ul><li><b>Advisor</b> recommande des économies, mais n'alerte pas sur un seuil.</li><li><b>Azure Policy</b> contrôle la configuration des ressources, pas les coûts.</li><li><b>Une alerte de métrique</b> surveille des valeurs techniques (CPU, requêtes…), pas des dépenses.</li></ul>",

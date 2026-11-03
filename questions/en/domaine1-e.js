@@ -1280,9 +1280,9 @@ AZ.questions.push(
  "stem": "<p>You need to allow User18 to manage the locks on all resources in the subscription Sub1, with no other resource management rights.</p><p>Which <b>two</b> solutions work?</p><p>Each correct answer presents a complete solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
   "Assign the built-in Contributor role",
-  "Assign the built-in Resource Policy Contributor role",
-  "Assign a custom role with the Microsoft.Authorization/locks/* actions",
-  "Assign the built-in User Access Administrator role"
+  "Assign Resource Policy Contributor",
+  "A custom role with locks/*",
+  "Assign User Access Administrator"
  ],
  "ans": [
   2,
@@ -1317,9 +1317,9 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>You need to allow an auditor to see the Azure Policy compliance of the whole management group MG-Corp, without changing anything.</p><p>Which <b>two</b> statements are true?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
-  "They must be a Global Administrator in Microsoft Entra ID",
-  "The Reader role on MG-Corp lets them see compliance",
-  "The assignment must be made on MG-Corp to cover all subscriptions",
+  "They must be Global Administrator in Microsoft Entra ID",
+  "Reader on MG-Corp lets them see compliance",
+  "The assignment must be made on MG-Corp",
   "They must have the Resource Policy Contributor role"
  ],
  "ans": [
@@ -1358,10 +1358,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>Your tenant contains cloud users and users synchronized from on-premises AD. You need to allow <b>all</b> users to reset their own password, and the new password must also work on on-premises domain computers.</p><p>Which <b>two</b> actions should you perform?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
-  "Convert synchronized users to cloud users",
-  "Create an administrative unit for synchronized users",
-  "Enable password writeback in Microsoft Entra Connect",
-  "Enable SSPR for All"
+  "Convert synced users to cloud accounts",
+  "Create an administrative unit for synced accounts",
+  "Enable password writeback",
+  "Enable SSPR for All users"
  ],
  "ans": [
   2,
@@ -1477,10 +1477,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You manage 30 subscriptions. The same custom policy must apply to all of them, and subscriptions created later must be covered automatically.</p><p>Which approach takes the least effort?</p>",
  "opts": [
-  "Use a scheduled script that checks the subscriptions every night",
-  "Save the definition and assign it to the root management group (or a common parent group)",
-  "Apply a lock to each subscription",
-  "Create the definition in each subscription and assign it 30 times"
+  "A scheduled script that checks the subscriptions nightly",
+  "Assign the definition to the root management group",
+  "Apply a ReadOnly lock to each subscription",
+  "Create the definition in each subscription, 30 times"
  ],
  "ans": 1,
  "expl": "<p>A definition saved in a parent <b>management group</b>, and assigned to that group, applies to all current and future subscriptions in the hierarchy.</p><p>30 manual assignments would miss new subscriptions. A script redoes what Azure Policy already does. A lock doesn't replace a policy.</p>",
@@ -1515,7 +1515,7 @@ AZ.questions.push(
  "opts": [
   "The resources of subscriptions whose ID he knows",
   "The resources of his default resource group",
-  "No Azure resources",
+  "No Azure resources, since he has no role",
   "All resources in the tenant, read-only"
  ],
  "ans": 2,
@@ -1544,7 +1544,7 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to delegate Azure Policy management (creating definitions and assignments) to the Governance team, on the management group MG-Corp, without giving them access to the resources.</p><p>Which role should you assign?</p>",
  "opts": [
-  "Contributor",
+  "Contributor on the management group",
   "Owner",
   "Security Administrator",
   "Resource Policy Contributor"
@@ -1581,9 +1581,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A policy with the DeployIfNotExists effect is assigned to Sub1 with a system-assigned managed identity. The remediation task fails with an authorization error.</p><p>What should you do?</p>",
  "opts": [
-  "Assign the assignment's managed identity the roles listed in the definition's roleDefinitionIds, on Sub1",
-  "Switch the effect to Audit",
-  "Delete the managed identity",
+  "Give the assignment's identity the roles in roleDefinitionIds",
+  "Switch the policy's effect to Audit, then rerun remediation",
+  "Delete the assignment's managed identity",
   "Assign the Owner role to your own account"
  ],
  "ans": 0,
@@ -1619,8 +1619,8 @@ AZ.questions.push(
  "stem": "<p>Your Microsoft Entra tenant has 25 users. You need to ensure that no user has the Global Administrator role without needing it.</p><p>Which Microsoft recommendation should you follow?</p>",
  "opts": [
   "Delete all Global Administrators",
-  "Limit the number of Global Administrators, ideally to fewer than five, and use less privileged roles",
-  "Give the Global Administrator role to all administrators",
+  "Fewer than five Global Administrators, less privileged roles",
+  "Give the Global Administrator role to every administrator",
   "Assign Global Administrator to a dynamic group"
  ],
  "ans": 1,
@@ -1650,10 +1650,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Contoso's developers must access the Azure portal with accounts from the partner company Fabrikam, which has its own Microsoft Entra tenant. You must not manage any passwords for them.</p><p>What should you do?</p>",
  "opts": [
-  "Synchronize the Fabrikam tenant with Microsoft Entra Connect",
+  "Sync the Fabrikam tenant with Entra Connect",
   "Create member accounts in your tenant",
-  "Invite them as B2B guest users and assign them roles",
-  "Create service principals for each developer"
+  "Invite them as B2B guests and assign roles",
+  "Create a service principal per developer"
  ],
  "ans": 2,
  "expl": "<p>With <b>Microsoft Entra B2B</b>, guests authenticate in their own tenant (Fabrikam): you don't manage their passwords. You then assign them Azure roles like any user.</p><p>Member accounts require managing passwords. Microsoft Entra Connect syncs an on-premises AD, not another tenant. Service principals are application identities.</p>",
@@ -1718,9 +1718,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to allow an application to create users in Microsoft Entra ID without human interaction.</p><p>What should you grant it?</p>",
  "opts": [
-  "The Microsoft Graph application permission User.ReadWrite.All, with admin consent",
-  "A storage account access key",
-  "A managed identity with no other configuration",
+  "The User.ReadWrite.All application permission (consent)",
+  "An access key of the app's storage account",
+  "A managed identity, with no other configuration",
   "The Azure Contributor role on the subscription"
  ],
  "ans": 0,
@@ -1758,8 +1758,8 @@ AZ.questions.push(
  "stem": "<p>You manage three environments (Dev, Test, Prod) with different policies, budgets, and teams. You want to clearly separate their billing and quota boundaries.</p><p>Which organization does Microsoft recommend?</p>",
  "opts": [
   "A single subscription with Env tags",
-  "One subscription per environment, grouped in management groups",
-  "A single resource group for everything",
+  "One subscription per environment, in management groups",
+  "A single resource group for every environment",
   "One Microsoft Entra tenant per environment"
  ],
  "ans": 1,
@@ -1788,10 +1788,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You manage the resource group RG1 in France Central. The France Central region suffers a complete outage.</p><p>What is the impact on managing the RG1 resources located in West Europe?</p>",
  "opts": [
-  "No possible impact",
+  "No possible impact on RG1 or its resources",
   "The West Europe resources stop",
-  "The West Europe resources keep running, but RG1 management operations may be unavailable",
-  "RG1 is moved automatically to West Europe"
+  "Resources keep running, RG1 management may be unavailable",
+  "RG1 is moved automatically to West Europe with its metadata"
  ],
  "ans": 2,
  "expl": "<p>A resource group's region is where its <b>metadata</b> is stored. If it's down, resources in other regions keep running, but management operations (deployment, changes) that depend on this metadata may fail.</p><p>That's why the resource group is often placed in the same region as its resources. Nothing is moved automatically.</p>",
@@ -1825,9 +1825,9 @@ AZ.questions.push(
  "stem": "<p>You need to allow a user to view invoices and manage payment methods for a Microsoft Customer Agreement (MCA).</p><p>At which level are these permissions managed?</p>",
  "opts": [
   "In Microsoft Entra roles only",
-  "In an Azure Policy",
+  "In a billing Azure Policy",
   "In a resource group's access control (IAM)",
-  "In the billing account and billing profile roles (Cost Management + Billing)"
+  "In the billing account and profile roles"
  ],
  "ans": 3,
  "expl": "<p>For a Microsoft Customer Agreement, billing rights (invoices, payment methods, creating subscriptions) are managed in <b>Cost Management + Billing</b>, with roles specific to the billing account, billing profile, and invoice section (Billing profile owner, contributor, reader…).</p><p>A resource group's access control doesn't cover billing. Azure Policy grants no rights.</p>",
@@ -1860,8 +1860,8 @@ AZ.questions.push(
  "stem": "<p>An administrator configured a monthly budget of €10,000 on Sub1. Spending reaches €12,000 at the end of the month.</p><p>What happened to Sub1's resources?</p>",
  "opts": [
   "They kept running normally",
-  "New creations were blocked",
-  "They switched to read-only",
+  "New creations were blocked by the budget",
+  "They switched to read-only at the threshold",
   "They were stopped at €10,000"
  ],
  "ans": 0,
@@ -1895,10 +1895,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to allow a user to read the secrets of the key vault KV2, which still uses the <b>Vault access policy</b> permission model.</p><p>What should you do?</p>",
  "opts": [
-  "Assign the Reader role on KV2",
-  "Add an access policy with the Get permission on secrets for this user",
-  "Enable soft delete",
-  "Assign the Key Vault Secrets User role to the user"
+  "Assign the Reader role on the KV2 vault",
+  "An access policy with Get on secrets",
+  "Enable soft delete on KV2",
+  "Key Vault Secrets User on KV2"
  ],
  "ans": 1,
  "expl": "<p>With the <b>Vault access policy</b> model, data access is granted through <b>access policies</b> (Get, List, Set… per object type). RBAC data roles such as Secrets User have <b>no effect</b> until the vault switches to the RBAC model.</p><p>Reader only gives access to the control plane. Soft delete protects against deletion; it grants no access.</p>",
@@ -1935,7 +1935,7 @@ AZ.questions.push(
  "opts": [
   "To the administrator who created ID-App",
   "To the web apps' resource group",
-  "To ID-App, once, on the target resources",
+  "To ID-App, once, on the targets",
   "To each web app separately"
  ],
  "ans": 2,
@@ -1972,9 +1972,9 @@ AZ.questions.push(
  "stem": "<p>An auditor asks for proof that the policy “Storage accounts should use private link” has been respected in the subscription Sub1 for three months.</p><p>What should you provide?</p>",
  "opts": [
   "The Microsoft Entra ID sign-in logs",
-  "The list of locks in Sub1",
+  "The list of locks in the Sub1 subscription",
   "The Advisor recommendations report",
-  "The Azure Policy compliance history for this assignment"
+  "The assignment's compliance history"
  ],
  "ans": 3,
  "expl": "<p>Azure Policy keeps the <b>compliance history</b> of each assignment (chart and states). You can also export states with Azure Resource Graph.</p><p>Sign-in logs, Advisor, and locks don't show policy compliance.</p>",
@@ -2004,9 +2004,9 @@ AZ.questions.push(
  "stem": "<p>Users in the Interns group must be able to sign in to the Azure portal, but must not be able to browse the Microsoft Entra admin center.</p><p>Which setting should you enable?</p>",
  "opts": [
   "Restrict access to Microsoft Entra admin center",
-  "Block user sign-in",
+  "Block sign-in for non-admin users",
   "Users can register applications: No",
-  "Require SSPR registration"
+  "Require SSPR registration at the next sign-in"
  ],
  "ans": 0,
  "expl": "<p>The user setting <b>“Restrict access to Microsoft Entra admin center”</b> prevents non-admins from browsing the directory in the admin center. It's not a strong security measure (Microsoft Graph and PowerShell still work), but it meets the need.</p><p>Blocking sign-in would prevent any access. The other two settings have no effect on browsing the directory.</p>",
@@ -2037,9 +2037,9 @@ AZ.questions.push(
  "stem": "<p>You need to give User20 the right to restart the VMs in all resource groups of Sub1, current and future, but no other right.</p><p>Which solution best follows the principle of least privilege?</p>",
  "opts": [
   "Virtual Machine Contributor on Sub1",
-  "A custom role with virtualMachines/read and virtualMachines/restart/action, assigned on Sub1",
+  "A custom role (read, restart) on Sub1",
   "A custom role assigned on each resource group",
-  "Contributor on Sub1"
+  "Contributor on the Sub1 subscription"
  ],
  "ans": 1,
  "expl": "<p>A custom role limited to reading and restarting VMs, assigned on <b>Sub1</b>, covers all resource groups, including future ones.</p><p>Virtual Machine Contributor also allows creating, modifying, and deleting VMs. Assigning per group would miss new groups. Contributor gives all rights.</p>",
@@ -2074,10 +2074,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to know whether the Deny policy you are about to assign would block existing resources, before actually enforcing it.</p><p>What should you do?</p>",
  "opts": [
-  "Start a remediation task",
-  "Create a temporary ReadOnly lock",
-  "Assign the policy with policy enforcement disabled (DoNotEnforce) and check compliance",
-  "Assign the policy in Deny and watch for errors"
+  "Start a remediation task on the assignment",
+  "Create a temporary ReadOnly lock on the subscription",
+  "Assign with DoNotEnforce and check compliance",
+  "Assign the policy in Deny and watch the errors"
  ],
  "ans": 2,
  "expl": "<p>With <b>Policy enforcement: Disabled</b> (enforcementMode = DoNotEnforce), the assignment calculates compliance without blocking. You see which resources would be non-compliant, then enable enforcement when you're ready.</p><p>You can also use an Audit effect parameter. Assigning directly in Deny could block deployments.</p>",
@@ -2112,7 +2112,7 @@ AZ.questions.push(
  "stem": "<p>Your organization's administrators must prove their identity with multifactor authentication before activating an eligible role in Privileged Identity Management.</p><p>Where do you configure this requirement?</p>",
  "opts": [
   "In the SSPR settings",
-  "In Azure Policy",
+  "In an Azure Policy",
   "In the device settings",
   "In the role settings in PIM"
  ],
@@ -2154,8 +2154,8 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>An Azure Policy forbids public IP addresses. An engineer must create a public IP address for Azure Bastion in RG-Bastion, and only there, for 6 months, with a record of the justification.</p><p>What should you create?</p>",
  "opts": [
-  "A policy exemption on RG-Bastion with an expiration date",
-  "A lock on RG-Bastion",
+  "An exemption with an expiration date",
+  "A ReadOnly lock on RG-Bastion",
   "A second assignment with the Audit effect",
   "A custom role for the engineer"
  ],
@@ -2200,9 +2200,9 @@ AZ.questions.push(
  "stem": "<p>You need users to be able to see their licenses and apps, change their password, and register their authentication methods.</p><p>Which portal should you direct them to?</p>",
  "opts": [
   "The Azure DevOps portal",
-  "The My Account portal (myaccount.microsoft.com)",
+  "The My Account portal",
   "The Microsoft Entra admin center",
-  "The Azure portal"
+  "The Azure portal, Subscriptions page"
  ],
  "ans": 1,
  "expl": "<p>The <b>My Account</b> portal lets each user manage their security info, password, and devices, and see their subscriptions. The My Apps portal (myapps) lists applications.</p><p>The Azure portal and the Entra admin center are administration tools.</p>",
@@ -2235,8 +2235,8 @@ AZ.questions.push(
  "opts": [
   "Disable each account in the group",
   "Apply a ReadOnly lock to the subscription",
-  "Delete the role assignment in the subscription's access control (IAM)",
-  "Delete the group"
+  "Delete the role assignment (IAM)",
+  "Delete the group from Microsoft Entra ID"
  ],
  "ans": 2,
  "expl": "<p>Deleting the <b>assignment</b> removes access for the whole group in one operation, without touching the group itself, which may be used elsewhere.</p><p>Deleting the group or the accounts would cause other damage. A ReadOnly lock would also block legitimate administrators, and wouldn't remove the right to assign roles.</p>",
@@ -2266,9 +2266,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to find all resource groups in your subscriptions that contain no resources, so you can delete them.</p><p>Which tool can do this in a single query?</p>",
  "opts": [
-  "Cost Management",
+  "Cost Management, by tag",
   "Azure Policy in Deny mode",
-  "Microsoft Entra ID",
+  "Microsoft Entra ID, audit log",
   "Azure Resource Graph Explorer"
  ],
  "ans": 3,
@@ -2334,7 +2334,7 @@ AZ.questions.push(
  "stem": "<p>Your Microsoft Entra tenant contains a user named Admin3 who has the User Administrator role. Admin3 wants to reset the password of a Global Administrator.</p><p>Can he do it?</p>",
  "opts": [
   "Yes, but only if the Global Administrator allows it",
-  "No, only a Global Administrator (or Privileged Authentication Administrator) can do it",
+  "No: Global or Privileged Authentication Administrator",
   "Yes, User Administrator can reset every password",
   "No, no administrator password can be reset"
  ],
@@ -2404,8 +2404,8 @@ AZ.questions.push(
  "opts": [
   "A script run manually by each administrator",
   "Tags on the subscriptions",
-  "Locks on the root",
-  "Azure Policy initiatives and templates (Template Specs or deployment stacks)"
+  "Locks on the root group",
+  "Azure Policy initiatives and templates"
  ],
  "ans": 3,
  "expl": "<p>Azure Blueprints is being retired. Microsoft recommends combining <b>Azure Policy initiatives</b> (governance) with ARM or Bicep <b>templates</b> published as Template Specs, or <b>deployment stacks</b>, which can also protect resources with deny assignments.</p>",
@@ -2438,10 +2438,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>In the portal, the <b>Delete</b> option of the storage account storage8 returns the error: “The scope ... cannot perform delete operation because following scope(s) are locked”.</p><p>What should you do to delete storage8?</p>",
  "opts": [
-  "Remove the lock from the storage account or its parent (resource group or subscription)",
-  "Disable soft delete",
-  "Empty all containers first",
-  "Assign the Storage Blob Data Contributor role"
+  "Remove the lock from the account or its parent",
+  "Disable blob soft delete",
+  "Empty all the account's containers first",
+  "Assign Storage Blob Data Contributor"
  ],
  "ans": 0,
  "expl": "<p>The message says a <b>lock</b> applies, on storage8 itself or inherited from its resource group or subscription. You must remove it (with the Owner or User Access Administrator role), delete the account, then put the lock back if needed.</p><p>The account's content, data roles, and soft delete aren't the cause.</p>",
@@ -2472,7 +2472,7 @@ AZ.questions.push(
  "stem": "<p>You need to automatically assign a Microsoft 365 license to all users whose country is France, with no manual group management.</p><p>Which combination should you use?</p>",
  "opts": [
   "A Microsoft 365 group with assigned membership",
-  "A dynamic group (user.country -eq \"France\") with a license assigned to the group",
+  "A dynamic group (country France) with a license",
   "A France administrative unit with a license",
   "An Azure Policy on location"
  ],
@@ -2509,10 +2509,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A project's spending must be tracked across three subscriptions. Each project resource has the tag Project=Orion.</p><p>How do you get the project's total cost?</p>",
  "opts": [
-  "Create a shared resource group",
+  "Create a resource group shared by all three",
   "Manually add up the budgets of the three subscriptions",
-  "Cost analysis at the management group or billing account scope, filtered on the tag Project=Orion",
-  "Check Azure Advisor"
+  "Cost analysis at group level, filtered on Project=Orion",
+  "Check Azure Advisor, Cost tab"
  ],
  "ans": 2,
  "expl": "<p><b>Cost analysis</b> can be opened at a scope that covers several subscriptions (management group, billing account or profile) and filtered on a <b>tag</b>.</p><p>Budgets are thresholds, not spending. A resource group can't span several subscriptions. Advisor doesn't show spending.</p>",
@@ -2545,9 +2545,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You move the subscription Sub5 from the management group MG-Dev to MG-Prod. MG-Prod has a Deny policy on VM sizes.</p><p>What happens to the existing VMs in Sub5 whose size is forbidden in MG-Prod?</p>",
  "opts": [
-  "They are stopped",
-  "They are resized automatically",
-  "The subscription move is denied",
+  "They're stopped by the policy",
+  "They're resized automatically",
+  "The subscription move is denied by Azure Policy",
   "They keep running and become non-compliant"
  ],
  "ans": 3,
@@ -2577,10 +2577,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A guest user was added a year ago for a finished project. You need to remove inactive guests automatically.</p><p>Which feature fits best?</p>",
  "opts": [
-  "An access review of guest users, with results applied automatically",
-  "A budget alert",
-  "A group expiration policy",
-  "A resource lock"
+  "An access review of guests, results applied",
+  "A budget alert on guest accounts",
+  "A Microsoft 365 group expiration policy",
+  "A resource lock on guest accounts"
  ],
  "ans": 0,
  "expl": "<p><b>Access reviews</b> can target guests, ask for validation (or rely on inactivity), and <b>apply results automatically</b>: remove access, or block and then delete denied accounts.</p><p>Expiration concerns Microsoft 365 groups, not accounts. The other two options are unrelated.</p>",
@@ -2618,8 +2618,8 @@ AZ.questions.push(
  "stem": "<p>You need to create 20 identical resource groups (same tags, locks, and role assignments) for 20 projects, in a repeatable way.</p><p>Which method fits best?</p>",
  "opts": [
   "Create each group by hand in the portal",
-  "A Bicep template deployed at the subscription scope",
-  "Use Azure Advisor",
+  "A Bicep template at subscription scope",
+  "Use Azure Advisor to generate the groups",
   "Copy the groups with the portal's Clone option"
  ],
  "ans": 1,
@@ -2654,10 +2654,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Your organization wants new subscriptions to be placed automatically under MG-Sandbox, not under the root.</p><p>What should you configure?</p>",
  "opts": [
-  "An Azure Policy on the root",
-  "A tag on MG-Sandbox",
-  "The default management group in the hierarchy settings",
-  "A lock on the root"
+  "An Azure Policy on the root group",
+  "A tag on the MG-Sandbox group",
+  "The default management group",
+  "A lock on the root management group"
  ],
  "ans": 2,
  "expl": "<p>The <b>hierarchy settings</b> let you choose the <b>default management group</b> where new subscriptions are placed. You can also require permission there to create management groups.</p>",
@@ -2721,9 +2721,9 @@ AZ.questions.push(
  "stem": "<p>You want to prevent users from consenting on their own to third-party applications that request access to their data.</p><p>Where should you configure this setting?</p>",
  "opts": [
   "Enterprise applications > Consent and permissions",
-  "Subscription > Policies",
+  "Subscription > Policies > Assignments",
   "Device settings",
-  "External collaboration settings"
+  "Users > External collaboration settings (guests)"
  ],
  "ans": 0,
  "expl": "<p>The <b>User consent for applications</b> setting is in <b>Enterprise applications > Consent and permissions</b>. You can turn it off, or limit it to verified publishers and low-risk permissions, and enable an admin consent request workflow.</p>",
@@ -2758,9 +2758,9 @@ AZ.questions.push(
  "stem": "<p>You need to give an external team access to a single resource group for 3 months. The access must disappear automatically afterward.</p><p>Which solution, with Microsoft Entra ID P2, takes the least management?</p>",
  "opts": [
   "A lock on the resource group",
-  "An active Azure role assignment in PIM with an end date",
+  "An active assignment in PIM with an end date",
   "A classic assignment, to delete in 3 months",
-  "A 3-month budget"
+  "A 3-month budget on the resource group"
  ],
  "ans": 1,
  "expl": "<p>PIM lets you create assignments (active or eligible) with a <b>start and end date</b>. At the end date, access is removed automatically.</p><p>A classic assignment depends on someone remembering to delete it. The other two options don't manage access.</p>",
@@ -2795,10 +2795,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>An administrator asks you why the built-in <b>Contributor</b> role doesn't let him grant access, even though it gives “all rights”.</p><p>What is the correct explanation?</p>",
  "opts": [
-  "Contributor is a Microsoft Entra role",
-  "Contributor applies only to resource groups",
-  "Contributor contains Actions * but NotActions Microsoft.Authorization/*/Delete, */Write, and elevateAccess/Action",
-  "Contributor contains only read actions"
+  "Contributor is a Microsoft Entra role, not an Azure one",
+  "Contributor only applies to resource groups",
+  "Its NotActions exclude Microsoft.Authorization writes",
+  "Contributor only contains read actions"
  ],
  "ans": 2,
  "expl": "<p>The Contributor definition grants <code>*</code> in Actions, but excludes in NotActions writing and deleting in <code>Microsoft.Authorization</code> (role assignments, locks, authorization policies) as well as elevating access. It therefore manages everything except access.</p><p>Contributor can be assigned at any scope and is an Azure role.</p>",
@@ -2833,9 +2833,9 @@ AZ.questions.push(
  "stem": "<p>You need to assign the same custom role to a group in 12 subscriptions, without repeating the operation in each subscription.</p><p>What should you do?</p>",
  "opts": [
   "Assign the role to the Microsoft Entra tenant",
-  "Create 12 custom roles",
-  "Use a shared tag",
-  "Include the parent management group in AssignableScopes and assign the role on that management group"
+  "Create 12 custom roles, one per subscription",
+  "Use a shared tag on the subscriptions",
+  "The parent group in AssignableScopes, then assign it"
  ],
  "ans": 3,
  "expl": "<p>If the 12 subscriptions are under the same <b>management group</b>, the custom role can have that group in AssignableScopes (as long as it contains no DataActions). A single assignment on the management group covers all 12 subscriptions.</p>",
@@ -2869,8 +2869,8 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You find that a user was deleted from Microsoft Entra ID 40 days ago. He was supposed to be restored.</p><p>What can you do?</p>",
  "opts": [
-  "Create a new account: the old one is permanently deleted after 30 days",
-  "Restore him from Deleted users",
+  "Create a new account: the old one is gone after 30 days",
+  "Restore him from the Deleted users page, as usual",
   "Restore him from an Azure Backup backup",
   "Restore him from the audit log"
  ],
@@ -2902,9 +2902,9 @@ AZ.questions.push(
  "stem": "<p>The finance team asks for all resources without the CostCenter tag to be visible on a dashboard, without blocking any deployment.</p><p>Which solution fits?</p>",
  "opts": [
   "A lock on each resource group",
-  "A policy with the Audit effect, viewed on the Compliance page",
+  "An Audit policy, viewed in Compliance",
   "One budget per cost center",
-  "A policy with the Deny effect"
+  "A policy with the Deny effect on the tag"
  ],
  "ans": 1,
  "expl": "<p>The <b>Audit</b> effect marks resources without the tag as non-compliant, without blocking anything. Azure Policy's <b>Compliance</b> page serves as the dashboard.</p><p>Deny would block deployments, which is ruled out.</p>",
@@ -2937,10 +2937,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to allow a user to see all resources in a resource group, and to create support tickets, without changing anything.</p><p>Which combination of roles should you assign on the resource group?</p>",
  "opts": [
-  "Reader only",
-  "Contributor",
+  "Reader only on the subscription",
+  "Contributor on the production subscription",
   "Reader and Support Request Contributor",
-  "Owner"
+  "Owner on the subscription"
  ],
  "ans": 2,
  "expl": "<p><b>Reader</b> lets you see everything without changing anything. <b>Support Request Contributor</b> adds creating support requests. Roles add up.</p><p>Contributor and Owner allow changes. Reader alone doesn't allow opening a support request.</p>",

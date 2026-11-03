@@ -45,10 +45,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous créez l'utilisateur Jean dans l'Active Directory local. Microsoft Entra Connect synchronise l'annuaire toutes les 30 minutes. Une heure plus tard, vous voulez supprimer Jean depuis le portail Microsoft Entra.</p><p>Que se passe-t-il ?</p>",
  "opts": [
-  "Jean est converti en compte cloud",
-  "L'option de suppression n'est pas disponible : il faut supprimer Jean dans l'AD local",
+  "Jean est converti en compte cloud uniquement",
+  "Suppression impossible ici : il faut le supprimer dans l'AD local",
   "La suppression réussit et Jean disparaît aussi de l'AD local",
-  "La suppression réussit, mais Jean réapparaît à la prochaine synchronisation sans changement"
+  "La suppression réussit, mais Jean revient à la synchronisation"
  ],
  "ans": 1,
  "expl": "<p>Pour un objet <b>synchronisé</b>, la source d'autorité est l'AD local. Le portail ne permet pas de supprimer ni de modifier ses attributs synchronisés : il faut supprimer Jean dans l'<b>AD local</b>, et la suppression sera répercutée à la prochaine synchronisation.</p><p>Entra ne modifie jamais l'AD local de cette façon, et ne convertit pas l'objet en compte cloud.</p>",
@@ -129,9 +129,9 @@ AZ.questions.push(
  "stem": "<p>Vous avez ajouté le domaine personnalisé contoso.com à Microsoft Entra ID. Il reste à l'état <b>Non vérifié</b>.</p><p>Quel type d'enregistrement DNS devez-vous créer chez votre hébergeur DNS public ?</p>",
  "opts": [
   "Un enregistrement PTR pour contoso.com",
-  "Un enregistrement A pointant vers une adresse IP Azure",
-  "Un enregistrement TXT ou MX avec la valeur fournie par Microsoft",
-  "Un enregistrement CNAME pointant vers contoso.onmicrosoft.com"
+  "Un enregistrement A vers une adresse IP Azure",
+  "Un TXT ou MX avec la valeur de Microsoft",
+  "Un CNAME vers contoso.onmicrosoft.com"
  ],
  "ans": 2,
  "expl": "<p>Microsoft fournit une valeur unique du type <code>MS=ms12345678</code> à publier dans un enregistrement <b>TXT</b> (ou, à défaut, <b>MX</b>). Sa présence prouve que vous contrôlez le domaine.</p><p>Les enregistrements A, CNAME et PTR ne servent pas à cette vérification.</p>",
@@ -290,7 +290,7 @@ AZ.questions.push(
  "opts": [
   "Oui, mais seulement si GRP-Assistants est dynamique",
   "Non, sauf si GRP-Assistants est un groupe Microsoft 365",
-  "Non, les licences basées sur les groupes ne s'appliquent qu'aux membres directs",
+  "Non : la licence de groupe ne vise que les membres directs",
   "Oui, les licences sont héritées par les groupes imbriqués"
  ],
  "ans": 2,
@@ -327,9 +327,9 @@ AZ.questions.push(
  "stem": "<p>Vous attribuez une licence Microsoft 365 E3 au groupe GRP-Ventes, qui compte 120 membres. Il ne vous reste que 100 licences disponibles.</p><p>Que se passe-t-il ?</p>",
  "opts": [
   "Aucun membre ne reçoit de licence",
-  "Les 120 membres reçoivent une licence et vous êtes facturé du surplus",
-  "Azure achète automatiquement 20 licences supplémentaires",
-  "100 membres reçoivent une licence ; les 20 autres sont en erreur d'attribution"
+  "Les 120 reçoivent une licence, le surplus est facturé",
+  "Azure achète automatiquement 20 licences de plus",
+  "100 reçoivent une licence, 20 sont en erreur"
  ],
  "ans": 3,
  "expl": "<p>Entra attribue les licences tant qu'il en reste. Les utilisateurs restants apparaissent en <b>erreur</b> (« nombre de licences insuffisant ») dans le groupe, et seront traités dès que des licences se libèrent ou sont achetées.</p><p>Aucune licence n'est achetée ni facturée automatiquement.</p>",
@@ -364,9 +364,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Un employé a quitté l'entreprise ce matin. Vous devez l'empêcher immédiatement de se connecter, sans supprimer son compte, et invalider ses sessions en cours.</p><p>Quelles actions devez-vous effectuer dans Microsoft Entra ID ?</p>",
  "opts": [
-  "Désactiver « Compte activé », puis révoquer les sessions",
-  "Le retirer de tous les groupes",
-  "Supprimer ses licences",
+  "Désactiver le compte, puis révoquer les sessions",
+  "Le retirer de tous les groupes du locataire",
+  "Supprimer toutes ses licences Microsoft 365",
   "Réinitialiser son mot de passe uniquement"
  ],
  "ans": 0,
@@ -402,9 +402,9 @@ AZ.questions.push(
  "stem": "<p>Un invité n'a pas reçu l'e-mail d'invitation envoyé il y a une semaine. Son compte apparaît dans l'annuaire avec l'état d'invitation <b>En attente d'acceptation</b>.</p><p>Que devez-vous faire ?</p>",
  "opts": [
   "Lui attribuer une licence Microsoft Entra ID P1",
-  "Renvoyer l'invitation depuis le profil de l'invité",
-  "Supprimer le domaine de l'invité",
-  "Convertir le compte en membre"
+  "Renvoyer l'invitation depuis le profil",
+  "Supprimer puis rajouter le domaine de l'invité",
+  "Convertir le compte invité en compte membre"
  ],
  "ans": 1,
  "expl": "<p>Le profil d'un invité dont l'invitation n'a pas été acceptée propose <b>Renvoyer l'invitation</b>. On peut aussi lui transmettre directement le lien d'acceptation.</p><p>Les autres actions ne lui permettent pas d'accepter l'invitation.</p>",
@@ -503,10 +503,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Les administrateurs de votre organisation ont le rôle Propriétaire sur les abonnements en permanence. Vous devez faire en sorte qu'ils activent ce rôle seulement quand ils en ont besoin, pour une durée limitée et avec une justification.</p><p>Que devez-vous utiliser ?</p>",
  "opts": [
-  "Des unités administratives",
+  "Des unités administratives par équipe",
   "Une stratégie Azure Policy en mode Deny",
-  "Microsoft Entra Privileged Identity Management (PIM)",
-  "Des verrous de ressources"
+  "Privileged Identity Management (PIM)",
+  "Des verrous sur les ressources critiques"
  ],
  "ans": 2,
  "expl": "<p><b>Privileged Identity Management</b> permet de rendre un rôle <b>éligible</b> au lieu de permanent : l'administrateur l'active pour une durée limitée, avec justification, authentification multifacteur ou approbation si besoin. PIM fonctionne pour les rôles Microsoft Entra et les rôles Azure. Il demande Microsoft Entra ID P2.</p><p>Les verrous, Azure Policy et les unités administratives ne gèrent pas l'activation temporaire des rôles.</p>",
@@ -584,9 +584,9 @@ AZ.questions.push(
  "stem": "<p>Une stratégie avec l'effet Deny bloque régulièrement les déploiements des développeurs. Ils ne comprennent pas pourquoi : le message d'erreur ne cite que le nom technique de la stratégie.</p><p>Que devez-vous configurer dans l'affectation ?</p>",
  "opts": [
   "Un message de non-conformité",
-  "Une exclusion",
-  "Une identité managée",
-  "L'effet Audit"
+  "Une exclusion sur l'affectation",
+  "Une identité managée sur l'affectation",
+  "L'effet Audit à la place de Deny"
  ],
  "ans": 0,
  "expl": "<p>Le <b>message de non-conformité</b> d'une affectation est affiché dans l'erreur de refus et dans les résultats de conformité. On y explique la règle, par exemple « Seule la région France Central est autorisée. Contactez l'équipe Cloud. »</p><p>Une exclusion ou l'effet Audit supprimeraient le blocage. L'identité managée sert aux corrections.</p>",
@@ -704,7 +704,7 @@ AZ.questions.push(
  "opts": [
   "La suppression réussit après confirmation",
   "Le sous-réseau est vidé mais conservé",
-  "La suppression échoue, car le verrou s'applique aussi aux ressources enfants",
+  "Elle échoue : le verrou couvre les ressources enfants",
   "La suppression réussit, car le verrou ne protège que VNet1"
  ],
  "ans": 2,
@@ -735,10 +735,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous essayez de créer un environnement Azure Container Apps dans l'abonnement Sub2. Le déploiement échoue avec l'erreur <b>MissingSubscriptionRegistration</b>.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Retirer les verrous de Sub2",
-  "Demander une augmentation de quota",
+  "Retirer les verrous de l'abonnement Sub2",
+  "Demander une augmentation de quota dans Sub2",
   "Attribuer le rôle Lecteur sur Sub2",
-  "Inscrire le fournisseur de ressources Microsoft.App dans Sub2"
+  "Inscrire le fournisseur Microsoft.App"
  ],
  "ans": 3,
  "expl": "<p>Chaque service Azure dépend d'un <b>fournisseur de ressources</b> (Microsoft.Compute, Microsoft.Storage, Microsoft.App…). S'il n'est pas inscrit dans l'abonnement, l'erreur MissingSubscriptionRegistration apparaît. On l'inscrit dans <b>Abonnement > Fournisseurs de ressources</b> ou avec <code>az provider register --namespace Microsoft.App</code>.</p><p>Un quota, un verrou ou un rôle Lecteur n'ont pas de lien avec cette erreur.</p>",
@@ -771,9 +771,9 @@ AZ.questions.push(
  "stem": "<p>Vous devez déplacer des ressources de l'abonnement Sub1 vers l'abonnement Sub2.</p><p>Quelles <b>deux</b> conditions doivent être remplies ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
  "opts": [
   "Sub1 et Sub2 doivent être dans le même groupe d'administration",
-  "Les fournisseurs de ressources des ressources déplacées doivent être inscrits dans Sub2",
+  "Les fournisseurs des ressources doivent être inscrits dans Sub2",
   "Les ressources doivent être arrêtées pendant le déplacement",
-  "Sub1 et Sub2 doivent appartenir au même locataire Microsoft Entra"
+  "Sub1 et Sub2 doivent être dans le même locataire"
  ],
  "ans": [
   1,
@@ -852,10 +852,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Votre entreprise utilise un mélange de VM, d'App Service et d'Azure Functions Premium dont les tailles changent souvent. Elle veut une remise en échange d'un engagement de dépense horaire sur 1 ou 3 ans, sans être liée à une taille ou une région de VM.</p><p>Que devez-vous recommander ?</p>",
  "opts": [
-  "Azure Hybrid Benefit",
-  "Un plan d'économies Azure pour le calcul",
-  "Des VM Spot",
-  "Une réservation de VM"
+  "Azure Hybrid Benefit sur les VM",
+  "Un plan d'économies pour le calcul",
+  "Des VM Spot pour toutes les charges",
+  "Une réservation de VM par taille"
  ],
  "ans": 1,
  "expl": "<p>Le <b>plan d'économies pour le calcul</b> (savings plan) engage un montant horaire et applique la remise à plusieurs services de calcul, quelles que soient la taille et la région. Il convient aux charges qui évoluent.</p><p>Une <b>réservation</b> remise davantage, mais pour une famille de taille et une région précises. Les VM Spot peuvent être interrompues. Azure Hybrid Benefit dépend de licences existantes.</p>",
@@ -945,8 +945,8 @@ AZ.questions.push(
  "opts": [
   "Modifier l'étiquette Name de RG-Old",
   "Utiliser l'option Renommer du portail",
-  "Créer RG-Finance, y déplacer les ressources, puis supprimer RG-Old",
-  "Utiliser Set-AzResourceGroup -NewName"
+  "Créer RG-Finance, y déplacer, supprimer RG-Old",
+  "Utiliser Set-AzResourceGroup -NewName RG-Finance"
  ],
  "ans": 2,
  "expl": "<p>Un groupe de ressources <b>ne peut pas être renommé</b>. La méthode consiste à créer le nouveau groupe, y <b>déplacer</b> les ressources (qui le prennent en charge), puis supprimer l'ancien.</p><p>L'étiquette Name n'est qu'une métadonnée. Set-AzResourceGroup n'a pas de paramètre -NewName.</p>",
@@ -1023,10 +1023,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous créez un rôle personnalisé qui contient l'action de données <code>Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read</code>. Vous voulez que ses AssignableScopes contiennent le groupe d'administration MG-Data.</p><p>Que se passe-t-il ?</p>",
  "opts": [
-  "La création réussit, mais le rôle ne peut être attribué qu'à des groupes",
-  "La création échoue : les DataActions sont réservées aux rôles intégrés",
-  "La création réussit",
-  "La création échoue : un rôle personnalisé avec des DataActions ne peut pas être attribuable à un groupe d'administration"
+  "Réussite, mais le rôle ne s'attribue qu'à des groupes",
+  "Échec : les DataActions sont réservées aux rôles intégrés",
+  "La création réussit sans restriction",
+  "Échec : DataActions interdites sur un groupe d'administration"
  ],
  "ans": 3,
  "expl": "<p>Un rôle personnalisé peut avoir un groupe d'administration dans ses AssignableScopes, mais alors <b>sans DataActions</b>. Il faut ici utiliser des abonnements ou des groupes de ressources comme étendues attribuables.</p><p>Autre limite : un seul groupe d'administration par rôle personnalisé. Les DataActions sont tout à fait possibles dans les rôles personnalisés en dehors de ce cas.</p>",
@@ -1061,10 +1061,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous venez d'attribuer le rôle Contributeur à User14 sur RG1. User14 indique qu'il ne voit toujours pas les ressources de RG1 dans le portail.</p><p>Quelle est la cause la plus probable ?</p>",
  "opts": [
-  "Les attributions de rôles peuvent prendre quelques minutes à s'appliquer : il doit actualiser ou se reconnecter",
+  "L'attribution met quelques minutes : se reconnecter",
   "Contributeur ne permet pas de voir les ressources",
   "Il faut aussi lui attribuer une licence Microsoft Entra ID P2",
-  "Le rôle doit être attribué deux fois"
+  "Le rôle doit être attribué deux fois pour être actif"
  ],
  "ans": 0,
  "expl": "<p>Une nouvelle attribution peut prendre jusqu'à une dizaine de minutes pour être prise en compte. Se déconnecter puis se reconnecter (ou actualiser le portail) force la récupération d'un nouveau jeton.</p><p>Aucune licence n'est requise pour un rôle Azure. Contributeur inclut la lecture.</p>",
@@ -1197,9 +1197,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez exporter la liste de tous les utilisateurs de votre locataire Microsoft Entra dans un fichier CSV, depuis le portail.</p><p>Quelle opération devez-vous utiliser ?</p>",
  "opts": [
-  "Exporter le journal d'audit",
+  "Exporter le journal d'audit de Microsoft Entra ID",
   "Créer un export de Gestion des coûts",
-  "Télécharger des utilisateurs (opérations en bloc)",
+  "Télécharger des utilisateurs (en bloc)",
   "Exporter le modèle ARM du locataire"
  ],
  "ans": 2,
@@ -1276,9 +1276,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous attribuez à Sub1 une stratégie avec l'effet <b>Append</b> qui ajoute une règle d'adresse IP au pare-feu des comptes de stockage lors de leur création.</p><p>Quelle affirmation est vraie ?</p>",
  "opts": [
-  "Append ajoute des champs à la requête de création ou de mise à jour",
-  "Append déploie une ressource séparée",
-  "Append supprime les champs non conformes",
+  "Append ajoute des champs à la requête",
+  "Append déploie une ressource séparée après la création",
+  "Append supprime les champs non conformes de la requête",
   "Append bloque la création si le champ est absent"
  ],
  "ans": 0,
@@ -1808,10 +1808,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Les utilisateurs de votre locataire doivent utiliser l'authentification multifacteur pour accéder au portail Azure, mais pas pour les autres applications.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Une stratégie d'accès conditionnel ciblant l'application Microsoft Azure Management (ou Microsoft Admin Portals)",
+  "Un accès conditionnel ciblant Microsoft Azure Management",
   "La réinitialisation de mot de passe en libre-service",
-  "Les paramètres de sécurité par défaut",
-  "Une stratégie Azure Policy"
+  "Les paramètres de sécurité par défaut du locataire",
+  "Une stratégie Azure Policy qui cible les comptes administrateurs"
  ],
  "ans": 0,
  "expl": "<p>L'<b>accès conditionnel</b> (Entra ID P1) applique des conditions par application, utilisateur, emplacement ou appareil. Une stratégie qui cible les applications de gestion Azure et exige l'authentification multifacteur répond au besoin.</p><p>Les <b>paramètres de sécurité par défaut</b> s'appliquent à tout le locataire sans réglage fin. Azure Policy gouverne les ressources. SSPR concerne les mots de passe oubliés.</p>",
@@ -1849,10 +1849,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Le groupe de ressources RG-Shared contient des ressources utilisées par trois projets. Vous devez répartir la facture de RG-Shared entre ces projets selon leur consommation réelle de chaque ressource.</p><p>Quel est le prérequis indispensable pour que l'analyse des coûts puisse distinguer les projets ?</p>",
  "opts": [
-  "Créer un budget par projet",
+  "Créer un budget par projet sur l'abonnement",
   "Appliquer une étiquette Projet sur chaque ressource",
   "Créer un abonnement par ressource",
-  "Appliquer un verrou par projet"
+  "Appliquer un verrou par projet sur les groupes"
  ],
  "ans": 1,
  "expl": "<p>Les <b>étiquettes</b> appliquées sur chaque ressource apparaissent dans les données de coût : on peut alors grouper ou filtrer l'analyse des coûts par Projet.</p><p>Un abonnement par ressource serait ingérable. Un budget suit un montant, il ne répartit rien. Un verrou n'a aucun lien avec les coûts.</p>",
@@ -1895,8 +1895,8 @@ AZ.questions.push(
  "stem": "<p>Votre entreprise veut réduire la facture de 20 VM Windows Server de production qui tourneront en continu pendant 3 ans. Elle possède des licences Windows Server avec Software Assurance.</p><p>Quelles <b>deux</b> actions combinées offrent la plus forte réduction ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
  "opts": [
   "Activer Azure Hybrid Benefit sur les VM",
-  "Passer les disques en HDD Standard",
-  "Convertir les VM en VM Spot",
+  "Passer tous les disques en HDD Standard",
+  "Convertir les VM de production en VM Spot",
   "Acheter des réservations de VM sur 3 ans"
  ],
  "ans": [
@@ -1936,7 +1936,7 @@ AZ.questions.push(
  "opts": [
   "Les métriques de l'abonnement",
   "Le journal d'activité, catégorie Sécurité",
-  "Azure Policy > Conformité, puis l'affectation concernée",
+  "Azure Policy > Conformité",
   "Azure Advisor > Fiabilité"
  ],
  "ans": 2,
@@ -1971,10 +1971,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une stratégie personnalisée contient la règle suivante :</p><pre>\"if\": {\n  \"field\": \"type\",\n  \"equals\": \"Microsoft.Network/publicIPAddresses\"\n},\n\"then\": {\n  \"effect\": \"deny\"\n}</pre><p>Elle est attribuée à RG1. Que se passe-t-il quand un administrateur crée une machine virtuelle dans RG1 avec l'option « Nouvelle adresse IP publique » ?</p>",
  "opts": [
-  "La VM est créée avec l'adresse IP publique et marquée non conforme",
+  "La VM est créée avec l'IP publique et marquée non conforme",
   "La VM est créée sans adresse IP publique",
-  "La stratégie ne s'applique pas aux VM",
-  "Le déploiement échoue, car la création de l'adresse IP publique est refusée"
+  "La stratégie ne s'applique pas aux machines virtuelles",
+  "Échec : la création de l'IP publique est refusée"
  ],
  "ans": 3,
  "expl": "<p>La création d'une VM avec une nouvelle adresse IP publique crée aussi une ressource <code>Microsoft.Network/publicIPAddresses</code>. Cette ressource est refusée, donc le <b>déploiement échoue</b>.</p><p>Azure Policy ne modifie pas le déploiement à votre place pour retirer l'adresse. Deny ne crée pas la ressource. La règle vise le type adresse IP publique, quel que soit le contexte de création.</p>",
@@ -2084,7 +2084,7 @@ AZ.questions.push(
  "stem": "<p>Votre entreprise rachète Fabrikam, qui dispose de son propre locataire Microsoft Entra et de 3 abonnements Azure. Vous devez rattacher ces abonnements à votre locataire contoso.com.</p><p>Que devez-vous prévoir ?</p>",
  "opts": [
   "Fusionner les deux locataires depuis le portail",
-  "Changer l'annuaire de chaque abonnement, puis recréer les attributions de rôles et les identités managées",
+  "Changer l'annuaire des abonnements, puis recréer rôles et identités",
   "Ajouter fabrikam.com comme groupe d'administration",
   "Déplacer les ressources une par une vers vos abonnements, sans autre impact"
  ],
