@@ -145,9 +145,9 @@ AZ.cases.push(
    "stem": "<p>You need to meet the requirement for access to stfabdocs from the Lyon site.</p><p>What should you configure?</p>",
    "opts": [
     "A Microsoft.Storage service endpoint on Subnet-App",
-    "A stfabdocs firewall rule with the Lyon site's public address",
-    "A peering between VNet-Prod and VNet-Dev",
-    "A private endpoint for stfabdocs in VNet-Prod and a private DNS zone"
+    "A stfabdocs firewall rule with the Lyon site's address",
+    "A peering between VNet-Prod and VNet-Dev, with gateway transit",
+    "A private endpoint in VNet-Prod and a private DNS zone"
    ],
    "ans": 3,
    "expl": "<p>The Lyon site is connected to VNet-Prod by VPN. A <b>private endpoint</b> for stfabdocs in VNet-Prod gives it a private address reachable through the tunnel. The <b>private DNS zone</b> privatelink.blob.core.windows.net (and on-premises resolution) points the name to that address. You can then disable public access.</p><p>A service endpoint doesn't serve on-premises traffic; an IP rule would go over the internet.</p>",

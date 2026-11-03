@@ -167,6 +167,45 @@ for (const l of LANGS.slice(1)) {
   for (const id of Object.keys(sig)) if (!(id in refSig)) errors.push(`[${l}] ${id} : en trop (absente en ${ref})`);
 }
 
+/* Biais de longueur : la bonne réponse ne doit pas se repérer à sa longueur.
+ * - par question (choix unique ou multiple) : une bonne réponse ne doit pas dépasser
+ *   RATIO_MAX fois la plus longue des mauvaises, ni faire moins de RATIO_MIN fois la plus courte ;
+ * - par domaine : la part des questions où la bonne réponse est la seule plus longue
+ *   ne doit pas dépasser SHARE_MAX (le hasard donne 25 % avec 4 réponses).
+ * Les domaines de BIAS_PENDING ne sont pas encore corrigés : simple avertissement. */
+const RATIO_MAX = 1.25, RATIO_MIN = 0.5, SHARE_MAX = 0.35, MIN_LEN = 20;
+const BIAS_PENDING = new Set([1, 2, 3, 5]);
+const plainLen = s => String(s).replace(/<[^>]+>/g, "").replace(/&[a-z]+;/g, "x").replace(/\s+/g, " ").trim().length;
+const warnings = [];
+const biasStats = {};
+function lengthBias(lang, AZ) {
+  const all = [...AZ.questions, ...AZ.cases.flatMap(c => c.questions || [])];
+  for (const q of all) {
+    if (!["single", "multi"].includes(q.type) || !Array.isArray(q.opts)) continue;
+    const L = q.opts.map(plainLen), ans = [].concat(q.ans);
+    const wrong = L.filter((_, i) => !ans.includes(i));
+    if (!wrong.length) continue;
+    const key = `${lang}|${q.dom}`, st = biasStats[key] = biasStats[key] || { n: 0, longest: 0, shortest: 0 };
+    const max = Math.max(...L), min = Math.min(...L);
+    st.n++;
+    if (L.filter(x => x === max).length === 1 && ans.includes(L.indexOf(max))) st.longest++;
+    if (L.filter(x => x === min).length === 1 && ans.includes(L.indexOf(min))) st.shortest++;
+    if (max < MIN_LEN) continue;
+    const report = BIAS_PENDING.has(q.dom) ? warnings : errors;
+    const maxWrong = Math.max(...wrong), minWrong = Math.min(...wrong);
+    for (const a of ans) {
+      if (L[a] > RATIO_MAX * maxWrong) report.push(`[${lang}] ${q.id} : bonne réponse nettement plus longue (${L[a]} car. contre ${maxWrong} pour la plus longue des mauvaises)`);
+      else if (minWrong >= MIN_LEN && L[a] < RATIO_MIN * minWrong) report.push(`[${lang}] ${q.id} : bonne réponse nettement plus courte (${L[a]} car. contre ${minWrong} pour la plus courte des mauvaises)`);
+    }
+  }
+  for (const d of [1, 2, 3, 4, 5]) {
+    const st = biasStats[`${lang}|${d}`];
+    if (st && st.n && st.longest / st.n > SHARE_MAX)
+      (BIAS_PENDING.has(d) ? warnings : errors).push(`[${lang}] domaine ${d} : la bonne réponse est la plus longue dans ${Math.round(100 * st.longest / st.n)} % des QCM (maximum ${100 * SHARE_MAX} %)`);
+  }
+}
+for (const l of LANGS) lengthBias(l, banks[l]);
+
 /* Bilan */
 const AZ = banks[ref];
 const count = d => AZ.questions.filter(q => q.dom === d).length;
@@ -184,6 +223,16 @@ console.log("  Par format : " + Object.entries(byType).map(([k, v]) => `${k} ${v
 const withPortal = all.filter(q => q.portal).length + AZ.series.reduce((n, s) => n + s.items.filter(i => i.portal).length, 0);
 const withKeep = all.filter(q => q.keep).length + AZ.series.reduce((n, s) => n + s.items.filter(i => i.keep).length, 0);
 console.log(`  Vues du portail : ${withPortal} · « À retenir » : ${withKeep}`);
+console.log("  Biais de longueur (QCM où la bonne réponse est la seule plus longue / la seule plus courte) :");
+[1, 2, 3, 4, 5].forEach(d => console.log(`    Domaine ${d}${BIAS_PENDING.has(d) ? " (à corriger)" : ""} : ` + LANGS.map(l => {
+  const st = biasStats[`${l}|${d}`] || { n: 0, longest: 0, shortest: 0 };
+  return `${l} ${st.n ? Math.round(100 * st.longest / st.n) : 0} % / ${st.n ? Math.round(100 * st.shortest / st.n) : 0} %`;
+}).join(" · ")));
+if (warnings.length) {
+  console.warn(`\n⚠ ${warnings.length} avertissement(s) de biais de longueur (domaines pas encore corrigés)`);
+  if (process.argv.includes("--details")) warnings.forEach(w => console.warn("  - " + w));
+  else console.warn("  (node tools/validate.js --details pour la liste)");
+}
 
 if (errors.length) {
   console.error(`\n✗ ${errors.length} erreur(s) :`);

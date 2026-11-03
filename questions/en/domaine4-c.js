@@ -109,7 +109,7 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>LB2, a Standard public load balancer, distributes port 443 to VM3 and VM4. VM4 is stopped for maintenance.</p><p>How does LB2 know it should stop sending traffic to VM4?</p>",
  "opts": [
-  "Through the health probe, which marks VM4 as unhealthy",
+  "Through the health probe",
   "Through the inbound NAT rule",
   "It keeps sending traffic to VM4",
   "Through session persistence"
@@ -144,10 +144,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A web application stores the user's session in memory on each VM. Behind a Standard load balancer, a user must always land on the same VM.</p><p>What should you configure in the load-balancing rule?</p>",
  "opts": [
-  "A floating IP address",
+  "A floating IP address on the rule",
   "“Client IP” session persistence",
-  "HA ports",
-  "An outbound rule"
+  "HA (high availability) ports",
+  "An outbound rule with fixed SNAT"
  ],
  "ans": 1,
  "expl": "<p><b>Session persistence</b> (affinity) can be <b>None</b> (5-tuple hash, default), <b>Client IP</b> (2-tuple: source and destination), or <b>Client IP and protocol</b> (3-tuple). With Client IP, requests from the same client go to the same VM.</p>",
@@ -173,10 +173,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to let administrators connect over RDP to each of the three VMs in a backend pool, through the public address of load balancer LB3, on ports 50001, 50002, and 50003.</p><p>What should you create?</p>",
  "opts": [
-  "Health probes",
+  "Health probes on the ports",
   "Load-balancing rules",
   "Inbound NAT rules",
-  "Outbound rules"
+  "Outbound rules on the pool"
  ],
  "ans": 2,
  "expl": "<p>An <b>inbound NAT rule</b> forwards a port of the frontend address to a port of a specific VM (for example 50001 → VM1:3389). A load-balancing rule, instead, <b>distributes</b> traffic across all VMs in the pool.</p><p>In production, Azure Bastion is a better solution for RDP.</p>",
@@ -213,8 +213,8 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You create an <b>internal</b> load balancer in front of two network virtual appliances, which must receive all TCP and UDP traffic on all ports.</p><p>Which load-balancing rule option should you enable?</p>",
  "opts": [
-  "Floating IP only",
-  "An inbound NAT rule",
+  "Floating IP alone",
+  "An inbound NAT rule per port",
   "Session persistence",
   "HA (high availability) ports"
  ],
@@ -290,9 +290,9 @@ AZ.questions.push(
  "stem": "<p>VMs in the backend pool of a Standard public load balancer have no public IP address and no NAT gateway. They must reach the internet through the load balancer's address, with a controlled number of SNAT ports.</p><p>What should you configure?</p>",
  "opts": [
   "An outbound rule on the load balancer",
-  "A health probe",
-  "HA ports",
-  "An inbound NAT rule"
+  "A TCP health probe on the pool",
+  "HA ports on the load-balancing rule",
+  "An inbound NAT rule per pool VM"
  ],
  "ans": 0,
  "expl": "<p>A Standard public load balancer's <b>outbound rules</b> define SNAT translation for traffic leaving the pool: frontend addresses used and number of ports allocated per instance. The <b>NAT gateway</b> remains the recommended method for internet egress, when possible.</p>",
@@ -321,9 +321,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A web application in one region must be exposed over HTTPS with a certificate, route by URL path to two VM pools, and be protected against SQL injection.</p><p>What should you deploy?</p>",
  "opts": [
-  "A NAT gateway",
+  "A NAT gateway and an NSG",
   "Application Gateway v2 with WAF",
-  "Traffic Manager",
+  "Traffic Manager with two profiles",
   "Azure Load Balancer Standard"
  ],
  "ans": 1,
@@ -358,10 +358,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A single Application Gateway must host three sites: www.contoso.com, www.fabrikam.com, and www.tailspin.com, each with its own server pool.</p><p>What should you configure?</p>",
  "opts": [
-  "Three Application Gateways",
-  "Three private IP addresses",
-  "Three multi-site listeners (with the host name) and three routing rules",
-  "Three health probes only"
+  "Three Application Gateways, one per site",
+  "Three private frontend IPs and one rule",
+  "Three multi-site listeners and three rules",
+  "Three health probes and one basic listener"
  ],
  "ans": 2,
  "expl": "<p>A <b>multi-site listener</b> filters requests by host name (Host header). Each listener is associated with a <b>routing rule</b> that sends to the right backend pool. A single gateway can thus host several sites on the same IP address.</p>",
@@ -462,10 +462,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Application Gateway AG2 must automatically redirect all HTTP requests (port 80) to HTTPS (port 443).</p><p>What should you configure?</p>",
  "opts": [
-  "An HTTPS health probe",
-  "An inbound NAT rule",
-  "A NAT gateway",
-  "An HTTP listener on port 80 with a redirection rule to the HTTPS listener"
+  "An HTTPS health probe on the backend pool",
+  "An inbound NAT rule from port 80 to port 443",
+  "A NAT gateway on the gateway's subnet",
+  "An HTTP listener with a redirection rule"
  ],
  "ans": 3,
  "expl": "<p>Application Gateway handles <b>redirections</b>: a listener on port 80, and a rule that redirects to the HTTPS listener (permanent 301 redirection). You can also redirect to an external URL.</p>",
@@ -495,10 +495,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You deploy Application Gateway v2 in VNet1.</p><p>Which subnet requirement must you meet?</p>",
  "opts": [
-  "A dedicated subnet that contains only Application Gateways",
-  "The same subnet as the pool VMs",
-  "The GatewaySubnet subnet",
-  "The AzureBastionSubnet subnet"
+  "A subnet dedicated to Application Gateways",
+  "The same subnet as the backend pool VMs",
+  "The GatewaySubnet subnet, at least /27",
+  "The AzureBastionSubnet subnet, as a /26"
  ],
  "ans": 0,
  "expl": "<p>Application Gateway requires a <b>dedicated subnet</b> (you can put several Application Gateways in it, but no other resources). For v2, a /24 is recommended for autoscaling. Its name is free; it must not be the GatewaySubnet, reserved for VPN and ExpressRoute gateways.</p>",
@@ -528,7 +528,7 @@ AZ.questions.push(
  "opts": [
   "Traffic Manager with the Weighted method at 50/50",
   "Traffic Manager with the Priority method",
-  "Internal Load Balancer",
+  "An internal load balancer with two pools",
   "Application Gateway with path-based routing"
  ],
  "ans": 1,
@@ -659,10 +659,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to centrally filter all outbound traffic from several virtual networks to the internet, allowing only certain domain names (FQDNs), with logs.</p><p>What should you deploy?</p>",
  "opts": [
-  "Application Gateway",
-  "An NSG with FQDN rules",
-  "A NAT gateway",
-  "Azure Firewall in a hub network, with FQDN application rules and user-defined routes in the spokes"
+  "Application Gateway with WAF in each spoke",
+  "An NSG with FQDN rules on each spoke",
+  "A NAT gateway per virtual network, with logs",
+  "Azure Firewall in the hub, FQDN rules and UDRs"
  ],
  "ans": 3,
  "expl": "<p><b>Azure Firewall</b> is a managed stateful firewall. Its <b>application rules</b> filter by FQDN (HTTP/HTTPS); its <b>network rules</b> by address and port; its <b>DNAT rules</b> publish services. You place it in the hub and direct spoke traffic to it with 0.0.0.0/0 routes.</p><p>NSGs don't filter by domain name.</p>",
@@ -751,10 +751,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>An Azure SQL Database must be reachable from Subnet1 of VNet1 through a private IP address, and from the on-premises site through the VPN.</p><p>What should you configure?</p>",
  "opts": [
-  "A private endpoint for the SQL server, with the privatelink.database.windows.net DNS zone",
-  "A NAT gateway",
-  "A Microsoft.Sql service endpoint on Subnet1 only",
-  "A firewall rule with the on-premises site's public IP address"
+  "A private endpoint and the privatelink.database zone",
+  "A NAT gateway on Subnet1 with a fixed public IP address",
+  "A Microsoft.Sql service endpoint on Subnet1",
+  "A SQL firewall rule with the site's public address"
  ],
  "ans": 0,
  "expl": "<p>The <b>private endpoint</b> gives the SQL server a <b>private address</b> in VNet1, also reachable from on-premises through the VPN (with suitable DNS resolution). A service endpoint doesn't work from on-premises. An IP firewall rule would go over the internet.</p>",
@@ -788,10 +788,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You created a private endpoint for storage90 in VNet1, without DNS integration. VMs in VNet1 still resolve storage90.blob.core.windows.net to the public address.</p><p>What should you do?</p>",
  "opts": [
-  "Restart the storage account",
-  "Create the private DNS zone privatelink.blob.core.windows.net, link it to VNet1, and add the endpoint's A record to it",
-  "Change the storage account SKU",
-  "Add a service endpoint"
+  "Restart the storage account to publish the new private address",
+  "Create and link the privatelink.blob zone with the A record",
+  "Move the storage account to the Premium SKU (ZRS)",
+  "Add a service endpoint on the subnet"
  ],
  "ans": 1,
  "expl": "<p>The public name is an alias (CNAME) to <code>storage90.privatelink.blob.core.windows.net</code>. For it to resolve to the private address, you need the matching <b>privatelink private DNS zone</b>, <b>linked</b> to the virtual network, with an A record (created automatically through a DNS zone group if you choose integration).</p>",
@@ -824,8 +824,8 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to privately expose a service hosted behind a Standard internal load balancer in your subscription, so that clients in other tenants access it through a private endpoint in their own networks.</p><p>What should you create?</p>",
  "opts": [
-  "Global peering",
-  "A public IP address",
+  "Global peering with each client",
+  "A public IP address on the load balancer",
   "A Private Link service",
   "A VPN gateway per client"
  ],
@@ -857,10 +857,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A VM has two network interfaces. You want to add a third network interface.</p><p>Which condition must be met?</p>",
  "opts": [
-  "The VM must have a public IP address",
+  "The VM must have a public IP address on each interface",
   "The VM must be in an availability set",
   "The interfaces must be in different virtual networks",
-  "The VM size must support 3 network interfaces, and the VM must be stopped (deallocated) to add it"
+  "The size must support 3 interfaces, and the VM be deallocated"
  ],
  "ans": 3,
  "expl": "<p>The maximum number of network interfaces depends on the VM <b>size</b>. You add or remove a secondary interface when the VM is <b>stopped (deallocated)</b>. All of a VM's interfaces must be in the <b>same virtual network</b> (in the same or different subnets).</p>",
@@ -893,10 +893,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to move a network interface from VM6 to VM7.</p><p>Which statement is true?</p>",
  "opts": [
-  "You can't detach a VM's primary network interface; a secondary interface can be detached (VM deallocated) and attached to another VM in the same virtual network",
-  "You must first delete VM6",
-  "Network interfaces are never reusable",
-  "Any network interface can be moved while running"
+  "Only a secondary interface can be detached (VM deallocated)",
+  "You must first delete VM6 to release all of its interfaces",
+  "A network interface can never move to another VM",
+  "Any network interface can be moved while the VM runs"
  ],
  "ans": 0,
  "expl": "<p>A VM always has a <b>primary</b> interface, which you can't detach. A <b>secondary</b> interface can be detached (VM stopped and deallocated) then attached to another VM in the <b>same virtual network</b> and region.</p>",
@@ -928,10 +928,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Azure resources in Subnet-Web must be reachable from the internet, but IP addresses in Subnet-DB must never have default internet egress, without relying on NSGs.</p><p>Which property of Subnet-DB should you enable?</p>",
  "opts": [
-  "Private endpoint network policies",
-  "Private subnet (disable default outbound access)",
-  "Subnet delegation",
-  "Service endpoints"
+  "Private endpoint network policies on the subnet",
+  "Private subnet (no default outbound access)",
+  "Delegating the subnet to a managed service",
+  "The subnet's service endpoints for storage"
  ],
  "ans": 1,
  "expl": "<p>The <b>private subnet</b> option (defaultOutboundAccess = false) disables <b>default outbound access</b>: VMs no longer have implicit internet egress. You then need an explicit method (NAT gateway, public address, load balancer, firewall). Microsoft is retiring default outbound access for new virtual networks.</p>",
@@ -958,9 +958,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You deploy ACI container groups in Subnet-ACI. The deployment fails because the subnet isn't configured for this service.</p><p>What should you configure on Subnet-ACI?</p>",
  "opts": [
-  "An application security group",
-  "A route table",
-  "A subnet delegation to Microsoft.ContainerInstance/containerGroups",
+  "A dedicated application security group",
+  "A route table to the ACI service",
+  "A delegation to Microsoft.ContainerInstance",
   "A Microsoft.Storage service endpoint"
  ],
  "ans": 2,
@@ -1126,9 +1126,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>An NSG rule must allow load balancer health probe traffic, even though a custom rule denies all inbound traffic at priority 4000.</p><p>Which source should you use in an allow rule with a priority lower than 4000?</p>",
  "opts": [
-  "The AzureLoadBalancer service tag",
+  "The AzureLoadBalancer tag",
   "The address 169.254.169.254",
-  "The Internet tag",
+  "The Internet service tag",
   "The VirtualNetwork tag"
  ],
  "ans": 0,
@@ -1158,10 +1158,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to see all security rules applied to VM9's network interface, combining the subnet's NSG and the interface's NSG, with the default rules.</p><p>What should you look at?</p>",
  "opts": [
-  "The NSG's activity log",
-  "The network interface's effective security rules",
-  "The VM's metrics",
-  "Effective routes"
+  "The subnet NSG's activity log",
+  "The effective security rules",
+  "The VM's network metrics",
+  "The interface's effective routes"
  ],
  "ans": 1,
  "expl": "<p><b>Effective security rules</b> (on the network interface or in Network Watcher) show the combination of the subnet and interface NSGs, with service tags expanded into address ranges.</p>",
@@ -1194,10 +1194,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to capture VM10's network traffic for 10 minutes to analyze it with Wireshark.</p><p>What should you use?</p>",
  "opts": [
-  "Connection monitor",
-  "Flow logs",
-  "Network Watcher packet capture (Network Watcher extension on the VM)",
-  "IP flow verify"
+  "Network Watcher connection monitor",
+  "The virtual network's flow logs",
+  "Network Watcher packet capture",
+  "IP flow verify on the VM"
  ],
  "ans": 2,
  "expl": "<p>Network Watcher <b>packet capture</b> records a VM's traffic (with filters and duration) to a .cap file stored in a storage account or on the VM, to open with Wireshark. It uses the Network Watcher Agent extension.</p><p>Flow logs only record flow metadata, not packet contents.</p>",
@@ -1233,10 +1233,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to continuously monitor latency and availability of the connection between VM11 (Azure) and an on-premises server, with alerts if it degrades.</p><p>Which tool should you use?</p>",
  "opts": [
-  "Packet capture",
+  "A scheduled packet capture",
   "IP flow verify",
   "Next hop",
-  "Network Watcher connection monitor"
+  "Connection monitor"
  ],
  "ans": 3,
  "expl": "<p><b>Connection monitor</b> regularly tests connections between sources (Azure VMs, on-premises machines with the agent) and destinations, records latency and loss, and enables Azure Monitor <b>alerts</b>.</p><p>The other tools do one-off tests.</p>",
@@ -1273,9 +1273,9 @@ AZ.questions.push(
  "stem": "<p>You want to visualize the network resources of a virtual network (subnets, interfaces, NSGs, gateways) and their relationships as a diagram.</p><p>Which feature should you use?</p>",
  "opts": [
   "Network Watcher topology",
-  "Packet capture",
-  "The activity log",
-  "Azure Advisor"
+  "Packet capture on the VNet",
+  "The VNet's activity log",
+  "Azure Advisor, Network tab"
  ],
  "ans": 0,
  "expl": "<p>Network Watcher <b>topology</b> generates an interactive diagram of network resources and their links, across one or more subscriptions and regions.</p>",
@@ -1302,10 +1302,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Network Watcher tools aren't available for a virtual network located in Norway East.</p><p>What should you check?</p>",
  "opts": [
-  "That the VMs have a public IP address",
-  "That Network Watcher is enabled in the Norway East region",
+  "That the network's VMs have a public IP address",
+  "That Network Watcher is enabled in Norway East",
   "That the virtual network has a VPN gateway",
-  "That the virtual network is peered"
+  "That the virtual network is peered to a hub"
  ],
  "ans": 1,
  "expl": "<p><b>Network Watcher</b> is a <b>regional</b> service: one instance is created per region (automatically when the first virtual network is created, in the NetworkWatcherRG resource group). If it was deleted or disabled, you must enable it in that region.</p>",
@@ -1334,9 +1334,9 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>You deploy a site-to-site VPN between VNet1 and the Bordeaux site. You need to give the Bordeaux network team the information required to configure their firewall.</p><p>Which <b>two</b> pieces of information should you provide?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
-  "The private IP address of each VM",
-  "The public IP address of the Azure VPN gateway",
-  "The resource group name",
+  "The private IP address of each VM in VNet1",
+  "The Azure VPN gateway's public IP address",
+  "The name of VNet1's resource group",
   "The connection's shared key"
  ],
  "ans": [
@@ -1374,10 +1374,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>VMs in VNet-Spoke must reach the internet only through the Azure Firewall in VNet-Hub (private address 10.0.0.4).</p><p>Which <b>two</b> actions should you perform?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
-  "Create rules (network or application) in the firewall policy to allow the desired traffic",
-  "Enable “Use remote gateway” with no gateway in the hub",
-  "Create a route table with 0.0.0.0/0 → Virtual appliance 10.0.0.4 and associate it with the spoke's subnets",
-  "Create a NAT gateway in the spoke"
+  "Create rules in the firewall policy that allow the traffic",
+  "Enable “Use remote gateway” on the spoke-to-hub peering",
+  "Associate a 0.0.0.0/0 → 10.0.0.4 UDR with the spoke's subnets",
+  "Create a NAT gateway in the spoke, associated with its subnets"
  ],
  "ans": [
   0,
@@ -1413,10 +1413,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>You deploy Azure Bastion in VNet1.</p><p>Which <b>two</b> conditions are required?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
-  "A subnet named AzureBastionSubnet of size /26 or larger",
-  "A VPN gateway",
-  "A public IP address on each VM",
-  "A Standard SKU public IP address (for the Basic SKU and above)"
+  "An AzureBastionSubnet subnet of size /26 or larger",
+  "A VPN gateway in the same network's GatewaySubnet",
+  "A Standard public IP address on each target VM",
+  "A Standard public IP address for Bastion"
  ],
  "ans": [
   0,
@@ -1909,10 +1909,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Two VMs in VNet1 in different subnets can't communicate. No NSG or route table is configured.</p><p>What is the most likely cause?</p>",
  "opts": [
-  "You need a peering between the subnets",
-  "You need a VPN gateway",
-  "The VMs' operating system firewall (for example Windows Firewall blocking ICMP)",
-  "Subnets in the same virtual network don't communicate by default"
+  "You need a peering between the two subnets",
+  "You need a VPN gateway between the subnets",
+  "The VMs' operating system firewall",
+  "Subnets in one VNet are isolated by default"
  ],
  "ans": 2,
  "expl": "<p>By default, all subnets in a virtual network communicate through the virtual network system route. With no NSG or UDR, the likely cause is the <b>operating system firewall</b>: for example, Windows Firewall blocks ping (ICMP) by default.</p>",
@@ -1937,10 +1937,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want VMs in an internal load balancer pool to receive traffic addressed directly to the frontend address (for example for a SQL Always On cluster).</p><p>Which load-balancing rule option should you enable?</p>",
  "opts": [
-  "An HTTP probe",
-  "Outbound rules",
-  "Session persistence",
-  "Floating IP (direct server return)"
+  "An HTTP probe on the listener port",
+  "An outbound rule on the same pool",
+  "Session persistence (client IP)",
+  "Floating IP on the rule"
  ],
  "ans": 3,
  "expl": "<p><b>Floating IP</b> (Direct Server Return) forwards the packet without translating the destination address: the VM sees the frontend address and must have it configured on a loopback. It's required for SQL Server availability group listeners.</p>",
@@ -1966,10 +1966,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>An Application Gateway returns a 502 (Bad Gateway) error for all requests. The pool VMs work when queried directly.</p><p>What should you check first?</p>",
  "opts": [
-  "Backend health (probe, Application Gateway subnet NSG, backend ports and certificates)",
-  "The storage access tier",
-  "A firewall's DNAT rules",
-  "The VPN gateway"
+  "Backend health (probe, NSG, ports, certificates)",
+  "The access tier of the log storage account",
+  "The DNAT rules of the firewall in front of the gateway",
+  "The VPN gateway and the routes to on-premises"
  ],
  "ans": 0,
  "expl": "<p>A <b>502</b> error means Application Gateway can't reach a healthy backend. The <b>Backend health</b> page shows why: failing probe (path or expected code), blocking NSG, wrong port or host name, untrusted backend certificate in HTTPS.</p>",
@@ -1997,10 +1997,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You add an NSG to the Application Gateway v2 subnet. Afterward, the gateway stops working.</p><p>Which inbound rule should you allow?</p>",
  "opts": [
-  "Port 3389 from the internet",
-  "Ports 65200-65535 from the GatewayManager service tag",
-  "Port 1433 from AzureCloud",
-  "Port 22 from VirtualNetwork"
+  "Port 3389 from the Internet tag",
+  "Ports 65200-65535 from GatewayManager",
+  "Port 1433 from the AzureCloud tag",
+  "Port 22 from the VirtualNetwork tag"
  ],
  "ans": 1,
  "expl": "<p>Application Gateway v2 requires ports <b>65200 to 65535</b> to be open inbound from the <b>GatewayManager</b> tag (communication with Azure infrastructure). You must also allow AzureLoadBalancer and client traffic on the listener ports.</p>",
@@ -2030,9 +2030,9 @@ AZ.questions.push(
  "stem": "<p>A VpnGw1 SKU VPN gateway no longer offers enough bandwidth for traffic with the on-premises site.</p><p>What can you do?</p>",
  "opts": [
   "Add a second VPN gateway in the same virtual network",
-  "Create a second GatewaySubnet",
-  "Resize the gateway to a higher SKU of the same generation (for example VpnGw2)",
-  "Increase the VM size"
+  "Create a second GatewaySubnet and deploy a gateway in it",
+  "Resize the gateway to VpnGw2 (same generation)",
+  "Increase the size of the VMs that talk to on-premises"
  ],
  "ans": 2,
  "expl": "<p>You can <b>resize</b> a gateway to a higher SKU (VpnGw1 → VpnGw2 → VpnGw3…, or to the zone-redundant AZ versions). A virtual network has only one VPN gateway and one GatewaySubnet.</p>",
@@ -2061,9 +2061,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Your VPN gateway must withstand the failure of an availability zone.</p><p>Which SKU should you choose?</p>",
  "opts": [
-  "Basic",
-  "Standard",
-  "VpnGw2",
+  "Basic, in active-active mode",
+  "Standard, with two instances",
+  "VpnGw2, in active-active mode on two sites",
   "An AZ SKU, for example VpnGw2AZ"
  ],
  "ans": 3,
@@ -2095,9 +2095,9 @@ AZ.questions.push(
  "stem": "<p>Your organization has 30 branches, several Azure regions, and mobile users. You want a managed network architecture that automatically interconnects all of it (VPN, ExpressRoute, virtual networks).</p><p>What should you recommend?</p>",
  "opts": [
   "Azure Virtual WAN",
-  "A NAT gateway",
-  "Azure Bastion",
-  "A peering between each pair of virtual networks"
+  "A NAT gateway per region",
+  "Azure Bastion in a hub",
+  "A peering between each pair of VNets"
  ],
  "ans": 0,
  "expl": "<p><b>Azure Virtual WAN</b> provides managed virtual hubs that interconnect VPN sites, ExpressRoute circuits, point-to-site users, and virtual networks, with automatic transitive routing between them.</p>",
@@ -2127,10 +2127,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Traffic between VNet1 and the on-premises site goes through the site-to-site VPN. An on-premises VM can't reach a VM in VNet1, but the reverse works.</p><p>What is the most likely cause?</p>",
  "opts": [
-  "Peering isn't transitive",
-  "An NSG that doesn't allow inbound traffic from the on-premises ranges (or the local firewall)",
-  "Azure DNS doesn't work",
-  "The VM has no public address"
+  "Peering isn't transitive to on-premises",
+  "An NSG blocking inbound traffic from the site",
+  "Azure-provided DNS doesn't resolve the site's names",
+  "The VM in VNet1 has no public IP address"
  ],
  "ans": 1,
  "expl": "<p>The tunnel works (the reverse direction passes). <b>Inbound</b> traffic is therefore filtered: by an NSG (if the default rules were overridden, or if a higher-priority deny rule exists) or by the VM's or on-premises firewall. IP flow verify will confirm it.</p><p>The default AllowVnetInBound rule normally includes the on-premises ranges known by the gateway.</p>",
@@ -2154,10 +2154,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to restrict public IP addresses on network interfaces across the whole subscription: no VM must be able to receive a public IP address.</p><p>Which solution is the most suitable?</p>",
  "opts": [
-  "An NSG on each subnet",
-  "A route table",
-  "An Azure Policy that denies network interfaces with a public IP address",
-  "A NAT gateway"
+  "An NSG denying all inbound traffic on each subnet",
+  "A 0.0.0.0/0 → None route table on each subnet",
+  "An Azure Policy denying public IPs on network interfaces",
+  "A NAT gateway on every subnet in the subscription, with no inbound IP"
  ],
  "ans": 2,
  "expl": "<p><b>Azure Policy</b> (for example the built-in policy “Network interfaces should not have public IPs”, Deny effect) prevents the configuration itself. An NSG filters traffic but doesn't prevent assigning an address.</p>",
@@ -2187,10 +2187,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A VM in VNet1 must resolve the names of VMs in VNet2, which is peered, without custom DNS.</p><p>Which solution is the simplest?</p>",
  "opts": [
-  "A hosts file on each VM",
-  "Azure-provided DNS is enough between peered networks",
-  "A public DNS zone",
-  "A private DNS zone linked to both virtual networks (autoregistration enabled for each)"
+  "A hosts file kept up to date on each VM",
+  "Azure-provided DNS, which is enough between peered VNets",
+  "A public DNS zone with one record per VM",
+  "A private DNS zone linked to both virtual networks"
  ],
  "ans": 3,
  "expl": "<p>Azure-provided DNS only resolves short names within the same virtual network. A <b>private DNS zone</b> linked to both networks, with <b>autoregistration</b> enabled on each (a network can have only one registration zone), lets the VMs resolve each other.</p>",

@@ -178,10 +178,10 @@ AZ.cases.push(
    "type": "single",
    "stem": "<p>Vous devez répondre à l'exigence d'accès réseau à stlitwaredata.</p><p>Que devez-vous configurer ?</p>",
    "opts": [
-    "Un NSG sur Subnet-Web qui bloque le stockage",
-    "Une passerelle NAT sur Subnet-Data",
-    "Un point de terminaison privé dans Subnet-Data et la désactivation de l'accès public",
-    "Un point de terminaison de service Microsoft.Storage sur Subnet-Data et une règle de réseau virtuel dans le pare-feu de stlitwaredata"
+    "Un NSG sur Subnet-Web qui bloque l'étiquette Storage en sortie",
+    "Une passerelle NAT sur Subnet-Data, autorisée dans le pare-feu du compte",
+    "Un point de terminaison privé dans Subnet-Data et l'accès public désactivé",
+    "Un point de terminaison de service sur Subnet-Data et une règle de VNet"
    ],
    "ans": 3,
    "expl": "<p>L'exigence demande de <b>garder l'adresse publique</b> : le <b>point de terminaison de service</b> avec une règle de réseau virtuel répond au besoin, gratuitement. Un point de terminaison privé fonctionnerait techniquement, mais il implique de désactiver l'accès public dans cette option et coûte plus cher.</p>",
@@ -547,10 +547,10 @@ AZ.cases.push(
    "type": "single",
    "stem": "<p>Vous devez répondre à l'exigence de passage par FW1 entre VNet-App et VNet-Data.</p><p>Que devez-vous configurer dans VNet-App ?</p>",
    "opts": [
-    "Une table de routage avec 10.2.0.0/16 → Appliance virtuelle 10.0.1.4, associée aux sous-réseaux de VNet-App",
-    "Un appairage direct entre VNet-App et VNet-Data",
-    "Une passerelle NAT",
-    "Un NSG qui autorise 10.2.0.0/16"
+    "Une table de routage 10.2.0.0/16 → 10.0.1.4 sur les sous-réseaux",
+    "Un appairage direct entre VNet-App et VNet-Data, sans le hub",
+    "Une passerelle NAT dans VNet-App, devant le pare-feu FW1",
+    "Un NSG qui n'autorise 10.2.0.0/16 qu'à travers FW1"
    ],
    "ans": 0,
    "expl": "<p>Un <b>itinéraire défini par l'utilisateur</b> envoie le trafic destiné à VNet-Data vers FW1 (même chose dans VNet-Data vers 10.1.0.0/16), avec les règles correspondantes dans FW1. Un appairage direct contournerait le pare-feu.</p>",
@@ -577,7 +577,7 @@ AZ.cases.push(
    "stem": "<p>Vous devez répondre à l'exigence d'administration des VM.</p><p>Quelles <b>deux</b> actions devez-vous effectuer ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
    "opts": [
     "Créer une passerelle NAT dans VNet-Hub",
-    "Déployer Azure Bastion dans un sous-réseau AzureBastionSubnet de VNet-Hub",
+    "Déployer Azure Bastion dans VNet-Hub",
     "Supprimer les adresses IP publiques des VM",
     "Ouvrir le port 3389 depuis Internet dans les NSG"
    ],
@@ -612,10 +612,10 @@ AZ.cases.push(
    "type": "single",
    "stem": "<p>Vous devez répondre à l'exigence de publication de VM-WEB1 et VM-WEB2.</p><p>Que devez-vous déployer ?</p>",
    "opts": [
-    "Un équilibreur de charge public Standard",
-    "Application Gateway v2 avec WAF dans un sous-réseau dédié de VNet-App",
-    "Une passerelle NAT",
-    "Traffic Manager"
+    "Un équilibreur de charge public Standard dans VNet-App",
+    "Application Gateway v2 avec WAF, sous-réseau dédié",
+    "Une passerelle NAT et un NSG sur le sous-réseau web",
+    "Traffic Manager avec deux points de terminaison externes"
    ],
    "ans": 1,
    "expl": "<p>Un <b>WAF</b> exige un service de couche 7 : <b>Application Gateway</b> (niveau WAF v2) dans un sous-réseau dédié, avec VM-WEB1 et VM-WEB2 dans le pool. Un équilibreur de charge et Traffic Manager n'ont pas de WAF.</p>",
@@ -649,10 +649,10 @@ AZ.cases.push(
    "type": "single",
    "stem": "<p>Vous devez répondre à l'exigence de résolution de noms.</p><p>Que devez-vous configurer ?</p>",
    "opts": [
-    "Un fichier hosts sur chaque VM",
-    "Une zone DNS publique northwind.internal",
-    "Une zone DNS privée northwind.internal liée à VNet-App et VNet-Data avec l'inscription automatique",
-    "Un enregistrement CNAME par VM dans Azure DNS public"
+    "Un fichier hosts tenu à jour sur chaque VM des deux réseaux",
+    "Une zone DNS publique northwind.internal, avec délégation",
+    "Une zone privée northwind.internal liée aux deux VNets (auto)",
+    "Un enregistrement CNAME par VM dans une zone Azure DNS publique"
    ],
    "ans": 2,
    "expl": "<p>Une <b>zone DNS privée</b> liée aux réseaux, avec l'<b>inscription automatique</b>, crée et tient à jour les enregistrements des VM. Une zone privée est mondiale : elle peut être liée à des réseaux de France Central et de West Europe.</p>",

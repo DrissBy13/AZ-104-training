@@ -186,10 +186,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>VNet1 (10.0.0.0/16) est appairé à VNet2 (10.1.0.0/16). Vous devez ajouter l'espace d'adressage 10.2.0.0/16 à VNet1.</p><p>Que devez-vous faire après l'ajout ?</p>",
  "opts": [
-  "Créer une passerelle VPN",
-  "Synchroniser l'appairage pour que VNet2 connaisse le nouvel espace",
-  "Rien : l'appairage est mis à jour automatiquement sans action",
-  "Supprimer puis recréer l'appairage dans tous les cas"
+  "Créer une passerelle VPN dans VNet1 pour annoncer le nouvel espace",
+  "Lancer une synchronisation de l'appairage",
+  "Rien : l'appairage se met à jour seul, sans aucune action",
+  "Supprimer puis recréer l'appairage dans les deux sens"
  ],
  "ans": 1,
  "expl": "<p>On peut modifier l'espace d'adressage d'un réseau virtuel appairé. Ensuite, l'appairage passe à l'état « synchronisation requise » : il faut lancer une <b>synchronisation</b> (bouton Synchroniser ou <code>Sync-AzVirtualNetworkPeering</code>) pour que le réseau distant apprenne le nouvel espace.</p><p>Il n'est plus nécessaire de supprimer et recréer l'appairage.</p>",
@@ -219,9 +219,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez appairer VNet3 (10.10.0.0/16) avec VNet4 (10.10.128.0/17).</p><p>Que se passe-t-il ?</p>",
  "opts": [
-  "L'appairage fonctionne normalement",
-  "L'appairage fonctionne, mais seulement dans un sens",
-  "L'appairage est impossible car les espaces d'adressage se chevauchent",
+  "L'appairage fonctionne normalement dans les deux sens",
+  "L'appairage fonctionne, mais seulement de VNet3 vers VNet4",
+  "L'appairage est impossible : les espaces se chevauchent",
   "L'appairage fonctionne si les deux réseaux sont dans la même région"
  ],
  "ans": 2,
@@ -289,10 +289,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Dans une topologie hub-and-spoke, le hub VNet-Hub contient une passerelle VPN vers le site local. Les spokes VNet-S1 et VNet-S2 doivent joindre le site local par cette passerelle.</p><p>Quels réglages d'appairage devez-vous activer ?</p>",
  "opts": [
-  "« Autoriser le trafic transféré » uniquement",
-  "« Utiliser la passerelle distante » sur le hub, et « Autoriser le transit de passerelle » sur les spokes",
-  "Aucun : l'appairage le permet par défaut",
-  "« Autoriser le transit de passerelle » sur les appairages du hub, et « Utiliser la passerelle distante » sur les appairages des spokes"
+  "« Autoriser le trafic transféré » sur tous les appairages, sans autre réglage",
+  "« Utiliser la passerelle distante » sur le hub, « Autoriser le transit » sur les spokes",
+  "Aucun : un appairage avec le hub donne accès à sa passerelle par défaut",
+  "« Autoriser le transit de passerelle » sur le hub, « Utiliser la passerelle distante » sur les spokes"
  ],
  "ans": 3,
  "expl": "<p>Le réseau qui <b>possède</b> la passerelle (le hub) autorise le <b>transit de passerelle</b>. Les réseaux qui veulent l'<b>utiliser</b> (les spokes) activent <b>Utiliser la passerelle distante</b> (et ne doivent pas avoir leur propre passerelle). Le site local apprend alors les plages des spokes (via BGP ou en les ajoutant à la configuration locale).</p>",
@@ -324,10 +324,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>VNet-Spoke1 et VNet-Spoke2 sont appairés à VNet-Hub, qui contient une appliance virtuelle réseau (NVA) à l'adresse 10.0.1.4. Vous voulez que Spoke1 et Spoke2 communiquent en passant par la NVA.</p><p>Quelle combinaison de configuration est nécessaire ?</p>",
  "opts": [
-  "Des tables de routage dans les spokes avec le saut suivant Appliance virtuelle 10.0.1.4, « Autoriser le trafic transféré » sur les appairages, et le transfert IP sur l'interface réseau de la NVA",
-  "Un appairage transitif activé sur le hub",
-  "Une passerelle NAT dans le hub",
-  "Un équilibreur de charge public dans chaque spoke"
+  "Des UDR vers 10.0.1.4 dans les spokes, le trafic transféré autorisé et le transfert IP sur la NVA",
+  "Un appairage transitif activé sur le hub, avec le transit de passerelle sur les deux spokes",
+  "Une passerelle NAT dans le hub, sur le sous-réseau de la NVA, et un appairage direct entre les spokes",
+  "Un équilibreur de charge public dans chaque spoke, avec la NVA dans le pool principal"
  ],
  "ans": 0,
  "expl": "<ul><li>Des <b>itinéraires définis par l'utilisateur</b> dans chaque spoke envoient le trafic de l'autre spoke vers la NVA.</li><li><b>Autoriser le trafic transféré</b> sur les appairages accepte le trafic qui ne provient pas directement du réseau appairé.</li><li>Le <b>transfert IP</b> sur l'interface réseau de la NVA (et dans son système) lui permet de router des paquets qui ne lui sont pas destinés.</li></ul><p>« Appairage transitif » n'existe pas.</p>",
@@ -363,10 +363,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>VNet1 est en France Central et VNet2 en Japan East. Les VM des deux réseaux doivent communiquer par le réseau Microsoft, avec une latence faible, sans passerelle.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Une passerelle VPN de réseau à réseau",
+  "Une connexion VPN de réseau à réseau",
   "Un appairage de réseaux virtuels mondial",
-  "Une passerelle NAT",
-  "Un équilibreur de charge"
+  "Une passerelle NAT dans chacun des deux réseaux",
+  "Un équilibreur de charge interrégional"
  ],
  "ans": 1,
  "expl": "<p>L'<b>appairage mondial</b> relie des réseaux virtuels de <b>régions différentes</b> par le réseau principal de Microsoft, sans passerelle ni chiffrement IPsec, avec une faible latence. Le trafic entre régions est facturé (entrée et sortie).</p><p>Un VPN de réseau à réseau fonctionnerait aussi, mais avec une passerelle, une bande passante limitée et plus de latence.</p>",
@@ -428,9 +428,9 @@ AZ.questions.push(
  "stem": "<p>VNet1 est dans l'abonnement Sub1 (locataire Contoso) et VNet2 dans l'abonnement Sub2 (locataire Fabrikam).</p><p>Pouvez-vous appairer ces deux réseaux virtuels ?</p>",
  "opts": [
   "Non, l'appairage n'est possible que dans le même locataire",
-  "Oui, mais seulement avec une passerelle VPN",
+  "Oui, mais seulement avec une passerelle VPN de chaque côté",
   "Non, l'appairage n'est possible que dans le même abonnement",
-  "Oui, l'appairage entre abonnements et entre locataires est pris en charge, avec les autorisations nécessaires des deux côtés"
+  "Oui, avec les autorisations nécessaires dans les deux locataires"
  ],
  "ans": 3,
  "expl": "<p>L'appairage fonctionne entre <b>abonnements</b> et même entre <b>locataires</b> Microsoft Entra. L'administrateur de chaque côté doit avoir le droit de créer le lien d'appairage (par exemple Contributeur de réseau), souvent avec un compte invité dans l'autre locataire.</p>",
@@ -564,9 +564,9 @@ AZ.questions.push(
  "stem": "<p>Votre passerelle VPN doit relier VNet1 à 3 sites locaux en même temps, et accepter des connexions point à site.</p><p>Quel type de VPN devez-vous choisir pour la passerelle ?</p>",
  "opts": [
   "Basé sur les routes (route-based)",
-  "ExpressRoute",
-  "Statique",
-  "Basé sur les stratégies (policy-based)"
+  "Basé sur les stratégies (policy-based)",
+  "Statique, avec une adresse IP fixe",
+  "Actif-passif avec un seul tunnel"
  ],
  "ans": 0,
  "expl": "<p>Le type <b>basé sur les routes</b> prend en charge plusieurs connexions site à site, le point à site, le réseau à réseau, BGP et la coexistence avec ExpressRoute. C'est le choix par défaut.</p><p>Le type <b>basé sur les stratégies</b> ne permet qu'un seul tunnel site à site (SKU De base) et pas de point à site. Il est réservé à d'anciens périphériques.</p>",
@@ -596,10 +596,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Des employés en télétravail doivent se connecter à VNet1 depuis leur ordinateur portable, depuis n'importe où, avec leur compte Microsoft Entra.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "ExpressRoute",
-  "Un VPN point à site sur la passerelle VPN, avec le type de tunnel OpenVPN et l'authentification Microsoft Entra ID",
-  "Un appairage de réseaux virtuels",
-  "Un VPN site à site vers chaque domicile"
+  "ExpressRoute avec un circuit par domicile et le peering Microsoft",
+  "Un VPN point à site OpenVPN avec l'authentification Entra ID",
+  "Un appairage entre VNet1 et le réseau domestique de chaque utilisateur",
+  "Un VPN site à site vers chaque domicile, avec une clé partagée"
  ],
  "ans": 1,
  "expl": "<p>Le <b>VPN point à site</b> relie un ordinateur à un réseau virtuel. On définit un <b>pool d'adresses clients</b>, le type de tunnel et l'authentification. L'authentification <b>Microsoft Entra ID</b> exige le type de tunnel <b>OpenVPN</b> et le client Azure VPN.</p><p>Le site à site relie des réseaux (un périphérique VPN par site). ExpressRoute est un circuit privé d'entreprise.</p>",
@@ -732,10 +732,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Votre site local est relié à VNet1 par ExpressRoute. Vous voulez une connexion de secours automatique si le circuit tombe.</p><p>Que devez-vous ajouter ?</p>",
  "opts": [
-  "Un équilibreur de charge",
-  "Un second appairage",
-  "Une passerelle NAT",
-  "Une passerelle VPN site à site dans le même réseau virtuel (coexistence ExpressRoute et VPN)"
+  "Un équilibreur de charge entre le circuit et VNet1",
+  "Un second appairage privé configuré sur le même circuit",
+  "Une passerelle NAT sur le GatewaySubnet de VNet1",
+  "Une passerelle VPN site à site dans VNet1 (coexistence)"
  ],
  "ans": 3,
  "expl": "<p>Une passerelle <b>VPN</b> et une passerelle <b>ExpressRoute</b> peuvent coexister dans le même GatewaySubnet. Le VPN site à site sert de chemin de <b>secours</b> : ExpressRoute est préféré tant qu'il est disponible.</p>",
@@ -764,10 +764,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>La passerelle VPN de VNet1 doit rester disponible même si une instance de passerelle est en maintenance, avec deux tunnels actifs vers le site local.</p><p>Quelle configuration devez-vous activer ?</p>",
  "opts": [
-  "Le mode actif-actif",
-  "Une seconde passerelle dans un autre GatewaySubnet du même réseau virtuel",
-  "Le SKU De base",
-  "Le mode basé sur les stratégies"
+  "Le mode actif-actif de la passerelle",
+  "Une seconde passerelle dans le même VNet",
+  "Le SKU De base avec deux connexions",
+  "Le mode basé sur les stratégies (policy)"
  ],
  "ans": 0,
  "expl": "<p>Par défaut, une passerelle VPN fonctionne en <b>actif-passif</b> : une instance de secours prend le relais en cas de problème, avec une courte interruption. En <b>actif-actif</b>, les deux instances ont chacune une adresse IP publique et établissent chacune un tunnel : pas d'interruption lors d'une maintenance.</p><p>Un réseau virtuel ne peut avoir qu'un GatewaySubnet et une seule passerelle VPN.</p>",
@@ -800,10 +800,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>La connexion VPN site à site entre VNet1 et le site de Nantes affiche l'état <b>Non connecté</b>. Le pare-feu local est bien configuré.</p><p>Quel outil devez-vous utiliser pour diagnostiquer la connexion ?</p>",
  "opts": [
-  "Azure Advisor",
+  "Azure Advisor, recommandations de fiabilité",
   "Network Watcher : Résolution des problèmes de VPN",
-  "Les diagnostics de démarrage",
-  "L'analyse des coûts"
+  "Les diagnostics de démarrage de la passerelle",
+  "Le journal d'activité de la passerelle VPN"
  ],
  "ans": 1,
  "expl": "<p>La <b>résolution des problèmes de VPN</b> de Network Watcher analyse la passerelle et la connexion, et produit un rapport (journaux IKE, erreurs de clé partagée ou de paramètres de stratégie). Les causes fréquentes : clé partagée différente, mauvaise adresse IP publique ou plages d'adresses dans la passerelle de réseau local.</p>",
@@ -835,10 +835,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Le périphérique VPN du site de Rennes change d'adresse IP publique.</p><p>Quelle ressource Azure devez-vous mettre à jour ?</p>",
  "opts": [
-  "La table de routage de VNet1",
-  "Le GatewaySubnet",
+  "La table de routage associée au GatewaySubnet",
+  "Le GatewaySubnet de VNet1",
   "La passerelle de réseau local de Rennes",
-  "La passerelle de réseau virtuel"
+  "La passerelle de réseau virtuel de VNet1"
  ],
  "ans": 2,
  "expl": "<p>La <b>passerelle de réseau local</b> contient l'adresse IP publique (ou le FQDN) du périphérique local et ses plages d'adresses. On la met à jour quand l'un ou l'autre change. On peut aussi utiliser un FQDN pour un site à adresse dynamique.</p>",
@@ -871,10 +871,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Le site local de Toulouse ajoute un nouveau réseau 192.168.50.0/24. Les VM de VNet1 ne peuvent pas le joindre par le VPN site à site existant (sans BGP).</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Créer un appairage",
+  "Créer un appairage vers le réseau 192.168.50.0/24",
   "Ajouter 192.168.50.0/24 à l'espace d'adressage de VNet1",
-  "Changer le SKU de la passerelle",
-  "Ajouter 192.168.50.0/24 aux préfixes d'adresses de la passerelle de réseau local de Toulouse"
+  "Passer la passerelle VPN à un SKU supérieur, avec BGP",
+  "Ajouter 192.168.50.0/24 à la passerelle de réseau local"
  ],
  "ans": 3,
  "expl": "<p>Sans BGP, Azure ne connaît les réseaux du site local que par la liste de <b>préfixes</b> de la passerelle de réseau local. Il faut y ajouter le nouveau réseau. Avec BGP, il serait appris automatiquement.</p><p>Ajouter cette plage à VNet1 créerait un chevauchement.</p>",
@@ -904,9 +904,9 @@ AZ.questions.push(
  "stem": "<p>Vous créez une table de routage RT1 avec l'itinéraire 0.0.0.0/0, saut suivant <b>Appliance virtuelle</b> 10.0.2.4. Vous associez RT1 à Subnet1.</p><p>Que se passe-t-il pour le trafic Internet sortant des VM de Subnet1 ?</p>",
  "opts": [
   "Il est envoyé vers l'appliance 10.0.2.4",
-  "Il sort directement vers Internet",
+  "Il sort directement vers Internet par l'itinéraire système",
   "Il est envoyé vers la passerelle VPN",
-  "Il est bloqué"
+  "Il est abandonné, faute d'itinéraire"
  ],
  "ans": 0,
  "expl": "<p>Un itinéraire défini par l'utilisateur remplace l'itinéraire système par défaut 0.0.0.0/0 → Internet. Tout trafic qui ne correspond pas à un itinéraire plus précis (comme celui du réseau virtuel) part vers l'<b>appliance</b>, souvent un pare-feu, qui doit avoir le transfert IP activé.</p>",
@@ -1033,10 +1033,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>VM1 de Subnet1 n'arrive pas à joindre 10.20.1.10. Vous voulez savoir quel itinéraire est réellement appliqué à son interface réseau, en combinant les itinéraires système, BGP et définis par l'utilisateur.</p><p>Que devez-vous consulter ?</p>",
  "opts": [
-  "Les métriques de VM1",
-  "Le journal d'activité",
-  "Les itinéraires effectifs de l'interface réseau de VM1 (ou Network Watcher : Tronçon suivant)",
-  "Les règles de sécurité effectives uniquement"
+  "Les métriques réseau de VM1 dans Azure Monitor",
+  "Le journal d'activité de la table de routage associée",
+  "Les itinéraires effectifs de l'interface de VM1",
+  "Les règles de sécurité effectives de VM1"
  ],
  "ans": 2,
  "expl": "<p>Les <b>itinéraires effectifs</b> d'une interface réseau listent tous les itinéraires appliqués et indiquent lesquels sont actifs. <b>Tronçon suivant</b> (Next hop) de Network Watcher donne directement le saut suivant et la table de routage utilisés pour une destination précise.</p><p>Les règles de sécurité effectives concernent les NSG, pas le routage.</p>",
@@ -1069,9 +1069,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une table de routage contient deux itinéraires : 10.0.0.0/8 → Appliance virtuelle 10.1.0.4, et 10.2.0.0/16 → Passerelle de réseau virtuel.</p><p>Par où part un paquet vers 10.2.5.20 ?</p>",
  "opts": [
-  "Vers l'appliance 10.1.0.4",
-  "Vers Internet",
-  "Il est abandonné",
+  "Vers l'appliance virtuelle 10.1.0.4",
+  "Vers Internet, par l'itinéraire système",
+  "Il est abandonné (itinéraires en conflit)",
   "Vers la passerelle de réseau virtuel"
  ],
  "ans": 3,
@@ -1104,10 +1104,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Les VM de Subnet-App doivent toujours passer par le Pare-feu Azure, même pour les réseaux du site local appris par BGP depuis la passerelle VPN.</p><p>Quel réglage de la table de routage devez-vous configurer ?</p>",
  "opts": [
-  "Désactiver la propagation des itinéraires de passerelle (Propager les itinéraires de passerelle : Non)",
+  "Propager les itinéraires de passerelle : Non",
   "Activer la mise en réseau accélérée",
-  "Augmenter la priorité des itinéraires",
-  "Activer le transfert IP"
+  "Augmenter la priorité des itinéraires UDR",
+  "Activer le transfert IP sur la table"
  ],
  "ans": 0,
  "expl": "<p>Avec <b>Propager les itinéraires de passerelle</b> à Non, les itinéraires appris par BGP (et les plages du site local) ne sont pas ajoutés aux sous-réseaux associés à la table. Seuls vos itinéraires (par exemple 0.0.0.0/0 et les plages locales vers le pare-feu) s'appliquent.</p><p>Les itinéraires n'ont pas de priorité numérique.</p>",
@@ -1136,10 +1136,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous déployez une VM Linux qui sert de routeur entre deux sous-réseaux. Les paquets qui ne lui sont pas destinés sont abandonnés par Azure.</p><p>Que devez-vous activer dans Azure ?</p>",
  "opts": [
-  "La mise en réseau accélérée",
+  "La mise en réseau accélérée sur l'interface",
   "Le transfert IP sur l'interface réseau de la VM",
-  "Un groupe de sécurité réseau",
-  "Une adresse IP publique"
+  "Un groupe de sécurité réseau sur chaque sous-réseau",
+  "Une adresse IP publique sur l'interface de la VM"
  ],
  "ans": 1,
  "expl": "<p>Par défaut, Azure abandonne les paquets dont l'adresse de destination n'est pas celle de l'interface réseau. Le <b>transfert IP</b> sur l'interface réseau lève cette restriction. Il faut aussi activer le routage dans le système d'exploitation (par exemple <code>net.ipv4.ip_forward=1</code>).</p>",
@@ -1229,8 +1229,8 @@ AZ.questions.push(
  "opts": [
   "Non, car un sous-réseau ne peut pas avoir de NSG",
   "Oui, car le NSG de l'interface réseau est ignoré",
-  "Non, car le trafic entrant doit être autorisé par les deux NSG",
-  "Oui, car le NSG du sous-réseau l'autorise"
+  "Non, car le trafic doit être autorisé par les deux NSG",
+  "Oui, car le NSG du sous-réseau autorise le port 3389"
  ],
  "ans": 2,
  "expl": "<p>Pour le trafic <b>entrant</b>, Azure évalue d'abord le NSG du <b>sous-réseau</b>, puis celui de l'<b>interface réseau</b>. Le trafic doit être autorisé par <b>les deux</b>. NSG-NIC n'a que les règles par défaut, dont <b>DenyAllInBound</b> (65500) qui refuse le RDP depuis Internet.</p><p>Pour le trafic sortant, l'ordre est inversé : interface réseau puis sous-réseau.</p>",
@@ -1355,10 +1355,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez autoriser les VM web à joindre les VM de base de données sur le port 1433, sans utiliser d'adresses IP dans les règles. Les deux groupes de VM sont dans le même réseau virtuel et leurs adresses changent souvent.</p><p>Que devez-vous utiliser ?</p>",
  "opts": [
-  "Des itinéraires définis par l'utilisateur",
-  "Des étiquettes de service",
-  "Des étiquettes de ressource Azure",
-  "Des groupes de sécurité d'application (ASG-Web et ASG-SQL) comme source et destination de la règle NSG"
+  "Des itinéraires définis par l'utilisateur pour chaque groupe",
+  "Des étiquettes de service personnalisées nommées Web et SQL",
+  "Des étiquettes de ressource Azure (Rôle=Web, Rôle=SQL)",
+  "Des groupes de sécurité d'application en source et destination"
  ],
  "ans": 3,
  "expl": "<p>Un <b>groupe de sécurité d'application</b> regroupe des interfaces réseau. On écrit la règle avec les ASG comme source et destination (« ASG-Web vers ASG-SQL sur 1433 ») ; ajouter une VM au groupe suffit, sans toucher aux règles. Les interfaces réseau d'un ASG doivent être dans le même réseau virtuel.</p><p>Les étiquettes de service représentent des services Azure (Storage, Sql…), pas vos VM.</p>",
@@ -1392,10 +1392,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Les VM de Subnet-App doivent pouvoir joindre tous les comptes de stockage Azure de la région France Central, et rien d'autre sur Internet.</p><p>Comment devez-vous écrire les règles sortantes du NSG ?</p>",
  "opts": [
-  "Autoriser la destination de l'étiquette de service Storage.FranceCentral, puis refuser la destination Internet avec une priorité moins élevée",
-  "Autoriser 0.0.0.0/0 vers le port 443",
-  "Autoriser la destination VirtualNetwork uniquement",
-  "Refuser l'étiquette Storage"
+  "Autoriser Storage.FranceCentral, puis refuser Internet en priorité plus basse",
+  "Autoriser 0.0.0.0/0 vers le port 443 seulement, puis refuser tout le reste",
+  "Autoriser la destination VirtualNetwork uniquement, puis refuser Internet",
+  "Refuser l'étiquette Storage, puis autoriser Internet en priorité plus basse"
  ],
  "ans": 0,
  "expl": "<p>Une <b>étiquette de service</b> représente les plages d'adresses d'un service Azure, tenues à jour par Microsoft. <b>Storage.FranceCentral</b> limite à la région. On ajoute ensuite une règle qui <b>refuse Internet</b> avec un numéro de priorité plus grand, pour bloquer le reste (la règle par défaut AllowInternetOutBound l'autoriserait sinon).</p>",
@@ -1426,7 +1426,7 @@ AZ.questions.push(
  "opts": [
   "Moniteur de connexion",
   "Vérification du flux IP",
-  "Tronçon suivant",
+  "Tronçon suivant (Next hop)",
   "Capture de paquets"
  ],
  "ans": 1,
@@ -1459,10 +1459,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>VM5 n'arrive pas à joindre un serveur du site local. Vous voulez tester la connexion TCP de bout en bout et voir à quel saut elle échoue (NSG, routage, ou serveur qui ne répond pas).</p><p>Quel outil devez-vous utiliser ?</p>",
  "opts": [
-  "Le journal d'activité",
-  "Vérification du flux IP uniquement",
-  "Network Watcher : Résolution des problèmes de connexion",
-  "Azure Advisor"
+  "Le journal d'activité du NSG",
+  "La vérification du flux IP seule",
+  "Résolution des problèmes de connexion",
+  "Azure Advisor, onglet Fiabilité"
  ],
  "ans": 2,
  "expl": "<p>La <b>résolution des problèmes de connexion</b> (Connection troubleshoot) teste une connexion TCP ou ICMP depuis une VM vers une destination, affiche les sauts, la latence et la cause probable d'un échec (règle de NSG, itinéraire, destination injoignable).</p>",
@@ -1498,10 +1498,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez enregistrer tout le trafic IP accepté et refusé dans VNet1 pour une analyse de sécurité, et l'analyser avec Traffic Analytics.</p><p>Que devez-vous activer ?</p>",
  "opts": [
-  "Les diagnostics de démarrage",
-  "Le journal d'activité",
-  "Une capture de paquets permanente",
-  "Les journaux de flux de réseau virtuel (VNet flow logs) de Network Watcher, vers un compte de stockage, avec Traffic Analytics"
+  "Les diagnostics de démarrage de chaque VM, vers un compte de stockage",
+  "Le journal d'activité de VNet1, exporté vers Log Analytics",
+  "Une capture de paquets permanente sur chaque VM de VNet1",
+  "Les journaux de flux de réseau virtuel, avec Traffic Analytics"
  ],
  "ans": 3,
  "expl": "<p>Les <b>journaux de flux</b> enregistrent les flux IP (source, destination, ports, décision). Les journaux de flux de <b>réseau virtuel</b> remplacent les journaux de flux de NSG (en cours de retrait). Ils sont écrits dans un compte de stockage, et <b>Traffic Analytics</b> les analyse dans Log Analytics.</p>",
@@ -1538,8 +1538,8 @@ AZ.questions.push(
  "stem": "<p>Les administrateurs doivent se connecter en RDP et SSH aux VM de VNet1 depuis le portail Azure, en HTTPS, sans adresse IP publique sur les VM.</p><p>Que devez-vous déployer ?</p>",
  "opts": [
   "Azure Bastion dans AzureBastionSubnet",
-  "Une passerelle NAT",
-  "Un équilibreur de charge public",
+  "Une passerelle NAT sur le sous-réseau",
+  "Un équilibreur de charge public Standard",
   "Une adresse IP publique sur chaque VM"
  ],
  "ans": 0,
@@ -1637,8 +1637,8 @@ AZ.questions.push(
  "stem": "<p>Bastion est déployé dans VNet-Hub. VNet-Spoke est appairé à VNet-Hub.</p><p>Pouvez-vous utiliser ce Bastion pour vous connecter aux VM de VNet-Spoke ?</p>",
  "opts": [
   "Non, il faut un Bastion par réseau virtuel",
-  "Oui, Bastion fonctionne avec les réseaux virtuels appairés",
-  "Non, sauf avec une passerelle VPN",
+  "Oui, Bastion fonctionne avec les VNets appairés",
+  "Non, sauf avec une passerelle VPN dans le hub",
   "Oui, mais seulement avec le SKU Premium"
  ],
  "ans": 1,
@@ -1668,10 +1668,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Les VM de Subnet-Private n'ont pas d'adresse IP publique. Elles doivent accéder à Internet en sortie avec une ou plusieurs adresses IP publiques fixes, que des partenaires mettront en liste d'autorisation. Aucun trafic entrant ne doit être possible.</p><p>Que devez-vous déployer ?</p>",
  "opts": [
-  "Une passerelle VPN",
-  "Azure Bastion",
+  "Une passerelle VPN site à site vers les partenaires",
+  "Azure Bastion avec une adresse IP publique Standard",
   "Une passerelle NAT associée à Subnet-Private",
-  "Un équilibreur de charge public avec des règles entrantes"
+  "Un équilibreur public avec des règles entrantes"
  ],
  "ans": 2,
  "expl": "<p>La <b>passerelle NAT</b> fournit la connectivité <b>sortante</b> d'un ou plusieurs sous-réseaux par des adresses IP publiques (ou un préfixe) <b>Standard</b> statiques. Elle n'accepte pas de connexions entrantes non sollicitées. C'est la méthode recommandée pour la sortie Internet.</p>",
@@ -1747,7 +1747,7 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous créez une adresse IP publique pour un équilibreur de charge Standard.</p><p>Quelle affirmation est vraie ?</p>",
  "opts": [
-  "Une adresse Standard est ouverte à tout le trafic entrant par défaut",
+  "Une adresse Standard accepte tout le trafic entrant par défaut",
   "Une adresse Standard ne peut être utilisée qu'avec une VM",
   "Une adresse IP publique Standard peut être dynamique",
   "Une adresse IP publique Standard est toujours statique"
@@ -1784,10 +1784,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une VM doit garder la même adresse IP <b>privée</b> même après un arrêt avec libération.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Une affectation d'adresse privée Statique dans la configuration IP de l'interface réseau",
-  "Une adresse IP publique statique",
-  "Une réservation DHCP sur un serveur DNS",
-  "Une adresse IP fixe dans les paramètres réseau de Windows"
+  "Une adresse privée Statique sur l'interface réseau",
+  "Une adresse IP publique statique sur la VM",
+  "Une réservation DHCP sur un serveur DNS du VNet",
+  "Une adresse IP fixe dans les paramètres de Windows"
  ],
  "ans": 0,
  "expl": "<p>Dans la configuration IP de l'<b>interface réseau</b>, l'affectation <b>Statique</b> réserve l'adresse privée pour l'interface, même après libération de la VM. Azure continue de la donner par DHCP.</p><p>Il ne faut <b>jamais</b> configurer l'adresse IP manuellement dans le système d'exploitation : on risque de perdre la connectivité.</p>",
@@ -1817,9 +1817,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez fournir à un partenaire une plage contiguë de 16 adresses IP publiques que vous utiliserez progressivement pour vos ressources.</p><p>Que devez-vous créer ?</p>",
  "opts": [
-  "Une passerelle NAT /28",
+  "Une passerelle NAT avec une plage /28",
   "Un préfixe d'adresse IP publique /28",
-  "Un sous-réseau /28",
+  "Un sous-réseau /28 dans un VNet public",
   "16 adresses IP publiques dynamiques"
  ],
  "ans": 1,
@@ -1846,10 +1846,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez héberger la zone DNS publique contoso.com dans Azure.</p><p>Que devez-vous faire après avoir créé la zone dans Azure DNS ?</p>",
  "opts": [
-  "Créer un lien de réseau virtuel",
-  "Créer un enregistrement PTR",
-  "Mettre à jour les enregistrements NS chez le registraire du domaine avec les serveurs de noms Azure de la zone",
-  "Activer l'inscription automatique"
+  "Créer un lien de réseau virtuel vers chaque VNet",
+  "Créer un enregistrement PTR pour la zone",
+  "Mettre à jour les NS chez le registraire",
+  "Activer l'inscription automatique sur la zone"
  ],
  "ans": 2,
  "expl": "<p>Pour que la zone Azure fasse autorité, il faut <b>déléguer</b> le domaine : chez le registraire, on remplace les serveurs de noms par les 4 serveurs <b>NS</b> attribués à la zone Azure (ns1-xx.azure-dns.com, etc.).</p><p>Les liens de réseau virtuel et l'inscription automatique concernent les zones <b>privées</b>.</p>",
@@ -1882,10 +1882,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Les VM de VNet1 doivent se trouver par leur nom, sous le suffixe <b>corp.contoso.local</b>, avec des enregistrements créés et supprimés automatiquement avec les VM.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Un enregistrement A par VM dans le fichier hosts",
-  "Une zone DNS publique contoso.com",
-  "Un serveur DNS personnalisé sur chaque VM",
-  "Une zone DNS privée corp.contoso.local liée à VNet1 avec l'inscription automatique activée"
+  "Un enregistrement A par VM, tenu à jour dans le fichier hosts",
+  "Une zone DNS publique contoso.com avec un enregistrement par VM",
+  "Un serveur DNS personnalisé sur chaque VM, avec des redirecteurs",
+  "Une zone DNS privée liée à VNet1, inscription automatique activée"
  ],
  "ans": 3,
  "expl": "<p>Une <b>zone DNS privée</b> n'est résolue que dans les réseaux virtuels liés. Avec l'<b>inscription automatique</b> sur le lien, Azure crée un enregistrement A pour chaque VM du réseau et le supprime quand la VM est supprimée.</p><p>Un réseau virtuel ne peut avoir l'inscription automatique que sur <b>une seule</b> zone privée, mais peut être lié à plusieurs zones pour la résolution.</p>",
@@ -1957,10 +1957,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous configurez VNet1 pour utiliser vos propres serveurs DNS (10.0.0.4 et 10.0.0.5) à la place du DNS fourni par Azure. Les VM existantes continuent d'utiliser l'ancien serveur.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Redémarrer les VM (ou renouveler le bail DHCP) pour qu'elles reçoivent les nouveaux serveurs DNS",
-  "Modifier le fichier hosts de chaque VM",
-  "Créer une zone DNS privée",
-  "Supprimer et recréer les VM"
+  "Redémarrer les VM (ou renouveler le bail DHCP)",
+  "Ajouter les serveurs au fichier hosts de chaque VM",
+  "Créer une zone DNS privée liée au réseau virtuel",
+  "Supprimer et recréer les VM dans le réseau virtuel"
  ],
  "ans": 0,
  "expl": "<p>Les serveurs DNS sont transmis par <b>DHCP</b>. Les VM existantes ne prennent en compte le changement qu'après un <b>redémarrage</b> ou un renouvellement de bail (<code>ipconfig /renew</code>).</p><p>On peut aussi définir des serveurs DNS au niveau d'une interface réseau, ce qui prime sur ceux du réseau virtuel.</p>",
@@ -2025,10 +2025,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Les serveurs DNS du site local doivent résoudre les noms d'une zone DNS privée Azure (privatelink.blob.core.windows.net), et les VM Azure doivent résoudre le domaine AD local, sans déployer de VM DNS.</p><p>Que devez-vous déployer ?</p>",
  "opts": [
-  "Azure Bastion",
-  "Azure DNS Private Resolver avec un point de terminaison entrant et un point de terminaison sortant (et des règles de transfert)",
-  "Une passerelle NAT",
-  "Une zone DNS publique"
+  "Azure Bastion avec un sous-réseau dédié",
+  "Azure DNS Private Resolver (entrant et sortant)",
+  "Une passerelle NAT et deux zones DNS privées",
+  "Une zone DNS publique pour le domaine AD local"
  ],
  "ans": 1,
  "expl": "<p><b>Azure DNS Private Resolver</b> est un service managé. Son <b>point de terminaison entrant</b> reçoit les requêtes du site local (via un redirecteur conditionnel) et les résout avec les zones privées liées. Son <b>point de terminaison sortant</b>, avec un <b>jeu de règles de transfert</b>, envoie les requêtes du domaine local vers les DNS locaux.</p>",
@@ -2058,10 +2058,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Le domaine racine contoso.com, hébergé dans Azure DNS, doit pointer vers le point de terminaison d'Azure Front Door. Un CNAME n'est pas autorisé à la racine d'une zone.</p><p>Quel type d'enregistrement devez-vous utiliser ?</p>",
  "opts": [
-  "Un enregistrement TXT",
-  "Un enregistrement MX",
-  "Un enregistrement d'alias (alias record) vers la ressource Front Door",
-  "Un enregistrement CNAME à la racine"
+  "Un enregistrement TXT à la racine de la zone",
+  "Un enregistrement MX vers le point de terminaison",
+  "Un enregistrement d'alias vers Front Door",
+  "Un enregistrement CNAME à la racine (@)"
  ],
  "ans": 2,
  "expl": "<p>Les <b>jeux d'enregistrements d'alias</b> d'Azure DNS pointent vers une ressource Azure (adresse IP publique, profil Traffic Manager, point de terminaison Front Door ou CDN) et peuvent être utilisés à la <b>racine</b> de la zone. Ils suivent automatiquement les changements d'adresse de la ressource.</p>",

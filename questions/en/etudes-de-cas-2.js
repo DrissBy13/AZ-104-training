@@ -178,10 +178,10 @@ AZ.cases.push(
    "type": "single",
    "stem": "<p>You need to meet the network access requirement for stlitwaredata.</p><p>What should you configure?</p>",
    "opts": [
-    "An NSG on Subnet-Web that blocks storage",
-    "A NAT gateway on Subnet-Data",
-    "A private endpoint in Subnet-Data and disabling public access",
-    "A Microsoft.Storage service endpoint on Subnet-Data and a virtual network rule in stlitwaredata's firewall"
+    "An NSG on Subnet-Web that blocks the Storage tag outbound",
+    "A NAT gateway on Subnet-Data, allowed in the account firewall",
+    "A private endpoint in Subnet-Data and public access disabled",
+    "A service endpoint on Subnet-Data and a virtual network rule"
    ],
    "ans": 3,
    "expl": "<p>The requirement asks to <b>keep the public address</b>: a <b>service endpoint</b> with a virtual network rule meets the need, at no cost. A private endpoint would technically work, but this option includes disabling public access, and it costs more.</p>",
@@ -547,10 +547,10 @@ AZ.cases.push(
    "type": "single",
    "stem": "<p>You need to meet the requirement that traffic between VNet-App and VNet-Data go through FW1.</p><p>What should you configure in VNet-App?</p>",
    "opts": [
-    "A route table with 10.2.0.0/16 → Virtual appliance 10.0.1.4, associated with VNet-App's subnets",
-    "A direct peering between VNet-App and VNet-Data",
-    "A NAT gateway",
-    "An NSG that allows 10.2.0.0/16"
+    "A 10.2.0.0/16 → 10.0.1.4 route table on the subnets",
+    "A direct peering between VNet-App and VNet-Data, without the hub",
+    "A NAT gateway in VNet-App, in front of the FW1 firewall",
+    "An NSG that only allows 10.2.0.0/16 through FW1"
    ],
    "ans": 0,
    "expl": "<p>A <b>user-defined route</b> sends traffic bound for VNet-Data to FW1 (same in VNet-Data toward 10.1.0.0/16), with the matching rules in FW1. A direct peering would bypass the firewall.</p>",
@@ -577,7 +577,7 @@ AZ.cases.push(
    "stem": "<p>You need to meet the VM administration requirement.</p><p>Which <b>two</b> actions should you perform?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
    "opts": [
     "Create a NAT gateway in VNet-Hub",
-    "Deploy Azure Bastion in an AzureBastionSubnet subnet in VNet-Hub",
+    "Deploy Azure Bastion in VNet-Hub",
     "Remove the VMs' public IP addresses",
     "Open port 3389 from the internet in the NSGs"
    ],
@@ -612,10 +612,10 @@ AZ.cases.push(
    "type": "single",
    "stem": "<p>You need to meet the publishing requirement for VM-WEB1 and VM-WEB2.</p><p>What should you deploy?</p>",
    "opts": [
-    "A Standard public load balancer",
-    "Application Gateway v2 with WAF in a dedicated subnet of VNet-App",
-    "A NAT gateway",
-    "Traffic Manager"
+    "A Standard public load balancer in VNet-App",
+    "Application Gateway v2 with WAF, dedicated subnet",
+    "A NAT gateway and an NSG on the web subnet",
+    "Traffic Manager with two external endpoints"
    ],
    "ans": 1,
    "expl": "<p>A <b>WAF</b> requires a layer 7 service: <b>Application Gateway</b> (WAF v2 tier) in a dedicated subnet, with VM-WEB1 and VM-WEB2 in the pool. A load balancer and Traffic Manager have no WAF.</p>",
@@ -649,10 +649,10 @@ AZ.cases.push(
    "type": "single",
    "stem": "<p>You need to meet the name resolution requirement.</p><p>What should you configure?</p>",
    "opts": [
-    "A hosts file on each VM",
-    "A northwind.internal public DNS zone",
-    "A northwind.internal private DNS zone linked to VNet-App and VNet-Data with autoregistration",
-    "A CNAME record per VM in public Azure DNS"
+    "A hosts file kept up to date on each VM in both networks",
+    "A northwind.internal public DNS zone, with delegation",
+    "A northwind.internal private zone linked to both VNets (auto)",
+    "A CNAME record per VM in a public Azure DNS zone"
    ],
    "ans": 2,
    "expl": "<p>A <b>private DNS zone</b> linked to the networks, with <b>autoregistration</b>, creates and maintains the VMs' records. A private zone is global: it can be linked to networks in France Central and West Europe.</p>",

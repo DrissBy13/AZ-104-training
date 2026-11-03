@@ -145,9 +145,9 @@ AZ.cases.push(
    "stem": "<p>Vous devez répondre à l'exigence d'accès à stfabdocs depuis le site de Lyon.</p><p>Que devez-vous configurer ?</p>",
    "opts": [
     "Un point de terminaison de service Microsoft.Storage sur Subnet-App",
-    "Une règle de pare-feu de stfabdocs avec l'adresse publique du site de Lyon",
-    "Un peering entre VNet-Prod et VNet-Dev",
-    "Un point de terminaison privé pour stfabdocs dans VNet-Prod et une zone DNS privée"
+    "Une règle de pare-feu de stfabdocs avec l'adresse du site de Lyon",
+    "Un peering entre VNet-Prod et VNet-Dev, avec le transit de passerelle",
+    "Un point de terminaison privé dans VNet-Prod et une zone DNS privée"
    ],
    "ans": 3,
    "expl": "<p>Le site de Lyon est relié à VNet-Prod par le VPN. Un <b>point de terminaison privé</b> pour stfabdocs dans VNet-Prod lui donne une adresse privée joignable par le tunnel. La <b>zone DNS privée</b> privatelink.blob.core.windows.net (et la résolution côté site) fait pointer le nom vers cette adresse. On peut alors désactiver l'accès public.</p><p>Un point de terminaison de service ne sert pas au trafic du site local ; une règle IP passerait par Internet.</p>",

@@ -115,10 +115,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>VNet1 is peered with VNet2. VNet2 is peered with VNet3. The address spaces don't overlap. VM1 (VNet1) can't reach VM3 (VNet3).</p><p>You need to enable communication between VM1 and VM3. The solution must minimize administrative effort.</p><p>What should you do?</p>",
  "opts": [
-  "Enable gateway transit on the peerings",
+  "Enable gateway transit on both peerings",
   "Add a route to VNet3 in a route table of VNet1",
   "Create a peering between VNet1 and VNet3",
-  "Move VM3 to VNet2"
+  "Move VM3 to VNet2 and delete VNet3"
  ],
  "ans": 2,
  "expl": "<p>Virtual network peering is <b>not transitive</b>: VNet1 ↔ VNet2 and VNet2 ↔ VNet3 don't give VNet1 ↔ VNet3. VNet2 doesn't relay traffic on its own.</p><p>The simplest solution is a <b>direct peering</b> between VNet1 and VNet3.</p><ul><li>A <b>route</b> to VNet3 would have no effect without a routing device in VNet2 (virtual appliance or gateway), to deploy and manage.</li><li><b>Gateway transit</b> is for sharing a VPN gateway, not for relaying between two peerings.</li><li><b>Moving VM3</b> would change the architecture.</li></ul>",
@@ -316,7 +316,7 @@ AZ.questions.push(
  "opts": [
   "A service endpoint on a subnet of VNet1",
   "A Standard public IP address for storage1",
-  "A storage1 firewall rule with the site's public address",
+  "A storage1 firewall rule with the site's address",
   "A private endpoint for storage1 in VNet1"
  ],
  "ans": 3,
@@ -390,10 +390,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You have two peered virtual networks, VNet1 and VNet2. Virtual machines in both networks must be registered automatically and reach each other by name in the contoso.local domain.</p><p>The solution must minimize administrative effort. What should you use?</p>",
  "opts": [
-  "A contoso.local public DNS zone",
-  "A contoso.local private DNS zone with one virtual network link per VNet, autoregistration enabled",
-  "A DNS server on a virtual machine in VNet1",
-  "Azure-provided name resolution"
+  "A contoso.local public DNS zone delegated by the registrar",
+  "A contoso.local private DNS zone linked to the VNets, autoregistration on",
+  "A DNS server on a VM in VNet1, used by both VNets",
+  "Azure-provided name resolution, with the contoso.local suffix"
  ],
  "ans": 1,
  "expl": "<p>A <b>private DNS zone</b> contoso.local, with a <b>virtual network link</b> to VNet1 and to VNet2, and <b>autoregistration</b> enabled on the links: each VM is registered automatically, and all VMs in both networks resolve names in the zone.</p><ul><li><b>Azure-provided resolution</b> only works within a single virtual network.</li><li>A <b>DNS server on a VM</b> works but requires administration.</li><li>A <b>public zone</b> is resolved on the internet, not suited to internal names.</li></ul>",
@@ -430,9 +430,9 @@ AZ.questions.push(
  "stem": "<p>A Standard public load balancer named LB1 distributes HTTPS traffic to VM1 and VM2. The site responds correctly locally on each VM, but LB1 no longer sends any traffic to either VM.</p><p>What are two possible causes? Each correct answer presents a complete solution.</p><p><b>NOTE:</b> Each correct selection is worth one point.</p>",
  "opts": [
   "The health probe queries an incorrect port or path",
-  "LB1's public IP address is static",
-  "An NSG blocks the probe traffic or port 443 to the VMs",
-  "No private DNS zone is linked to VNet1"
+  "LB1's frontend public IP address is static, not dynamic",
+  "An NSG blocks the probe or port 443 to the VMs",
+  "No private DNS zone is linked to the VNet1 virtual network"
  ],
  "ans": [
   0,

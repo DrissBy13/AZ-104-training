@@ -7,7 +7,7 @@ Merci de vouloir améliorer la banque ! Quelques règles simples.
 1. **Uniquement des questions originales.** Ne copie jamais une question de l'examen réel, d'un « dump » ou d'un site payant. Les questions de l'examen sont couvertes par l'accord de confidentialité de Microsoft.
 2. **Le vocabulaire de l'examen en français** : « interface réseau » (pas « carte réseau »), « groupe de sécurité réseau », « passerelle de réseau virtuel », « coffre Recovery Services », etc. Les noms de ressources suivent le style de l'examen : VM1, VNet1, Subnet1, RG1, storage1, User1…
 3. **Une explication complète** : pourquoi la bonne réponse est juste, et pourquoi chaque autre réponse est fausse.
-4. **Des réponses plausibles et de longueur proche** : la bonne réponse ne doit pas se repérer à sa longueur ou à sa précision.
+4. **Des réponses plausibles et de longueur proche** : la bonne réponse ne doit pas se repérer à sa longueur ou à sa précision. Le validateur refuse une bonne réponse plus de 1,25 fois plus longue que la plus longue des mauvaises (ou moins de la moitié de la plus courte), et un domaine où la bonne réponse est la plus longue dans plus de 35 % des QCM. Les domaines pas encore corrigés ne donnent qu'un avertissement (`node tools/validate.js --details` pour la liste). Pour équilibrer, raccourcis la bonne réponse (le détail va dans l'explication) et donne aux mauvaises la même précision.
 5. **Une source** dans la pull request (lien Microsoft Learn) pour les points qui ne sont pas évidents.
 6. Vérifie avant d'envoyer : `node tools/validate.js` doit afficher « Aucune erreur ».
 

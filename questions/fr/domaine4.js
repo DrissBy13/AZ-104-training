@@ -115,10 +115,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>VNet1 est appairé à VNet2. VNet2 est appairé à VNet3. Les espaces d'adressage ne se chevauchent pas. VM1 (VNet1) ne parvient pas à joindre VM3 (VNet3).</p><p>Vous devez permettre la communication entre VM1 et VM3. La solution doit limiter l'effort d'administration.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Activer le transit de passerelle sur les peerings",
+  "Activer le transit de passerelle sur les deux peerings",
   "Ajouter une route vers VNet3 dans une table de routage de VNet1",
   "Créer un peering entre VNet1 et VNet3",
-  "Déplacer VM3 dans VNet2"
+  "Déplacer VM3 dans VNet2 et supprimer VNet3"
  ],
  "ans": 2,
  "expl": "<p>Le peering de réseaux virtuels n'est <b>pas transitif</b> : VNet1 ↔ VNet2 et VNet2 ↔ VNet3 ne donnent pas VNet1 ↔ VNet3. VNet2 ne relaie pas le trafic tout seul.</p><p>La solution la plus simple est un <b>peering direct</b> entre VNet1 et VNet3.</p><ul><li>Une <b>route</b> vers VNet3 n'aurait aucun effet sans un appareil qui route dans VNet2 (appliance virtuelle ou passerelle), à déployer et administrer.</li><li>Le <b>transit de passerelle</b> sert à partager une passerelle VPN, pas à relayer entre deux peerings.</li><li><b>Déplacer VM3</b> changerait l'architecture.</li></ul>",
@@ -316,7 +316,7 @@ AZ.questions.push(
  "opts": [
   "Un point de terminaison de service sur un sous-réseau de VNet1",
   "Une adresse IP publique Standard pour storage1",
-  "Une règle de pare-feu de storage1 avec l'adresse publique du site",
+  "Une règle de pare-feu de storage1 avec l'adresse du site",
   "Un point de terminaison privé pour storage1 dans VNet1"
  ],
  "ans": 3,
@@ -390,10 +390,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous disposez de deux réseaux virtuels, VNet1 et VNet2, appairés. Les machines virtuelles des deux réseaux doivent être enregistrées automatiquement et se joindre par leur nom dans le domaine contoso.local.</p><p>La solution doit limiter l'effort d'administration. Que devez-vous utiliser ?</p>",
  "opts": [
-  "Une zone DNS publique contoso.local",
-  "Une zone DNS privée contoso.local avec un lien de réseau virtuel par VNet, inscription automatique activée",
-  "Un serveur DNS sur une machine virtuelle dans VNet1",
-  "La résolution de noms fournie par Azure"
+  "Une zone DNS publique contoso.local déléguée par le registraire",
+  "Une zone DNS privée contoso.local liée aux VNets, inscription automatique",
+  "Un serveur DNS sur une machine virtuelle dans VNet1, utilisé par les VNets",
+  "La résolution de noms fournie par Azure, avec le suffixe contoso.local"
  ],
  "ans": 1,
  "expl": "<p>Une <b>zone DNS privée</b> contoso.local, avec un <b>lien de réseau virtuel</b> vers VNet1 et vers VNet2, et l'<b>inscription automatique</b> activée sur les liens : chaque VM est enregistrée automatiquement, et toutes les VM des deux réseaux résolvent les noms de la zone.</p><ul><li>La <b>résolution fournie par Azure</b> ne fonctionne qu'à l'intérieur d'un même réseau virtuel.</li><li>Un <b>serveur DNS sur une VM</b> marche mais demande de l'administration.</li><li>Une <b>zone publique</b> est résolue sur Internet, pas adaptée à des noms internes.</li></ul>",
@@ -430,9 +430,9 @@ AZ.questions.push(
  "stem": "<p>Un équilibreur de charge public Standard nommé LB1 répartit le trafic HTTPS vers VM1 et VM2. Le site répond correctement en local sur chaque VM, mais LB1 n'envoie plus aucun trafic aux deux VM.</p><p>Quelles sont les deux causes possibles ? Chaque réponse correcte présente une solution complète.</p><p><b>REMARQUE :</b> chaque sélection correcte vaut un point.</p>",
  "opts": [
   "La sonde d'intégrité interroge un port ou un chemin incorrect",
-  "L'adresse IP publique de LB1 est statique",
-  "Un NSG bloque le trafic de la sonde ou le port 443 vers les VM",
-  "Aucune zone DNS privée n'est liée à VNet1"
+  "L'adresse IP publique frontale de LB1 est statique et non dynamique",
+  "Un NSG bloque la sonde ou le port 443 vers les VM",
+  "Aucune zone DNS privée n'est liée au réseau virtuel VNet1"
  ],
  "ans": [
   0,

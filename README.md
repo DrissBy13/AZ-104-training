@@ -11,7 +11,7 @@ Un entraînement gratuit et open source à la certification **Microsoft Azure Ad
 ## Ce que tu trouves ici
 
 - **Une page d'accueil** qui explique les règles de l'examen réel (durée, score, formats, séries sans retour en arrière) et celles du simulateur.
-- **Deux langues** : interface et questions en français ou en anglais (bouton FR / EN). Les 1 059 questions existent dans les deux langues, avec les mêmes réponses.
+- **Deux langues** : interface et questions en français ou en anglais (bouton FR / EN). Les 1 081 questions existent dans les deux langues, avec les mêmes réponses.
 - **Une banque de questions** sur les cinq domaines du programme AZ-104, tirées au hasard à chaque session. Le tirage privilégie les questions que tu n'as pas encore vues : en enchaînant les sessions, tu fais le tour de la banque.
 - **Deux modes**
   - **Examen blanc** : environ 45 questions indépendantes réparties selon le poids officiel des domaines, une série de questions Oui/Non et une étude de cas. Chronomètre de 100 minutes, score sur 1 000, réussite à 700.
@@ -55,7 +55,7 @@ questions/<langue>/etudes-de-cas*.js  études de cas
 tools/validate.js             vérification automatique de la banque (FR et EN)
 ```
 
-Chaque question est un objet JavaScript avec un identifiant unique (par exemple `D4-012`), affiché sous la question. Une question existe dans `questions/fr` et dans `questions/en` avec le même identifiant, les mêmes options dans le même ordre et la même réponse : le validateur le vérifie. Les champs `portal` (fenêtre du portail, l'astérisque en tête marque l'élément surligné) et `keep` (encadré « À retenir ») complètent l'explication. Le format de chaque type de question est décrit dans [CONTRIBUTING.md](CONTRIBUTING.md).
+Chaque question est un objet JavaScript avec un identifiant unique (par exemple `D4-012`), affiché sous la question. Une question existe dans `questions/fr` et dans `questions/en` avec le même identifiant, les mêmes options dans le même ordre et la même réponse : le validateur le vérifie. Il contrôle aussi le **biais de longueur** : la bonne réponse ne doit pas se repérer parce qu'elle est la plus longue (voir CONTRIBUTING.md). Les champs `portal` (fenêtre du portail, l'astérisque en tête marque l'élément surligné) et `keep` (encadré « À retenir ») complètent l'explication. Le format de chaque type de question est décrit dans [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Signaler une erreur
 
