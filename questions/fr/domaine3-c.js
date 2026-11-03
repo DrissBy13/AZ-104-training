@@ -69,9 +69,9 @@ AZ.questions.push(
  "stem": "<p>Vous devez construire une image de conteneur à partir d'un Dockerfile et la placer dans le registre ACR1, sans installer Docker sur votre poste.</p><p>Quelle commande devez-vous utiliser ?</p>",
  "opts": [
   "az acr build --registry ACR1 --image app:v1 .",
-  "az container create --image app:v1",
-  "docker push ACR1/app:v1",
-  "az acr import --name ACR1"
+  "az container create --image app:v1 --file Dockerfile",
+  "docker push ACR1/app:v1 sans Docker local",
+  "az acr import --name ACR1 --source ./Dockerfile"
  ],
  "ans": 0,
  "expl": "<p><b>az acr build</b> (ACR Tasks) envoie le contexte de construction au registre, qui construit l'image dans Azure et la stocke. Aucun Docker local n'est nécessaire.</p><p>docker push demande Docker et une image déjà construite. az acr import copie une image depuis un autre registre. az container create lance un conteneur dans ACI.</p>",
@@ -122,9 +122,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Azure Container Instances doit tirer une image privée de ACR3. Vous ne voulez pas activer le compte administrateur du registre.</p><p>Quelle méthode est recommandée ?</p>",
  "opts": [
-  "Le compte administrateur avec son mot de passe",
-  "Rendre le registre public",
-  "Une identité managée (ou un principal de service) avec le rôle AcrPull sur ACR3",
+  "Le compte administrateur du registre",
+  "Rendre le registre public en lecture",
+  "Une identité managée avec AcrPull",
   "Copier l'image dans un compte de stockage"
  ],
  "ans": 2,
@@ -220,10 +220,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez exécuter un conteneur de traitement nocturne qui dure 20 minutes, sans gérer de serveur ni d'orchestrateur, et ne payer que pendant son exécution.</p><p>Quel service devez-vous utiliser ?</p>",
  "opts": [
-  "Un groupe de machines virtuelles identiques",
+  "Un groupe de machines virtuelles identiques à 1 instance",
   "Une VM avec Docker allumée en permanence",
-  "App Service plan Premium",
-  "Azure Container Instances avec la stratégie de redémarrage OnFailure ou Never"
+  "Un plan App Service Premium v3 dédié",
+  "Container Instances (redémarrage OnFailure ou Never)"
  ],
  "ans": 3,
  "expl": "<p><b>Azure Container Instances</b> lance un conteneur en quelques secondes et facture à la seconde le CPU et la mémoire. Avec la stratégie de redémarrage <b>OnFailure</b> ou <b>Never</b>, le conteneur s'arrête à la fin du traitement et la facturation aussi.</p><p>Avec <b>Always</b> (par défaut), ACI relancerait le conteneur sans fin. Une VM ou un plan App Service coûterait en permanence.</p>",
@@ -318,10 +318,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une application web et un conteneur de journalisation doivent tourner ensemble dans Azure Container Instances, partager la même adresse IP et le même cycle de vie, et communiquer par localhost.</p><p>Que devez-vous déployer ?</p>",
  "opts": [
-  "Un groupe de conteneurs Linux contenant les deux conteneurs",
+  "Un groupe de conteneurs avec les deux",
   "Un groupe à haute disponibilité",
   "Deux groupes de conteneurs séparés",
-  "Deux registres de conteneurs"
+  "Deux registres de conteneurs distincts"
  ],
  "ans": 0,
  "expl": "<p>Un <b>groupe de conteneurs</b> regroupe des conteneurs planifiés sur le même hôte, qui partagent le cycle de vie, le réseau (adresse IP, ports, localhost) et des volumes. C'est le modèle « sidecar ». Les groupes à plusieurs conteneurs ne sont pris en charge que pour <b>Linux</b>.</p><p>Deux groupes séparés auraient deux adresses IP.</p>",
@@ -390,10 +390,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Un groupe de conteneurs ACI doit être joignable sur Internet par un nom stable, par exemple <code>app1.francecentral.azurecontainer.io</code>.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Une zone DNS privée",
+  "Une zone DNS privée liée au groupe",
   "Un point de terminaison privé",
-  "Une adresse IP publique avec une étiquette de nom DNS",
-  "Une passerelle VPN"
+  "Une IP publique avec étiquette DNS",
+  "Une passerelle VPN point à site"
  ],
  "ans": 2,
  "expl": "<p>À la création du groupe de conteneurs, on choisit une <b>adresse IP publique</b> et une <b>étiquette de nom DNS</b>, qui donne un nom du type <code>&lt;étiquette&gt;.&lt;région&gt;.azurecontainer.io</code>. L'adresse IP peut changer au redémarrage, mais le nom reste.</p>",
@@ -432,9 +432,9 @@ AZ.questions.push(
  "stem": "<p>Un groupe de conteneurs ACI doit accéder à une base de données qui n'a qu'une adresse IP privée dans VNet1, sans exposition sur Internet.</p><p>Que devez-vous faire ?</p>",
  "opts": [
   "Activer la géoréplication du registre",
-  "Donner une adresse IP publique au groupe de conteneurs",
+  "Donner une IP publique au groupe de conteneurs",
   "Utiliser la stratégie de redémarrage Never",
-  "Déployer le groupe de conteneurs dans un sous-réseau délégué de VNet1"
+  "Déployer dans un sous-réseau délégué de VNet1"
  ],
  "ans": 3,
  "expl": "<p>ACI peut être déployé <b>dans un réseau virtuel</b>, dans un sous-réseau délégué à <code>Microsoft.ContainerInstance/containerGroups</code>. Le groupe reçoit une adresse IP privée et communique avec les autres ressources du réseau.</p>",
@@ -466,10 +466,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous déployez un conteneur dans ACI avec 2 vCPU et 4 Go de mémoire. Une semaine plus tard, il manque de mémoire.</p><p>Comment augmenter la mémoire ?</p>",
  "opts": [
-  "Redéployer le groupe de conteneurs avec une demande de ressources plus élevée",
-  "Ajouter un disque de données",
-  "Activer la mise à l'échelle automatique horizontale d'ACI",
-  "Changer de stratégie de redémarrage"
+  "Redéployer avec une demande de ressources plus élevée",
+  "Ajouter un disque de données au groupe de conteneurs",
+  "Activer la mise à l'échelle automatique d'ACI",
+  "Changer la stratégie de redémarrage en Always"
  ],
  "ans": 0,
  "expl": "<p>Les ressources (CPU et mémoire) d'un conteneur ACI sont fixées dans sa définition. Pour les changer, on <b>redéploie</b> le groupe de conteneurs avec les nouvelles valeurs (dans les limites de la région).</p><p>ACI n'a pas de mise à l'échelle automatique intégrée : pour cela, on choisit plutôt Azure Container Apps.</p>",
@@ -543,10 +543,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous déployez une nouvelle version de votre application dans Azure Container Apps. Vous voulez envoyer 10 % du trafic vers la nouvelle version et 90 % vers l'ancienne.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Deux environnements Container Apps",
-  "Une stratégie de redémarrage",
-  "Le mode multi-révisions avec une répartition du trafic entre révisions",
-  "Deux registres de conteneurs"
+  "Deux environnements Container Apps distincts",
+  "Une stratégie de redémarrage par révision",
+  "Le mode multi-révisions avec répartition du trafic",
+  "Deux registres de conteneurs, un par version"
  ],
  "ans": 2,
  "expl": "<p>Chaque déploiement d'une nouvelle configuration crée une <b>révision</b>. En mode <b>multi-révisions</b>, plusieurs révisions restent actives et on répartit le trafic entrant en pourcentages entre elles (déploiement progressif, tests A/B).</p>",
@@ -787,9 +787,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une application web dans un plan Standard S1 devient lente en journée, quand le nombre d'utilisateurs triple. La nuit, une seule instance suffit.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Une mise à l'échelle automatique horizontale (scale out) du plan, basée sur le CPU ou une planification",
-  "Un passage au niveau Premium (scale up) permanent",
-  "Une sauvegarde planifiée",
+  "Une mise à l'échelle automatique horizontale du plan",
+  "Un passage permanent au niveau Premium (scale up)",
+  "Une sauvegarde planifiée avant chaque pic",
   "Un emplacement de déploiement supplémentaire"
  ],
  "ans": 0,
@@ -828,9 +828,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une application web a besoin de plus de mémoire par instance, et d'une fonction réseau disponible uniquement au niveau Premium v3.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Activer Always On",
-  "Mettre le plan App Service à l'échelle verticalement (scale up) vers Premium v3",
-  "Ajouter des instances (scale out)",
+  "Activer Always On sur l'application",
+  "Monter le plan en Premium v3 (scale up)",
+  "Ajouter des instances au plan (scale out)",
   "Créer un emplacement de déploiement"
  ],
  "ans": 1,
@@ -863,8 +863,8 @@ AZ.questions.push(
  "opts": [
   "Chaque application est facturée comme un plan séparé",
   "Seule la première application tourne sur les 2 instances",
-  "Les trois applications tournent sur les mêmes 2 instances et partagent leurs ressources",
-  "Chaque application a ses propres 2 instances"
+  "Les trois tournent sur les 2 mêmes instances",
+  "Chaque application obtient ses propres 2 instances dans le plan"
  ],
  "ans": 2,
  "expl": "<p>Un <b>plan App Service</b> définit un ensemble de machines (taille et nombre d'instances). Toutes les applications du plan tournent sur <b>toutes</b> ses instances et partagent CPU et mémoire. On paie le plan, pas chaque application.</p><p>Si une application consomme trop, il faut la déplacer dans un autre plan.</p>",
@@ -900,7 +900,7 @@ AZ.questions.push(
   "ASP2 doit être au niveau Gratuit",
   "WebApp2 doit être supprimée puis recréée",
   "ASP2 doit être dans un autre abonnement",
-  "ASP2 doit être dans la même région et le même groupe de ressources (même espace de déploiement) que le plan actuel"
+  "Même région et même groupe de ressources"
  ],
  "ans": 3,
  "expl": "<p>On peut changer le plan d'une application (Modifier le plan App Service) vers un plan de la <b>même région</b> et du même « espace web » (en pratique le même groupe de ressources et la même région d'origine). Sinon, il faut cloner ou redéployer l'application.</p>",
@@ -971,10 +971,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>WebApp4 a les emplacements production et staging. La chaîne de connexion de la base de données doit <b>rester</b> attachée à chaque emplacement (base de test pour staging, base de production pour production) lors d'une permutation.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Cocher « Paramètre d'emplacement de déploiement » sur la chaîne de connexion dans chaque emplacement",
-  "Désactiver la permutation automatique",
-  "Utiliser la même chaîne de connexion dans les deux emplacements",
-  "Créer un troisième emplacement"
+  "Marquer la chaîne « Paramètre d'emplacement »",
+  "Désactiver la permutation automatique du staging",
+  "Utiliser la même chaîne de connexion partout",
+  "Créer un troisième emplacement pour la base de test"
  ],
  "ans": 0,
  "expl": "<p>Un paramètre marqué <b>Paramètre d'emplacement de déploiement</b> (sticky, ou « collant ») reste attaché à l'emplacement : il ne suit pas le code lors d'une permutation. Les paramètres non cochés sont échangés avec le code.</p>",
@@ -1005,10 +1005,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Chaque fois qu'un nouveau code est poussé dans l'emplacement staging de WebApp5, vous voulez qu'il soit automatiquement permuté en production après son préchauffage.</p><p>Que devez-vous activer ?</p>",
  "opts": [
-  "La mise à l'échelle automatique",
-  "La permutation automatique (auto swap) sur l'emplacement staging",
-  "Le routage du trafic à 100 %",
-  "Always On sur la production"
+  "La mise à l'échelle automatique du plan",
+  "La permutation automatique sur staging",
+  "Le routage de 100 % du trafic vers staging",
+  "Always On sur l'emplacement de production"
  ],
  "ans": 1,
  "expl": "<p>La <b>permutation automatique</b>, activée sur l'emplacement source (staging), permute avec l'emplacement cible dès que le déploiement est terminé et que l'application est préchauffée.</p>",
@@ -1039,9 +1039,9 @@ AZ.questions.push(
  "stem": "<p>Vous voulez envoyer 20 % des utilisateurs de production vers l'emplacement beta de WebApp6, sans permutation, pour tester une nouvelle fonctionnalité.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
   "Une permutation avec aperçu",
-  "Un équilibreur de charge",
-  "Le routage du trafic (Test en production) avec 20 % vers beta",
-  "Un second plan App Service"
+  "Un équilibreur de charge devant l'application",
+  "Le routage du trafic : 20 % vers beta",
+  "Un second plan App Service pour beta"
  ],
  "ans": 2,
  "expl": "<p>Le <b>routage du trafic</b> des emplacements (Testing in production) envoie un pourcentage des requêtes de production vers un autre emplacement. Un cookie garde chaque utilisateur sur le même emplacement pendant sa session.</p>",
@@ -1074,10 +1074,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez associer le domaine personnalisé www.contoso.com à WebApp7.</p><p>Quels enregistrements DNS devez-vous créer chez votre hébergeur DNS ?</p>",
  "opts": [
-  "Un enregistrement PTR",
-  "Un enregistrement SRV",
+  "Un enregistrement PTR vers l'adresse de l'application",
+  "Un enregistrement SRV vers webapp7.azurewebsites.net",
   "Un enregistrement MX vers webapp7.azurewebsites.net",
-  "Un CNAME www vers webapp7.azurewebsites.net, et un TXT asuid.www avec l'ID de vérification"
+  "Un CNAME www et un TXT asuid.www"
  ],
  "ans": 3,
  "expl": "<p>Pour un sous-domaine comme www, on crée un <b>CNAME</b> vers <code>webapp7.azurewebsites.net</code>, et un <b>TXT</b> <code>asuid.www</code> contenant l'ID de vérification du domaine (affiché dans le portail), qui prouve que vous possédez le domaine.</p><p>Pour le domaine racine (contoso.com), on utilise un enregistrement <b>A</b> vers l'adresse IP de l'application, plus le TXT <code>asuid</code>.</p>",
@@ -1107,10 +1107,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>WebApp8 est dans un plan <b>Gratuit (F1)</b>. Vous voulez ajouter le domaine www.contoso.com, avec HTTPS.</p><p>Que devez-vous faire d'abord ?</p>",
  "opts": [
-  "Passer le plan au niveau De base ou supérieur",
-  "Créer un enregistrement MX",
+  "Passer le plan en De base ou plus",
+  "Créer un enregistrement MX pour le domaine",
   "Créer un emplacement de déploiement",
-  "Activer Always On"
+  "Activer Always On sur l'application"
  ],
  "ans": 0,
  "expl": "<p>Le niveau <b>Gratuit</b> ne prend pas en charge les domaines personnalisés. Le niveau <b>Partagé</b> les accepte sans TLS. À partir de <b>De base</b>, on peut ajouter un domaine personnalisé avec un certificat TLS (y compris un certificat managé App Service gratuit).</p>",
@@ -1179,10 +1179,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>WebApp10 doit appeler une API hébergée sur une VM qui n'a qu'une adresse IP privée dans VNet2.</p><p>Que devez-vous configurer sur WebApp10 ?</p>",
  "opts": [
-  "Un domaine personnalisé",
+  "Un domaine personnalisé pour WebApp10",
   "Un point de terminaison privé pour WebApp10",
-  "L'intégration au réseau virtuel (VNet integration) avec un sous-réseau de VNet2",
-  "Des restrictions d'accès"
+  "L'intégration au réseau virtuel (VNet2)",
+  "Des restrictions d'accès sur WebApp10"
  ],
  "ans": 2,
  "expl": "<p>L'<b>intégration au réseau virtuel</b> concerne le trafic <b>sortant</b> : l'application peut joindre les ressources du réseau virtuel (et, par lui, ce qui est appairé ou relié par VPN). Elle utilise un sous-réseau délégué dédié.</p><p>Un <b>point de terminaison privé</b> concerne le trafic <b>entrant</b> : il donne à l'application une adresse privée. Les restrictions d'accès filtrent aussi l'entrant.</p>",
@@ -1214,10 +1214,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>WebApp11 ne doit être accessible que depuis VNet3 et le site local relié par VPN, jamais depuis Internet.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Un emplacement de déploiement",
+  "Un emplacement de déploiement dédié",
   "Une adresse IP publique statique",
-  "L'intégration au réseau virtuel uniquement",
-  "Un point de terminaison privé pour WebApp11 dans VNet3, et désactiver l'accès public"
+  "L'intégration au réseau virtuel de VNet3, sans autre réglage",
+  "Un point de terminaison privé, accès public coupé"
  ],
  "ans": 3,
  "expl": "<p>Le <b>point de terminaison privé</b> donne à l'application une adresse IP privée dans VNet3 : le trafic <b>entrant</b> arrive par le réseau privé (et par le VPN depuis le site local). On désactive ensuite l'<b>accès réseau public</b>.</p><p>L'intégration au réseau virtuel ne gère que le trafic sortant.</p>",
@@ -1249,9 +1249,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>WebApp12 doit n'accepter que le trafic venant de l'adresse IP publique de votre bureau, 203.0.113.0/24, sans changer l'architecture réseau.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Des restrictions d'accès avec une règle Autoriser pour 203.0.113.0/24",
-  "Un point de terminaison de service",
-  "Un pare-feu de compte de stockage",
+  "Des restrictions d'accès (Autoriser 203.0.113.0/24)",
+  "Un point de terminaison de service sur l'application",
+  "Un pare-feu de compte de stockage devant l'application",
   "Un groupe de sécurité réseau associé à l'application"
  ],
  "ans": 0,
@@ -1323,8 +1323,8 @@ AZ.questions.push(
  "opts": [
   "HTTPS uniquement",
   "Le contrôle d'intégrité",
-  "L'affinité ARR (sessions collantes)",
-  "Always On"
+  "L'affinité ARR",
+  "Always On sur toutes les instances"
  ],
  "ans": 2,
  "expl": "<p>L'<b>affinité ARR</b> place un cookie qui renvoie chaque utilisateur vers la même instance. Pour une application <b>sans état</b>, la désactiver répartit mieux la charge entre les instances.</p>",
@@ -1354,9 +1354,9 @@ AZ.questions.push(
  "stem": "<p>Une instance de WebApp15 devient parfois défaillante sans redémarrer. Vous voulez que le répartiteur de charge cesse de lui envoyer du trafic, puis la remplace si elle reste en échec.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
   "Les journaux de serveur web",
-  "Une alerte de budget",
-  "Always On",
-  "Le contrôle d'intégrité (Health check) avec un chemin comme /health"
+  "Une alerte de budget sur le plan",
+  "Always On sur les instances",
+  "Le contrôle d'intégrité (/health)"
  ],
  "ans": 3,
  "expl": "<p>Le <b>contrôle d'intégrité</b> interroge régulièrement un chemin de l'application sur chaque instance. Une instance qui répond mal est retirée de la rotation, puis remplacée si elle reste défaillante. Il faut au moins deux instances pour en profiter.</p>",
@@ -1389,10 +1389,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez configurer des sauvegardes personnalisées de WebApp16 (fichiers et configuration) vers un compte de stockage, selon une planification.</p><p>Que devez-vous utiliser ?</p>",
  "opts": [
-  "La fonctionnalité Sauvegardes d'App Service, avec un conteneur de stockage cible",
-  "Azure Backup avec un coffre Recovery Services pour les VM",
-  "Un instantané de disque managé",
-  "Azure Site Recovery"
+  "Les sauvegardes d'App Service (conteneur cible)",
+  "Azure Backup avec un coffre Recovery Services",
+  "Un instantané de disque managé de l'application",
+  "Azure Site Recovery pour l'application"
  ],
  "ans": 0,
  "expl": "<p>App Service a sa propre fonction de <b>sauvegarde</b> : sauvegardes automatiques intégrées (niveaux De base et plus), et sauvegardes <b>personnalisées</b> planifiées vers un conteneur de stockage, avec une base de données liée si besoin.</p><p>Azure Backup pour VM, les instantanés et Site Recovery ne s'appliquent pas aux applications App Service.</p>",
@@ -1429,10 +1429,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous voulez que chaque commit dans la branche main d'un dépôt GitHub soit déployé automatiquement sur WebApp17.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Les journaux d'application",
-  "Le Centre de déploiement avec GitHub comme source (GitHub Actions)",
-  "Une sauvegarde planifiée",
-  "Un emplacement de déploiement"
+  "Les journaux d'application vers GitHub",
+  "Le Centre de déploiement avec GitHub",
+  "Une sauvegarde planifiée depuis le dépôt",
+  "Un emplacement de déploiement lié au dépôt"
  ],
  "ans": 1,
  "expl": "<p>Le <b>Centre de déploiement</b> configure le déploiement continu depuis GitHub, Azure Repos, Bitbucket ou un dépôt Git local. Avec GitHub, il crée un workflow GitHub Actions qui construit et déploie à chaque commit.</p>",
@@ -1470,9 +1470,9 @@ AZ.questions.push(
  "stem": "<p>Une application web doit lire un paramètre ApiUrl différent en développement et en production, sans modifier le code.</p><p>Où devez-vous définir ce paramètre ?</p>",
  "opts": [
   "Dans un verrou de ressource",
-  "Dans le plan App Service",
-  "Dans les paramètres d'application de chaque application (variables d'environnement)",
-  "Dans une étiquette Azure"
+  "Dans le plan App Service commun",
+  "Dans les paramètres d'application",
+  "Dans une étiquette Azure de chaque application"
  ],
  "ans": 2,
  "expl": "<p>Les <b>paramètres d'application</b> (Configuration > Variables d'environnement) sont exposés à l'application comme variables d'environnement et remplacent les valeurs du fichier de configuration. Ils peuvent référencer un secret Key Vault (<code>@Microsoft.KeyVault(...)</code>).</p>",
@@ -1501,10 +1501,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une application web lit une chaîne de connexion. Vous ne voulez pas que le secret apparaisse dans la configuration d'App Service.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Chiffrer le secret avec une SAS",
-  "Mettre le secret dans le code source",
-  "Mettre le secret dans une étiquette",
-  "Stocker le secret dans Key Vault et utiliser une référence Key Vault dans le paramètre, avec l'identité managée de l'application"
+  "Chiffrer le secret avec une SAS de compte",
+  "Mettre le secret dans le code source, obfusqué, puis le compiler",
+  "Mettre le secret dans une étiquette de l'application",
+  "Une référence Key Vault et l'identité managée"
  ],
  "ans": 3,
  "expl": "<p>Une <b>référence Key Vault</b> (<code>@Microsoft.KeyVault(SecretUri=...)</code>) dans un paramètre d'application fait lire la valeur dans Key Vault au démarrage, avec l'<b>identité managée</b> de l'application, qui doit pouvoir lire les secrets.</p>",
@@ -2147,8 +2147,8 @@ AZ.questions.push(
  "opts": [
   "Désactiver Always On",
   "Passer le plan au niveau De base",
-  "Passer le plan au niveau Standard ou supérieur",
-  "Déployer dans un emplacement staging puis permuter"
+  "Passer le plan en Standard ou plus",
+  "Déployer en staging puis permuter"
  ],
  "ans": [
   2,
@@ -2185,10 +2185,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>Une application ACI doit tirer une image privée de ACR4 et écrire des fichiers persistants.</p><p>Quelles <b>deux</b> configurations sont nécessaires ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
  "opts": [
-  "Un emplacement de déploiement",
+  "Un emplacement de déploiement pour le conteneur",
   "Un disque managé attaché au groupe de conteneurs",
-  "Un volume Azure Files monté dans le conteneur",
-  "Des informations d'identification pour ACR4 (identité avec AcrPull ou principal de service)"
+  "Un volume Azure Files monté",
+  "Des identifiants pour ACR4 (AcrPull)"
  ],
  "ans": [
   2,
@@ -2225,10 +2225,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une application web dans un plan Premium doit continuer de fonctionner si un centre de données de la région tombe en panne.</p><p>Que devez-vous activer ?</p>",
  "opts": [
-  "La redondance de zone du plan App Service (au moins 2 instances)",
-  "Un emplacement de déploiement",
-  "Les sauvegardes planifiées",
-  "Always On"
+  "La redondance de zone du plan",
+  "Un emplacement de déploiement par zone",
+  "Les sauvegardes planifiées toutes les heures",
+  "Always On sur l'emplacement de production"
  ],
  "ans": 0,
  "expl": "<p>Un plan Premium v2/v3 (ou Isolé v2) peut être <b>redondant interzone</b> : ses instances sont réparties sur plusieurs zones de disponibilité de la région. Il faut au moins 2 instances (3 étaient requises à l'origine).</p><p>Les emplacements et Always On ne protègent pas d'une panne de zone. Les sauvegardes permettent de restaurer, pas de rester disponible.</p>",
@@ -2262,9 +2262,9 @@ AZ.questions.push(
  "stem": "<p>Une application web doit être disponible même si toute la région France Central tombe en panne.</p><p>Quelle architecture devez-vous mettre en place ?</p>",
  "opts": [
   "Un emplacement de déploiement dans France South",
-  "Deux applications dans deux régions, derrière Azure Front Door ou Traffic Manager",
+  "Deux applications, deux régions, Front Door",
   "Un plan avec 10 instances dans France Central",
-  "La redondance de zone"
+  "La redondance de zone du plan en France Central"
  ],
  "ans": 1,
  "expl": "<p>Pour survivre à la panne d'une <b>région</b>, il faut l'application dans <b>deux régions</b>, avec un service global qui dirige le trafic vers la région saine : <b>Azure Front Door</b> (HTTP, couche 7) ou <b>Traffic Manager</b> (DNS).</p><p>Les instances et la redondance de zone restent dans la région. Un emplacement est dans la même région que son application.</p>",
@@ -2333,10 +2333,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez héberger 15 petites applications web peu fréquentées, au coût le plus bas, avec des domaines personnalisés et HTTPS.</p><p>Quelle solution est la plus économique ?</p>",
  "opts": [
-  "15 plans Premium v3",
+  "15 plans Premium v3, un par application",
   "15 plans De base, un par application",
-  "15 VM de série B",
-  "Un seul plan De base (ou Standard) qui héberge les 15 applications"
+  "15 VM de série B avec IIS",
+  "Un seul plan De base pour les 15"
  ],
  "ans": 3,
  "expl": "<p>On paie le <b>plan</b>, pas l'application : un seul plan peut héberger plusieurs applications qui partagent ses instances. Pour des applications peu fréquentées, un plan De base (ou Standard si l'on veut des emplacements ou la mise à l'échelle automatique) suffit.</p>",

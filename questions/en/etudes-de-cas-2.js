@@ -143,9 +143,9 @@ AZ.cases.push(
    "stem": "<p>You need to meet the testing requirement for WebApp-Portail.</p><p>Which <b>two</b> actions should you perform?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
    "opts": [
     "Create a second app in a Basic plan",
-    "Move the App Service plan to the Standard tier",
+    "Move the App Service plan to Standard",
     "Create a deployment slot named test",
-    "Enable autoscale"
+    "Enable autoscale on the plan"
    ],
    "ans": [
     1,
@@ -410,10 +410,10 @@ AZ.cases.push(
    "type": "single",
    "stem": "<p>You need to meet the container image replication requirement.</p><p>What should you do?</p>",
    "opts": [
-    "Enable a retention policy",
+    "Enable a retention policy on ACR-Tailwind",
     "Create a second Basic registry in West Europe",
-    "Enable the admin account",
-    "Upgrade ACR-Tailwind to the Premium tier and add a geo-replication in West Europe"
+    "Enable the registry's admin account",
+    "ACR-Tailwind to Premium, geo-replication to West Europe"
    ],
    "ans": 3,
    "expl": "<p><b>Geo-replication</b> is only available in the <b>Premium</b> tier. A second independent registry would require pushing images twice.</p>",

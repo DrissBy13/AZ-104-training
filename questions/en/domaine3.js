@@ -544,10 +544,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>New virtual machines in your subscription must also encrypt their temporary disk and disk caches, without installing anything in the operating system.</p><p>What should you do first?</p>",
  "opts": [
-  "Create a key vault and a key",
+  "Create a key vault and a customer-managed key",
   "Enable Azure Disk Encryption on each VM",
-  "Register the encryption at host feature on the subscription",
-  "Convert the disks to Premium SSD"
+  "Register the EncryptionAtHost feature",
+  "Convert the disks to encrypted Premium SSD v2"
  ],
  "ans": 2,
  "expl": "<p><b>Encryption at host</b> also encrypts the <b>temporary disk</b> and disk <b>caches</b>, on the physical host, with no agent or BitLocker in the VM.</p><p>Before enabling it on a VM, you must <b>register the EncryptionAtHost feature</b> on the subscription (<code>Register-AzProviderFeature -FeatureName EncryptionAtHost</code>).</p><p><b>Azure Disk Encryption</b> encrypts inside the OS (BitLocker or DM-Crypt): not what's asked. The disk type doesn't matter.</p>",

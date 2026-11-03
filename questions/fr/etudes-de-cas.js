@@ -110,8 +110,8 @@ AZ.cases.push(
    "opts": [
     "Placer VM-APP1 et VM-APP2 dans un groupe à haute disponibilité",
     "Convertir les disques des deux VM en SSD Premium",
-    "Redéployer VM-APP1 et VM-APP2 dans deux zones de disponibilité différentes",
-    "Protéger les deux VM avec Azure Backup"
+    "Redéployer les deux VM dans deux zones différentes",
+    "Protéger VM-APP1 et VM-APP2 avec Azure Backup"
    ],
    "ans": 2,
    "expl": "<p>Le SLA de <b>99,99 %</b> exige au moins deux VM dans des <b>zones de disponibilité</b> différentes. Un groupe à haute disponibilité offre 99,95 %, des disques Premium seuls donnent 99,9 % pour une VM unique, et Azure Backup ne change pas la disponibilité.</p><p>La zone d'une VM se choisit à la création : les VM existantes, déployées sans zone, doivent être <b>redéployées</b>.</p>",

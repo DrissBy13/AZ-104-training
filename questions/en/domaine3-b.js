@@ -161,10 +161,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>An ARM template parameter file must provide the administrator password from the key vault KV1, without copying it into the file.</p><p>Which condition must KV1 meet?</p>",
  "opts": [
-  "KV1 must use access policies only",
+  "KV1 must use access policies, without RBAC",
   "KV1 must have its public endpoint disabled",
-  "KV1 must be in the same resource group as the VM",
-  "The “Azure Resource Manager for template deployment” option must be enabled on KV1"
+  "KV1 must be in the same resource group as the deployed VM",
+  "KV1 must allow Resource Manager for templates"
  ],
  "ans": 3,
  "expl": "<p>For a deployment to read a secret by reference (<code>\"reference\": { \"keyVault\": { \"id\": ... }, \"secretName\": ... }</code>), the vault must have <b>enabledForTemplateDeployment</b> on, and the user deploying must have the <code>Microsoft.KeyVault/vaults/deploy/action</code> permission.</p><p>The vault can be in another resource group, and the permission model doesn't matter for this setting.</p>",
@@ -193,10 +193,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You deploy a VM and its network interface with an ARM template. The deployment sometimes fails because the VM is created before the network interface.</p><p>What should you add to the VM resource?</p>",
  "opts": [
-  "A dependsOn element that references the network interface",
-  "A condition",
-  "A copy element",
-  "An output"
+  "A dependsOn element to the interface",
+  "A condition on the VM resource",
+  "A copy element on the interface",
+  "An output with the interface's ID"
  ],
  "ans": 0,
  "expl": "<p><b>dependsOn</b> tells Resource Manager that a resource must wait until another finishes deploying. Without a dependency, resources are deployed in parallel.</p><p>In Bicep, dependencies are usually inferred automatically when a resource references a property of another (for example <code>nic.id</code>).</p>",
@@ -253,10 +253,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You created a VM with its network by hand in the portal. You want an ARM template that describes it, to recreate it identically elsewhere.</p><p>What should you do?</p>",
  "opts": [
-  "Use Azure Advisor",
-  "Open the activity log",
-  "Use Export template on the VM or on the resource group",
-  "Create an image of the VM"
+  "Use Azure Advisor, Operational Excellence tab",
+  "Open the resource group's activity log",
+  "Use Export template",
+  "Create a generalized image of the VM"
  ],
  "ans": 2,
  "expl": "<p><b>Export template</b> generates an ARM template (and offers a Bicep version) from existing resources, or from a deployment's history. The template often needs cleaning up and parameterizing before reuse.</p><p>An image captures the disk, not the Azure configuration (network, size…).</p>",
@@ -429,9 +429,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to convert an existing ARM JSON template to a Bicep file to maintain it more easily.</p><p>Which command should you use?</p>",
  "opts": [
-  "az bicep publish",
+  "az bicep publish --file template.json",
   "az bicep build --file template.json",
-  "az deployment group export",
+  "az deployment group export --name deploy1",
   "az bicep decompile --file template.json"
  ],
  "ans": 3,
@@ -456,10 +456,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to reuse the definition of a standard virtual network in several Bicep files.</p><p>What should you create?</p>",
  "opts": [
-  "A Bicep module, called with the module keyword",
-  "A global variable",
-  "A resource lock",
-  "An output in each file"
+  "A Bicep module (module keyword)",
+  "A shared global variable",
+  "A resource lock per file",
+  "An output in each file, with no module"
  ],
  "ans": 0,
  "expl": "<p>A <b>module</b> is a reusable Bicep file, called from another file with <code>module vnet './vnet.bicep' = { name: ..., params: {...} }</code>. You can store it locally, in a Bicep registry, or as a Template Spec.</p>",
@@ -484,10 +484,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A Bicep file must add a subnet to an <b>already existing</b> virtual network named VNet1, without redeploying it.</p><p>How should you reference VNet1?</p>",
  "opts": [
-  "param vnet object",
-  "resource vnet 'Microsoft.Network/virtualNetworks@2023-04-01' existing = { name: 'VNet1' }",
-  "output vnet string",
-  "module vnet './vnet.bicep'"
+  "param vnet object = { name: 'VNet1', id: resourceId('…/virtualNetworks', 'VNet1') }",
+  "resource vnet '…/virtualNetworks@2023-04-01' existing = { name: 'VNet1' }",
+  "output vnet string = 'VNet1'",
+  "module vnet './vnet.bicep' = { name: 'VNet1', params: { mode: 'existing' } }"
  ],
  "ans": 1,
  "expl": "<p>The <b>existing</b> keyword declares a resource that already exists: you can read its properties and use it as a parent (<code>parent: vnet</code>) without redeploying it.</p><p>An object parameter doesn't reference a resource. A module would redeploy the network. An output returns a value.</p>",
@@ -553,10 +553,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to resize VM1 from Standard_D2s_v5 to Standard_E8s_v5. The new size doesn't appear in the list of available sizes while the VM is running.</p><p>What should you do?</p>",
  "opts": [
-  "Delete and recreate VM1",
-  "Add a data disk",
+  "Delete VM1 and recreate it in the new size",
+  "Add a data disk to VM1",
   "Move VM1 to another resource group",
-  "Stop (deallocate) VM1, then choose the new size"
+  "Stop (deallocate) VM1, then resize"
  ],
  "ans": 3,
  "expl": "<p>A running VM can only take a size available on the <b>hardware cluster</b> it runs on. Once <b>stopped and deallocated</b>, it can be placed on another cluster: all sizes available in the region appear.</p><p>A resize always restarts the VM, even without deallocation.</p>",
@@ -657,10 +657,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You deploy three VMs in an <b>availability set</b> with 3 fault domains and 5 update domains.</p><p>What does the availability set protect against?</p>",
  "opts": [
-  "A hardware failure of a rack and planned host maintenance",
-  "Accidental deletion of a VM",
-  "The failure of an entire region",
-  "The failure of an entire datacenter"
+  "A rack failure and host maintenance",
+  "Accidental deletion of a VM in the set",
+  "Failure of an entire region and its pair",
+  "Failure of an entire datacenter"
  ],
  "ans": 0,
  "expl": "<p><b>Fault domains</b> place VMs on different racks (separate power and network). <b>Update domains</b> keep all VMs from restarting at the same time during maintenance. SLA: 99.95%.</p><p>An availability set stays in <b>a single datacenter</b>. Against a datacenter failure, you use <b>availability zones</b> (99.99% SLA); against a region failure, another region.</p>",
@@ -834,8 +834,8 @@ AZ.questions.push(
  "stem": "<p>An application runs on two VMs in the France Central region. It must stay available if an entire datacenter in the region fails.</p><p>What should you do?</p>",
  "opts": [
   "Place the VMs in an availability set",
-  "Use Premium SSD disks",
-  "Deploy the VMs in two different availability zones",
+  "Use Premium SSD disks on both VMs",
+  "Deploy the VMs in two different zones",
   "Place the VMs in a proximity placement group"
  ],
  "ans": 2,
@@ -908,10 +908,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>VMSS1 has a rule: “If average CPU exceeds 75% for 10 minutes, add 2 instances”, with a cool down of 5 minutes. CPU stays at 90% for an hour.</p><p>Why aren't instances added every minute?</p>",
  "opts": [
-  "The cool down prevents a new action for 5 minutes after each scale action",
-  "VMSS support only one action per hour",
-  "The scale-in rule cancels the scale-out",
-  "The default count is reached"
+  "The cool down blocks any action for 5 minutes",
+  "VMSS only support one action per hour",
+  "The scale-in rule cancels the scale-out rule",
+  "The default instance count is already reached"
  ],
  "ans": 0,
  "expl": "<p>The <b>cool down</b> gives new instances time to start and metrics time to settle before a new evaluation. During this delay, no other scale action happens. The maximum instance count also limits scale-out.</p>",
@@ -942,9 +942,9 @@ AZ.questions.push(
  "stem": "<p>VMSS1 has a single scale rule: add one instance when CPU exceeds 70%. After a load spike, the number of instances never goes back down.</p><p>What should you add?</p>",
  "opts": [
   "A longer cool down",
-  "A scale-in rule, for example remove one instance when CPU is below 30%",
+  "A scale-in rule (CPU below 30%)",
   "A lower maximum instance count",
-  "A health probe"
+  "A health probe on the load balancer"
  ],
  "ans": 1,
  "expl": "<p>Autoscale only removes instances if a <b>scale-in rule</b> exists. Best practice: always pair a scale-out rule with a scale-in rule, with enough of a gap between thresholds (for example 70% and 30%) to avoid flapping.</p>",
@@ -980,7 +980,7 @@ AZ.questions.push(
   "Manual",
   "None",
   "Rolling",
-  "Automatic"
+  "Automatic, in no set order"
  ],
  "ans": 2,
  "expl": "<p>The <b>Rolling</b> policy updates instances in batches, with a pause and a health check (probe or application health extension) between batches.</p><ul><li><b>Manual</b>: nothing is updated until you upgrade each instance.</li><li><b>Automatic</b>: all instances can be updated at the same time, in any order.</li></ul>",
@@ -1056,7 +1056,7 @@ AZ.questions.push(
   "The Custom Script extension",
   "An availability set",
   "Boot diagnostics",
-  "The serial console"
+  "The VM's serial console"
  ],
  "ans": 0,
  "expl": "<p>The <b>Custom Script extension</b> downloads and runs a script (from a storage account or GitHub) in the VM. It's deployed through the portal, PowerShell, CLI, or a template, and suits post-deployment configuration.</p><p>Boot diagnostics capture the boot screen. The serial console gives text access during a failure. An availability set configures nothing.</p>",
@@ -1085,10 +1085,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to configure Linux VMs automatically at <b>first boot</b> (install packages, create users), with a file passed when the VM is created.</p><p>What should you use?</p>",
  "opts": [
-  "Run command",
-  "cloud-init, through custom data",
-  "Azure Advisor",
-  "The VMAccess extension"
+  "Run command on each VM",
+  "cloud-init (custom data)",
+  "Azure Advisor recommendations",
+  "The VMAccess extension for Linux"
  ],
  "ans": 1,
  "expl": "<p><b>cloud-init</b> is the standard first-boot configuration tool for Linux distributions. You pass the cloud-config file in the <b>custom data</b> when creating the VM.</p><p>VMAccess is for resetting access (password, SSH key). Run command runs a one-off script on an existing VM.</p>",
@@ -1119,8 +1119,8 @@ AZ.questions.push(
  "stem": "<p>An administrator forgot the password of the local administrator account on VM6 (Windows). VM6 isn't joined to a domain.</p><p>What should you do?</p>",
  "opts": [
   "Restore VM6 from the latest backup",
-  "Redeploy VM6",
-  "Use “Reset password” in the portal",
+  "Redeploy VM6 to another host",
+  "Use “Reset password”",
   "Create a snapshot of the OS disk"
  ],
  "ans": 2,
@@ -1154,10 +1154,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>VM7 no longer responds over RDP. You want to see a screenshot of the VM to know whether Windows is stuck at boot.</p><p>What should you use?</p>",
  "opts": [
-  "Azure Advisor",
-  "The activity log",
-  "Network Watcher IP flow verify",
-  "Boot diagnostics (screenshot)"
+  "Azure Advisor, Reliability tab",
+  "The VM's activity log",
+  "Network Watcher: IP flow verify",
+  "Boot diagnostics"
  ],
  "ans": 3,
  "expl": "<p><b>Boot diagnostics</b> keep a screenshot (and, for Linux, the console log). You see for example a blue screen, an update in progress, or a disk check prompt.</p><p>IP flow verify tests network rules. The activity log records Azure operations, not the OS state.</p>",
@@ -1225,9 +1225,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>An application stores cache files on the <b>D:</b> drive (temporary disk) of VM9, running Windows. After maintenance, the files are gone.</p><p>Why?</p>",
  "opts": [
-  "The backup overwrote the disk",
-  "The temporary disk isn't persistent: its content can be lost during maintenance, redeployment, or deallocation",
-  "The D: drive is encrypted",
+  "The Azure backup overwrote the disk's content",
+  "The temporary disk isn't persistent",
+  "The D: drive is BitLocker-encrypted and locked at boot",
   "The D: drive is a Premium data disk"
  ],
  "ans": 1,
@@ -1325,7 +1325,7 @@ AZ.questions.push(
  "opts": [
   "A managed disk's size can never change",
   "You must create a new disk and copy the data",
-  "You can increase the size in Azure, then extend the volume in the operating system",
+  "Grow it in Azure, then extend the volume",
   "You can shrink then grow the size freely"
  ],
  "ans": 2,
@@ -1395,7 +1395,7 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to back up VM12's OS disk once, before a risky update, quickly and cheaply.</p><p>What should you create?</p>",
  "opts": [
-  "An incremental snapshot of the disk",
+  "An incremental snapshot",
   "An Azure Compute Gallery",
   "An availability set",
   "A generalized managed image"
@@ -1540,7 +1540,7 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to encrypt the managed disks of several VMs with your own keys, stored in Key Vault, at the storage service level.</p><p>Which resource should you create and associate with the disks?</p>",
  "opts": [
-  "A Template Spec",
+  "A Template Spec with the key",
   "An Azure Compute Gallery",
   "A proximity placement group",
   "A Disk Encryption Set"
@@ -1615,9 +1615,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to attach a Premium SSD disk to VM18, of size Standard_D2_v4. The option isn't available.</p><p>Why?</p>",
  "opts": [
-  "The D2_v4 size doesn't support Premium storage: you need a size with “s”, such as D2s_v4",
-  "VM18 must run Linux",
-  "Premium disks require an availability set",
+  "D2_v4 doesn't support Premium (an “s” size is needed)",
+  "VM18 must run Linux for a Premium disk",
+  "Premium disks require the VM to be in an availability set",
   "Premium disks are only available in zones"
  ],
  "ans": 0,
@@ -1651,10 +1651,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Two VMs in a Windows failover cluster must access the same managed disk at the same time.</p><p>Which feature should you use?</p>",
  "opts": [
-  "A Premium Azure Files share",
-  "Shared disks (maxShares greater than 1)",
-  "A disk snapshot",
-  "The temporary disk"
+  "A Premium Azure Files share mounted by the nodes",
+  "Shared disks (maxShares > 1)",
+  "A disk snapshot attached to both VMs",
+  "Each node's temporary disk"
  ],
  "ans": 1,
  "expl": "<p><b>Shared disks</b> let you attach a managed disk (Premium SSD, Premium SSD v2, or Ultra) to several VMs at once, up to a maximum set by <b>maxShares</b>. The application (failover cluster, SCSI PR) manages concurrent access.</p><p>Azure Files is an SMB alternative, but it isn't a shared disk.</p>",
@@ -1687,9 +1687,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to move VM19 from France Central to West Europe, with its disks and network configuration.</p><p>What should you use?</p>",
  "opts": [
-  "The Redeploy option",
+  "The Redeploy option to the region",
   "The Move to another resource group option",
-  "Azure Resource Mover (or Azure Site Recovery)",
+  "Azure Resource Mover (or Site Recovery)",
   "Changing the region in Properties"
  ],
  "ans": 2,
@@ -1724,9 +1724,9 @@ AZ.questions.push(
  "stem": "<p>VM20 is in Subnet1 of VNet1. You need to move it to Subnet2 of the same virtual network.</p><p>What should you do?</p>",
  "opts": [
   "Move the VM to another resource group",
-  "Recreate the VM",
+  "Recreate the VM in Subnet2",
   "Create a peering between Subnet1 and Subnet2",
-  "Change the network interface's IP configuration to choose Subnet2 (the VM restarts)"
+  "Change the IP configuration's subnet"
  ],
  "ans": 3,
  "expl": "<p>Within the same virtual network, you can change the <b>subnet</b> of the network interface's IP configuration. The VM restarts and gets a new private IP address.</p><p>To change <b>virtual network</b>, however, you must recreate the VM (or use Resource Mover). Subnets aren't peered.</p>",
@@ -1758,7 +1758,7 @@ AZ.questions.push(
   "Run command",
   "A new DSC extension",
   "Boot diagnostics",
-  "A snapshot"
+  "A snapshot of the OS disk"
  ],
  "ans": 0,
  "expl": "<p><b>Run command</b> runs a PowerShell or shell script in the VM through the VM agent, with no network connection to the VM. Ideal for diagnosing or fixing when RDP or SSH no longer works.</p><p>Boot diagnostics show the screen. DSC is for lasting desired state configuration. A snapshot copies a disk.</p>",
@@ -1819,9 +1819,9 @@ AZ.questions.push(
  "stem": "<p>You deploy batch computations that can be interrupted and resumed. You want to minimize cost, accepting that Azure may reclaim the VMs at any time.</p><p>Which option should you choose?</p>",
  "opts": [
   "VMs with a 3-year reservation",
-  "Dedicated hosts",
-  "Spot VMs with the Deallocate or Delete eviction policy",
-  "B-series VMs"
+  "Dedicated hosts shared between teams",
+  "Spot VMs (Deallocate or Delete eviction)",
+  "B-series VMs in burst mode"
  ],
  "ans": 2,
  "expl": "<p><b>Spot VMs</b> use Azure's unused capacity at a large discount. Azure can <b>evict</b> them with 30 seconds' notice when it needs the capacity or the price exceeds your maximum. The eviction policy chooses Deallocate (disks kept) or Delete.</p><p>A 3-year reservation commits to a continuous workload. Dedicated hosts cost more.</p>",
@@ -1951,10 +1951,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to stop VM23 so you no longer pay for compute over the weekend. It must keep its disks.</p><p>What should you do?</p>",
  "opts": [
-  "Restart the VM",
+  "Restart the VM from the portal",
   "Shut it down from Windows (Shut down)",
-  "Stop it from the portal (Stopped (deallocated) state)",
-  "Delete the VM"
+  "Stop it from the portal (deallocated)",
+  "Delete the VM and keep its disks"
  ],
  "ans": 2,
  "expl": "<p>Stopping from the <b>portal</b> (or with <code>az vm deallocate</code>) <b>deallocates</b> the VM: compute is no longer billed, disks remain (and are billed). A dynamic public IP address is released.</p><p>Shutting down from the OS leaves the VM in the <b>Stopped</b> (not deallocated) state: compute keeps being billed.</p>",

@@ -229,9 +229,9 @@ AZ.questions.push(
   }
  ],
  "opts": [
-  "It's impossible: VM-C must be recreated in AS1",
+  "Impossible: VM-C must be recreated in AS1",
   "Move VM-C to AS1's resource group",
-  "Restart VM-C",
+  "Restart VM-C after choosing AS1",
   "Change VM-C's Availability property"
  ],
  "ans": 0,
@@ -395,9 +395,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>An application needs 3 web VMs behind a load balancer, spread to withstand a zone failure. The budget allows no more than 3 VMs.</p><p>Which configuration offers the best availability?</p>",
  "opts": [
-  "Three VMs in zone 1",
+  "Three VMs in zone 1, behind a Standard load balancer",
   "Three VMs in an availability set",
-  "One VM in each of zones 1, 2, and 3, with a Standard load balancer",
+  "One VM per zone (1, 2, 3) and a Standard LB",
   "Three VMs in a proximity placement group"
  ],
  "ans": 2,
@@ -433,7 +433,7 @@ AZ.questions.push(
   "Lengthen the cool down",
   "Reduce the maximum instance count",
   "Switch to the Manual upgrade policy",
-  "Use a preconfigured custom image (gallery) rather than lengthy extension configuration at startup"
+  "Use a preconfigured image (gallery)"
  ],
  "ans": 3,
  "expl": "<p>A <b>preconfigured</b> image (software already installed) avoids running long extensions on each new instance: the delay between the scale decision and the ready instance shrinks. You can also keep a higher minimum instance count.</p>",
@@ -462,10 +462,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You deploy a new image version to VMSS10, which uses the <b>Manual</b> upgrade policy. Existing instances keep the old image.</p><p>What should you do?</p>",
  "opts": [
-  "Upgrade the instances (for example az vmss update-instances --instance-ids '*')",
-  "Redeploy the VMSS",
+  "Upgrade the instances (update-instances)",
+  "Redeploy the VMSS to other hosts",
   "Increase the cool down",
-  "Nothing: they'll be updated at the next restart"
+  "Nothing: they'll update at the next restart"
  ],
  "ans": 0,
  "expl": "<p>In <b>Manual</b> mode, the set's model is updated, but each instance keeps the old model until you <b>upgrade</b> it (portal: Upgrade, or CLI <code>az vmss update-instances</code>). New instances created by scaling use the new model directly.</p>",
@@ -492,10 +492,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You restored an App Service backup of WebApp23 to a new app, WebApp23-test, to investigate a problem.</p><p>Which feature did you use?</p>",
  "opts": [
-  "A deployment slot",
+  "A restore deployment slot",
   "Restore a backup to another app",
-  "A Template Spec",
-  "Azure Site Recovery"
+  "A Template Spec of the app",
+  "Azure Site Recovery for App Service"
  ],
  "ans": 1,
  "expl": "<p>An App Service backup can be restored to the original app, to a <b>slot</b>, or to <b>another app</b> (new or existing). It's handy for testing without touching production.</p>",
@@ -524,9 +524,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to create a copy of WebApp24 (code and configuration) in another region, to prepare for global scale.</p><p>Which App Service feature fits best?</p>",
  "opts": [
-  "Move the app to the other region from Properties",
-  "Increase the number of instances",
-  "Clone the app (or restore a backup to an app in the other region)",
+  "Move the app to the other region (Properties)",
+  "Increase the plan's instance count",
+  "Clone the app to the other region",
   "A deployment slot in the other region"
  ],
  "ans": 2,
@@ -558,9 +558,9 @@ AZ.questions.push(
  "stem": "<p>A containerized web app must be redeployed automatically each time a new app:latest image is pushed to ACR9.</p><p>What should you enable?</p>",
  "opts": [
   "Always On",
-  "Geo-replication",
-  "Auto swap",
-  "Continuous deployment in Deployment Center (ACR webhook)"
+  "Geo-replication of the container registry",
+  "Auto swap on the staging slot",
+  "Continuous deployment (ACR webhook)"
  ],
  "ans": 3,
  "expl": "<p>With <b>continuous deployment</b> enabled for a container, App Service creates a <b>webhook</b> in ACR: on each push of the tracked image, the app pulls the new image and restarts.</p>",
@@ -593,10 +593,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Teams in Europe and Asia pull the same images from ACR10, located in France Central. Pulls from Asia are slow and incur data egress charges.</p><p>What should you do?</p>",
  "opts": [
-  "Move ACR10 to Premium and enable geo-replication to an Asian region",
-  "Enable the retention policy",
-  "Increase the VM size in Asia",
-  "Create a second, unrelated Basic registry"
+  "ACR10 to Premium, geo-replication to Asia",
+  "Enable the registry's retention policy",
+  "Increase the size of the VMs in Asia",
+  "Create a second, unrelated Basic registry in Asia"
  ],
  "ans": 0,
  "expl": "<p><b>Geo-replication</b> (Premium) creates replicas of the registry in other regions, with a single login name. Clients pull from the nearest replica: faster and with no cross-region egress charges. Pushes are replicated automatically.</p>",
@@ -629,10 +629,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>The registry ACR11 must only be reachable from VNet5, through a private IP address.</p><p>What should you configure?</p>",
  "opts": [
-  "The admin account",
-  "A private endpoint (Premium tier) and disable public access",
-  "A retention policy",
-  "The Basic tier"
+  "The admin account with a strong password",
+  "A private endpoint (Premium)",
+  "A manifest retention policy",
+  "The Basic tier with a firewall"
  ],
  "ans": 1,
  "expl": "<p>ACR <b>private endpoints</b> require the <b>Premium</b> tier. You then disable public network access. The private DNS zone is <code>privatelink.azurecr.io</code>.</p>",
@@ -668,10 +668,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to deploy an Azure Container Apps application that reads a database password, without writing it in clear text in the app definition.</p><p>What should you use?</p>",
  "opts": [
-  "A resource tag",
-  "The revision name",
-  "A Container Apps secret (optionally referenced from Key Vault), exposed as an environment variable",
-  "A setting of the Log Analytics environment"
+  "A resource tag on the app",
+  "The active revision's name",
+  "A Container Apps secret (environment variable)",
+  "A setting of the environment's Log Analytics workspace"
  ],
  "ans": 2,
  "expl": "<p>Container Apps manages <b>secrets</b> at the app level, which can reference a <b>Key Vault</b> secret with the app's managed identity. An environment variable references them with <code>secretRef</code>.</p>",
@@ -704,10 +704,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A developer wants to expose an API from an ACI container on port 8080.</p><p>What must he configure when creating the container group?</p>",
  "opts": [
-  "An App Service plan",
-  "A required load balancer",
-  "A scale rule",
-  "Port 8080 in the exposed ports of the container and the group (and a public IP address if the API must be on the internet)"
+  "An App Service plan to expose the port",
+  "A required load balancer in front of the group",
+  "A scale rule on port 8080",
+  "Port 8080 exposed (and a public IP)"
  ],
  "ans": 3,
  "expl": "<p>Ports to open are declared in the container and in the container group (<code>--ports 8080</code> parameter). A public IP address or a virtual network deployment makes the group reachable. No load balancer is needed.</p>",
@@ -739,7 +739,7 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to run a Windows container in Azure Container Instances.</p><p>Which constraint must you know?</p>",
  "opts": [
-  "The container group can contain only one Windows container",
+  "A group holds only one Windows container",
   "Windows containers aren't supported",
   "Windows containers require an Ultra disk",
   "Windows containers must be in an App Service plan"
@@ -1005,10 +1005,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A developer wants to deploy his code to a web app over FTPS. The connection is refused.</p><p>Which App Service setting should you check?</p>",
  "opts": [
-  "Always On",
-  "ARR affinity",
-  "The FTP state (FTP/FTPS allowed, FTPS only, or disabled) and basic publishing credentials",
-  "Health check"
+  "Always On on the production slot",
+  "ARR affinity (sticky sessions)",
+  "FTP state and basic credentials",
+  "The app's health check"
  ],
  "ans": 2,
  "expl": "<p>In <b>Configuration > General settings</b>, the <b>FTP state</b> can be set to “FTPS only” or “Disabled”, and basic authentication (used by FTP) can be disabled. For security, Microsoft recommends disabling FTP and preferring other deployment methods.</p>",
@@ -1071,9 +1071,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A Linux web app must run a .NET image with a custom startup command.</p><p>Where should you specify the command?</p>",
  "opts": [
-  "Configuration > General settings > Startup command",
-  "In the App Service plan",
-  "In an Azure tag",
+  "General settings > Startup command",
+  "In the app's App Service plan",
+  "In an Azure tag on the app",
   "In Deployment Center only"
  ],
  "ans": 0,
@@ -1100,10 +1100,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>The App Service plan ASP4 (Standard S1, 3 instances) hosts 6 apps. One of them uses almost all the CPU and slows down the others.</p><p>What is the best solution?</p>",
  "opts": [
-  "Enable ARR affinity",
+  "Enable ARR affinity on every app",
   "Move the resource-hungry app to its own plan",
-  "Add a deployment slot",
-  "Disable Always On"
+  "Add a deployment slot to the plan",
+  "Disable Always On on all the other apps in the plan"
  ],
  "ans": 1,
  "expl": "<p>All apps in a plan share the same instances. Isolating the resource-hungry app in a <b>dedicated plan</b> lets you scale it separately without penalizing the others.</p><p>Note: deployment slots also share the plan's resources.</p>",
@@ -1678,10 +1678,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>VM41 is in a <b>Failed</b> state after an interrupted operation. You want to bring it back to a consistent state without moving it or losing data.</p><p>Which <b>two</b> actions can help?</p><p>Each correct answer presents a complete solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
-  "Rerun the last operation (for example a resize or VM update)",
+  "Rerun the last operation (for example a resize)",
   "Reapply the VM's state",
   "Export the OS disk",
-  "Delete the VM and its disks"
+  "Delete the VM and its disks, then recreate it from a template"
  ],
  "ans": [
   0,
@@ -1718,10 +1718,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>You need to let a web app read Key Vault secrets without storing credentials.</p><p>Which <b>two</b> actions should you perform?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
-  "Put the vault's key in an app setting",
-  "Assign that identity the Key Vault Secrets User role on the vault",
-  "Enable the web app's system-assigned managed identity",
-  "Assign the Contributor role on the vault to all users"
+  "Put the vault's access key in an app setting",
+  "Key Vault Secrets User for that identity",
+  "Enable the system-assigned managed identity",
+  "Contributor on the vault for all users"
  ],
  "ans": [
   1,
@@ -1757,10 +1757,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A critical application runs on VM42, with no redundancy. You want to be warned 15 minutes before planned maintenance that will restart the host, to shut the application down cleanly.</p><p>What should you use in the VM?</p>",
  "opts": [
-  "The serial console",
+  "The VM's serial console",
   "Boot diagnostics",
-  "The Scheduled Events service (instance metadata)",
-  "A budget alert"
+  "The Scheduled Events service",
+  "A budget alert on the VM"
  ],
  "ans": 2,
  "expl": "<p><b>Scheduled Events</b>, exposed by the Instance Metadata Service (IMDS, <code>169.254.169.254</code>), informs the VM of upcoming events (reboot, redeploy, Spot eviction) with advance notice. The application can prepare for them.</p>",
@@ -1791,8 +1791,8 @@ AZ.questions.push(
  "opts": [
   "Boot diagnostics",
   "An availability set",
-  "A Rolling upgrade policy",
-  "A Maintenance Configuration with a scheduled window"
+  "A Rolling upgrade policy on the VMs",
+  "A scheduled Maintenance Configuration"
  ],
  "ans": 3,
  "expl": "<p><b>Maintenance Configurations</b> let you control platform updates for dedicated hosts and isolated VMs, or schedule guest patching, within a defined window.</p>",
@@ -1858,10 +1858,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You deploy 20 VMs with an ARM template. The deployment fails with a regional vCPU quota error.</p><p>What should you do?</p>",
  "opts": [
-  "Add a dependsOn",
-  "Request a vCPU quota increase for the family and region, or choose another size family",
-  "Create a new resource group",
-  "Switch to Complete mode"
+  "Add a dependsOn on the VM",
+  "Raise the vCPU quota (or change family)",
+  "Create a new resource group for the VM",
+  "Switch the deployment to Complete mode"
  ],
  "ans": 1,
  "expl": "<p>vCPU <b>quotas</b> (regional total and per family) limit the number of VMs. You request an increase in <b>Usage + quotas</b>, or choose a family that still has quota. The deployment mode and resource group change nothing.</p>",
@@ -1894,7 +1894,7 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want development VMs to shut down every evening at 7 PM, with a notification to developers 30 minutes before.</p><p>Which VM feature should you configure?</p>",
  "opts": [
-  "Redeploy",
+  "Redeploy the VM every evening",
   "Boot diagnostics",
   "Auto-shutdown with notification",
   "Availability set"
@@ -2003,9 +2003,9 @@ AZ.questions.push(
  "stem": "<p>A web app stores user sessions in memory, on the instance. You go from 1 to 3 instances and users are randomly signed out.</p><p>Which quick fix can you apply?</p>",
  "opts": [
   "Enable HTTPS only",
-  "Enable ARR affinity (sticky sessions)",
-  "Disable Always On",
-  "Move to the Basic plan"
+  "Enable ARR affinity",
+  "Disable Always On on the app",
+  "Move to a Basic plan with one instance"
  ],
  "ans": 1,
  "expl": "<p><b>ARR affinity</b> sends each user back to the same instance with a cookie: the in-memory session stays available. The real long-term fix is to store sessions outside the instance (for example Azure Cache for Redis).</p>",
@@ -2032,9 +2032,9 @@ AZ.questions.push(
  "stem": "<p>A web app's logs must be kept for 90 days and queried with KQL along with those of other resources.</p><p>What should you configure?</p>",
  "opts": [
   "Application logging to the file system",
-  "Log stream",
-  "A diagnostic setting to a Log Analytics workspace (AppServiceHTTPLogs, AppServiceConsoleLogs… categories)",
-  "Scheduled backups"
+  "The app's log stream",
+  "A diagnostic setting to Log Analytics",
+  "The app's scheduled backups"
  ],
  "ans": 2,
  "expl": "<p>A <b>diagnostic setting</b> sends App Service logs (HTTP, console, application, audit…) to <b>Log Analytics</b>, where you set retention and query them in KQL with other sources.</p><p>File system logging turns itself off after 12 hours. Log stream is live, with no retention.</p>",
@@ -2067,8 +2067,8 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to deploy several identical VMs in a region where a size family is in high demand. You want to reserve the capacity in advance, without a 1- or 3-year price commitment.</p><p>What should you use?</p>",
  "opts": [
-  "An Azure reservation (discount)",
-  "Spot VMs",
+  "An Azure reservation (1- or 3-year discount)",
+  "Spot VMs in the region",
   "A proximity placement group",
   "An on-demand capacity reservation"
  ],
@@ -2172,10 +2172,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You manage VMSS11's applications with a template. A new software version must be installed on all instances, including future ones.</p><p>Where should you define it?</p>",
  "opts": [
-  "In a tag",
-  "On each instance, by hand",
-  "In the scale set model (image or extension), then upgrade the instances",
-  "In the App Service plan"
+  "In a tag on the scale set",
+  "On each instance, by hand, over an RDP session",
+  "In the model, then upgrade the instances",
+  "In the associated App Service plan"
  ],
  "ans": 2,
  "expl": "<p>The set's <b>model</b> (image, extensions, VM applications) describes all instances. You update it, then <b>upgrade</b> the existing instances according to the upgrade policy. New instances use the new model automatically.</p>",
@@ -2207,10 +2207,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A compute application needs 500 VMs for 2 hours every night for parallel simulations, then none.</p><p>Which solution fits best?</p>",
  "opts": [
-  "A single ACI container",
-  "An App Service Premium plan",
+  "A single ACI container with 500 processes",
+  "An App Service Premium plan with 30 fixed instances",
   "500 individual VMs running all the time",
-  "A virtual machine scale set (or Azure Batch) that scales to 500 instances then back to 0"
+  "A VMSS (or Batch) that scales to 500, then back to 0"
  ],
  "ans": 3,
  "expl": "<p>A <b>virtual machine scale set</b> creates and deletes hundreds of identical VMs on demand (scheduled or automatic), down to zero. <b>Azure Batch</b> drives this kind of large-scale parallel compute. Combining with Spot VMs cuts cost further.</p>",

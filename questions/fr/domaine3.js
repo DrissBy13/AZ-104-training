@@ -544,10 +544,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Les nouvelles machines virtuelles de votre abonnement doivent chiffrer aussi leur disque temporaire et leurs caches de disque, sans rien installer dans le système d'exploitation.</p><p>Que devez-vous faire en premier ?</p>",
  "opts": [
-  "Créer un coffre de clés et une clé",
+  "Créer un coffre de clés et une clé gérée par le client",
   "Activer Azure Disk Encryption sur chaque VM",
-  "Enregistrer la fonctionnalité de chiffrement sur l'hôte dans l'abonnement",
-  "Convertir les disques en SSD Premium"
+  "Enregistrer la fonctionnalité EncryptionAtHost",
+  "Convertir les disques en SSD Premium v2 chiffrés"
  ],
  "ans": 2,
  "expl": "<p>Le <b>chiffrement sur l'hôte</b> (encryption at host) chiffre aussi le <b>disque temporaire</b> et les <b>caches</b> de disque, sur l'hôte physique, sans agent ni BitLocker dans la VM.</p><p>Avant de l'activer sur une VM, il faut <b>enregistrer la fonctionnalité</b> EncryptionAtHost sur l'abonnement (<code>Register-AzProviderFeature -FeatureName EncryptionAtHost</code>).</p><p><b>Azure Disk Encryption</b> chiffre à l'intérieur de l'OS (BitLocker ou DM-Crypt) : ce n'est pas ce qui est demandé. Le type de disque n'a pas d'importance.</p>",

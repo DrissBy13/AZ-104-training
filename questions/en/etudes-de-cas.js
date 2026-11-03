@@ -110,8 +110,8 @@ AZ.cases.push(
    "opts": [
     "Place VM-APP1 and VM-APP2 in an availability set",
     "Convert both VMs' disks to Premium SSD",
-    "Redeploy VM-APP1 and VM-APP2 in two different availability zones",
-    "Protect both VMs with Azure Backup"
+    "Redeploy both VMs in two different zones",
+    "Protect VM-APP1 and VM-APP2 with Azure Backup"
    ],
    "ans": 2,
    "expl": "<p>The <b>99.99%</b> SLA requires at least two VMs in different <b>availability zones</b>. An availability set offers 99.95%, Premium disks alone give 99.9% for a single VM, and Azure Backup doesn't change availability.</p><p>A VM's zone is chosen at creation: the existing VMs, deployed without zones, must be <b>redeployed</b>.</p>",

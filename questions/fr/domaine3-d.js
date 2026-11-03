@@ -44,7 +44,7 @@ AZ.questions.push(
  "opts": [
   "@description('dev, test, prod')",
   "@allowed(['dev', 'test', 'prod'])",
-  "@secure()",
+  "@metadata({ values: 'dev,test,prod' })",
   "@minLength(3)"
  ],
  "ans": 1,
@@ -70,10 +70,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Un fichier Bicep doit déployer une adresse IP publique uniquement si le paramètre <b>publicAccess</b> vaut true.</p><p>Comment devez-vous écrire la ressource ?</p>",
  "opts": [
-  "resource pip ... = [for i in range(0, publicAccess): { ... }]",
-  "resource pip ... existing = { ... }",
-  "resource pip 'Microsoft.Network/publicIPAddresses@2023-04-01' = if (publicAccess) { ... }",
-  "module pip ... = { dependsOn: [publicAccess] }"
+  "resource pip … = [for i in range(0, publicAccess): { … }]",
+  "resource pip … existing = { name: 'pip1' }",
+  "resource pip '…/publicIPAddresses@2023-04-01' = if (publicAccess) { … }",
+  "module pip './pip.bicep' = { dependsOn: [publicAccess] }"
  ],
  "ans": 2,
  "expl": "<p>Le mot-clé <b>if</b> après le signe égal crée un <b>déploiement conditionnel</b> (équivalent de l'élément <code>condition</code> en JSON ARM). Si la condition est fausse, la ressource n'est pas déployée.</p><p>Une boucle sur un booléen n'a pas de sens. existing référence une ressource existante. dependsOn ordonne des déploiements.</p>",
@@ -98,7 +98,7 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous examinez un fichier de paramètres ARM. Comment la valeur du paramètre vmSize doit-elle être écrite ?</p>",
  "opts": [
-  "\"vmSize\": { \"defaultValue\": \"Standard_D2s_v5\" }",
+  "\"vmSize\": { \"type\": \"string\", \"defaultValue\": \"Standard_D2s_v5\" }",
   "\"parameters\": { \"vmSize\": \"Standard_D2s_v5\" }",
   "\"variables\": { \"vmSize\": { \"value\": \"Standard_D2s_v5\" } }",
   "\"parameters\": { \"vmSize\": { \"value\": \"Standard_D2s_v5\" } }"
@@ -186,9 +186,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Un groupe de ressources a reçu des milliers de déploiements. Vous craignez d'atteindre la limite de l'historique des déploiements.</p><p>Que fait Azure ?</p>",
  "opts": [
-  "Il supprime automatiquement les déploiements les plus anciens quand l'historique approche de 800 entrées",
-  "Il bloque tout nouveau déploiement",
-  "Il supprime les ressources les plus anciennes",
+  "Il supprime les déploiements les plus anciens (près de 800)",
+  "Il bloque tout nouveau déploiement jusqu'au nettoyage",
+  "Il supprime les ressources les plus anciennes du groupe",
   "Il archive l'historique dans un compte de stockage"
  ],
  "ans": 0,
@@ -218,9 +218,9 @@ AZ.questions.push(
  "stem": "<p>Vous voulez déployer un ensemble de ressources et empêcher leur suppression ou leur modification hors du modèle, tout en gérant leur cycle de vie comme un tout.</p><p>Que devez-vous utiliser ?</p>",
  "opts": [
   "Un déploiement en mode Incrémentiel",
-  "Une pile de déploiement (deployment stack) avec des paramètres de refus",
-  "Une Template Spec",
-  "Un verrou sur chaque ressource"
+  "Une pile de déploiement avec refus",
+  "Une Template Spec versionnée par équipe",
+  "Un verrou Lecture seule sur chaque ressource"
  ],
  "ans": 1,
  "expl": "<p>Une <b>pile de déploiement</b> gère un ensemble de ressources comme une unité : elle peut supprimer les ressources retirées du modèle, et appliquer des <b>affectations de refus</b> (DenyDelete ou DenyWriteAndDelete) qui protègent les ressources gérées.</p><p>Une Template Spec stocke un modèle, sans protection. Des verrous individuels sont plus lourds à gérer.</p>",
@@ -249,8 +249,8 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Dans un modèle ARM JSON, vous devez obtenir l'identifiant complet d'un réseau virtuel nommé VNet1 du même groupe de ressources.</p><p>Quelle fonction devez-vous utiliser ?</p>",
  "opts": [
-  "reference('VNet1')",
-  "uniqueString('VNet1')",
+  "reference(resourceGroup().id, 'VNet1', '2023-04-01', 'Full')",
+  "uniqueString(resourceGroup().id, 'VNet1')",
   "resourceId('Microsoft.Network/virtualNetworks', 'VNet1')",
   "concat('VNet1')"
  ],
@@ -317,8 +317,8 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une instance de VMSS3 exécute un traitement critique de longue durée. Elle ne doit pas être supprimée lors d'une diminution automatique.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "La protection d'instance contre la diminution (scale-in protection)",
-  "La stratégie OldestVM",
+  "La protection contre la diminution",
+  "La stratégie de diminution OldestVM",
   "Un verrou Suppression impossible sur VMSS3",
   "Un nombre minimal d'instances plus élevé"
  ],
@@ -347,9 +347,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Les instances de VMSS4 tombent parfois en panne applicative sans que la VM s'arrête. Vous voulez qu'elles soient remplacées automatiquement.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Le surprovisionnement",
-  "L'extension d'intégrité de l'application (ou une sonde d'équilibreur) et les réparations automatiques d'instance",
-  "Le temps de refroidissement",
+  "Le surprovisionnement des instances",
+  "L'extension d'intégrité et les réparations automatiques",
+  "Le temps de refroidissement entre deux mises à l'échelle",
   "La stratégie de mise à niveau Manuelle"
  ],
  "ans": 1,
@@ -383,10 +383,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Le trafic de votre boutique en ligne augmente toujours de 18 h à 22 h. Vous voulez que VMSS5 ait 10 instances pendant ce créneau et 3 le reste du temps, sans attendre que le CPU monte.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Une règle basée sur le CPU",
+  "Une règle basée sur le CPU moyen",
   "Un groupe de placement de proximité",
-  "Un profil de mise à l'échelle planifié (basé sur l'heure) avec un nombre d'instances de 10",
-  "Une réservation"
+  "Un profil planifié à 10 instances",
+  "Une réservation de 10 instances sur 1 an"
  ],
  "ans": 2,
  "expl": "<p>La mise à l'échelle automatique accepte plusieurs <b>profils</b>, dont des profils <b>planifiés</b> (jours et heures récurrents) avec un nombre d'instances fixe ou leurs propres règles. On anticipe ainsi une charge prévisible.</p>",
@@ -461,10 +461,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Un disque SSD Premium P30 (1 Tio) de VM25 a besoin de plus d'IOPS pendant la clôture mensuelle, mais pas de plus d'espace.</p><p>Que pouvez-vous faire sans changer la taille du disque ?</p>",
  "opts": [
-  "Ajouter un disque temporaire",
-  "Passer en HDD Standard",
+  "Ajouter un disque temporaire plus grand",
+  "Passer le disque en HDD Standard",
   "Activer le cache Lecture/écriture",
-  "Changer le niveau de performance du disque (par exemple vers P40)"
+  "Changer le niveau de performance (P40)"
  ],
  "ans": 3,
  "expl": "<p>Pour les SSD Premium, le <b>niveau de performance</b> peut être relevé indépendamment de la taille (par exemple P30 → P40), puis abaissé plus tard (après un délai minimal). Le <b>bursting</b> à la demande est une autre option pour des pics courts sur les grands disques.</p><p>Un HDD Standard serait plus lent. Le cache Lecture/écriture est déconseillé pour les données.</p>",
@@ -500,7 +500,7 @@ AZ.questions.push(
   "VHD de taille fixe",
   "VHDX dynamique",
   "VHD dynamique",
-  "VMDK"
+  "VMDK (format VMware)"
  ],
  "ans": 0,
  "expl": "<p>Azure n'accepte que les disques au format <b>VHD de taille fixe</b>. Un VHDX ou un disque dynamique doit être converti (par exemple avec <code>Convert-VHD</code> sous Hyper-V), et un VMDK doit être converti en VHD.</p>",
@@ -529,10 +529,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Un auditeur veut télécharger une copie du disque du système d'exploitation de VM26 au format VHD.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Activer les diagnostics de démarrage",
-  "Générer une URL d'exportation (SAS) pour le disque managé, après avoir arrêté (libéré) la VM ou à partir d'un instantané",
-  "Utiliser Azure File Sync",
-  "Copier le dossier C:\\Windows"
+  "Activer les diagnostics de démarrage de la VM",
+  "Générer une URL d'exportation (SAS) du disque",
+  "Utiliser Azure File Sync sur la VM",
+  "Copier le dossier C:\\Windows vers un partage"
  ],
  "ans": 1,
  "expl": "<p>L'option <b>Exporter</b> d'un disque managé (ou d'un instantané) génère une <b>URL SAS</b> temporaire pour télécharger le VHD. Le disque ne doit pas être attaché à une VM en cours d'exécution : on libère la VM ou on exporte un instantané.</p>",
@@ -563,8 +563,8 @@ AZ.questions.push(
  "opts": [
   "Attacher l'instantané comme disque de données",
   "Restaurer l'instantané dans un compte de stockage",
-  "Créer un disque managé à partir de l'instantané, puis créer une VM à partir de ce disque",
-  "Créer une VM et choisir l'instantané comme image de la Marketplace"
+  "Créer un disque depuis l'instantané, puis la VM",
+  "Choisir l'instantané comme image de la Marketplace"
  ],
  "ans": 2,
  "expl": "<p>On crée d'abord un <b>disque managé</b> à partir de l'instantané, puis une <b>VM à partir de ce disque</b> (option Créer une VM sur le disque). La nouvelle VM est spécialisée : elle garde le nom d'ordinateur et les comptes de l'original.</p>",
@@ -595,9 +595,9 @@ AZ.questions.push(
  "stem": "<p>Des VM sans état d'un groupe identique doivent démarrer très vite et réinitialiser leur système à chaque redémarrage. Les données du disque du système d'exploitation n'ont pas besoin d'être conservées.</p><p>Quel type de disque du système d'exploitation devez-vous utiliser ?</p>",
  "opts": [
   "Un disque Ultra",
-  "Un SSD Premium avec cache Lecture/écriture",
+  "Un SSD Premium (cache Lecture/écriture)",
   "Un disque partagé",
-  "Un disque de système d'exploitation éphémère"
+  "Un disque système éphémère"
  ],
  "ans": 3,
  "expl": "<p>Le <b>disque de système d'exploitation éphémère</b> est créé sur le stockage local de l'hôte (cache ou disque temporaire) : lecture et réimage plus rapides, pas de coût de stockage. Mais il est perdu si la VM change d'hôte, et la VM ne peut pas être arrêtée avec libération.</p>",
@@ -626,9 +626,9 @@ AZ.questions.push(
  "stem": "<p>Vous devez créer une image généralisée d'une VM <b>Linux</b>.</p><p>Quelle commande devez-vous exécuter dans la VM avant de la capturer ?</p>",
  "opts": [
   "sudo waagent -deprovision+user",
-  "az vm deallocate",
+  "az vm deallocate --name VM27",
   "sudo shutdown -h now uniquement",
-  "sysprep /generalize"
+  "sysprep /generalize /oobe /shutdown"
  ],
  "ans": 0,
  "expl": "<p>Sous Linux, l'agent de VM Azure retire les informations propres à la machine avec <code>waagent -deprovision+user</code> (qui supprime aussi le dernier compte utilisateur). On libère ensuite la VM, on la marque généralisée (<code>az vm generalize</code>) et on capture l'image.</p><p>Sysprep est l'outil Windows.</p>",
@@ -694,10 +694,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>VM28 ne démarre plus à cause d'un pilote défectueux. Vous voulez réparer le disque du système d'exploitation depuis une autre VM.</p><p>Quelle démarche Microsoft recommande-t-elle ?</p>",
  "opts": [
-  "Redimensionner VM28",
-  "Activer Always On",
-  "Créer une VM de réparation, y attacher une copie du disque du système d'exploitation, corriger, puis remplacer le disque de VM28 (par exemple avec az vm repair)",
-  "Supprimer VM28 et ses disques"
+  "Redimensionner VM28 vers une taille supérieure",
+  "Activer Always On sur VM28",
+  "Réparer une copie du disque sur une VM de réparation",
+  "Supprimer VM28 et ses disques, puis la recréer depuis l'image"
  ],
  "ans": 2,
  "expl": "<p>La commande <b>az vm repair</b> automatise la démarche : création d'une VM de réparation, attachement d'une <b>copie</b> du disque du système d'exploitation comme disque de données, exécution de scripts de correction, puis <b>échange du disque du système d'exploitation</b> de la VM d'origine (swap OS disk).</p>",
@@ -729,10 +729,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez appliquer et maintenir une configuration d'état souhaité (rôles Windows, fichiers, services) sur des VM, et signaler les dérives.</p><p>Quelle solution Microsoft recommande-t-elle aujourd'hui ?</p>",
  "opts": [
-  "Les diagnostics de démarrage",
-  "La console série",
-  "Une Template Spec",
-  "Azure Machine Configuration (configuration invité d'Azure Policy)"
+  "Les diagnostics de démarrage des VM",
+  "La console série de chaque VM",
+  "Une Template Spec de configuration",
+  "Azure Machine Configuration"
  ],
  "ans": 3,
  "expl": "<p><b>Azure Machine Configuration</b> (anciennement configuration invité d'Azure Policy) audite et applique des configurations basées sur DSC dans les VM Azure et les serveurs Arc, et remonte la conformité. Il remplace progressivement Azure Automation State Configuration et l'extension DSC.</p>",
@@ -760,10 +760,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>L'extension Custom Script échoue sur VM29. Vous devez lire la sortie du script et le message d'erreur.</p><p>Où trouvez-vous ces informations ?</p>",
  "opts": [
-  "Dans l'état de l'extension (portail : Extensions + applications) et dans les journaux de l'agent dans la VM",
-  "Dans Azure Advisor",
-  "Dans la facture",
-  "Dans les métriques du compte de stockage"
+  "Dans l'état de l'extension et les journaux de l'agent",
+  "Dans Azure Advisor, onglet Excellence opérationnelle",
+  "Dans la facture du mois, ligne Extensions",
+  "Dans les métriques du compte de stockage des scripts"
  ],
  "ans": 0,
  "expl": "<p>Le portail affiche l'<b>état détaillé</b> de l'extension (sortie et erreur). Dans la VM, les journaux sont sous <code>C:\\WindowsAzure\\Logs\\Plugins\\</code> (Windows) ou <code>/var/log/azure/</code> (Linux). Pour réexécuter le même script, il faut supprimer puis réinstaller l'extension, ou changer un paramètre.</p>",
@@ -795,10 +795,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous créez une VM Windows Server et votre entreprise a des licences Windows Server avec Software Assurance.</p><p>Quelle option devez-vous cocher lors de la création pour réduire le coût ?</p>",
  "opts": [
-  "Instance Spot Azure",
-  "Utiliser une licence Windows Server existante (Azure Hybrid Benefit)",
-  "Mise en réseau accélérée",
-  "Diagnostics de démarrage"
+  "Instance Spot Azure à prix fixe",
+  "Azure Hybrid Benefit (licence existante)",
+  "Mise en réseau accélérée sur l'interface",
+  "Diagnostics de démarrage gérés"
  ],
  "ans": 1,
  "expl": "<p>L'option <b>Azure Hybrid Benefit</b> (« Utiliser une licence Windows Server existante ») facture la VM au tarif d'une VM Linux de base, sans le coût de la licence Windows. Elle peut aussi être activée après la création.</p>",
@@ -860,9 +860,9 @@ AZ.questions.push(
  "stem": "<p>Vous déplacez une VM vers une zone de disponibilité alors qu'elle a été créée sans zone (régionale).</p><p>Quelle affirmation est vraie ?</p>",
  "opts": [
   "Il suffit de modifier la propriété Zone de la VM",
-  "Il suffit de redémarrer la VM",
+  "Il suffit de redémarrer la VM dans la zone",
   "C'est impossible, même en recréant la VM",
-  "Il faut recréer la VM dans la zone (Azure Resource Mover ou recréation à partir des disques)"
+  "Il faut recréer la VM dans la zone"
  ],
  "ans": 3,
  "expl": "<p>La zone d'une VM est fixée à la création. Pour passer d'une VM régionale à une VM zonale, on la <b>recrée</b> dans la zone voulue (Azure Resource Mover propose ce scénario, ou on recrée à partir d'instantanés des disques).</p>",
@@ -1003,10 +1003,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une galerie Azure Compute contient une version d'image répliquée en France Central uniquement. Vous voulez créer des VM à partir d'elle en West Europe.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Ajouter West Europe aux régions de réplication de la version d'image",
-  "Rien : une galerie est mondiale",
-  "Créer une nouvelle galerie en West Europe et recommencer depuis le début",
-  "Copier l'image avec AzCopy"
+  "Ajouter West Europe aux régions de réplication",
+  "Rien : une galerie est mondiale et sert toutes les régions",
+  "Créer une galerie en West Europe et tout recommencer",
+  "Copier l'image avec AzCopy vers West Europe"
  ],
  "ans": 0,
  "expl": "<p>Une <b>version d'image</b> doit être <b>répliquée</b> dans chaque région où l'on veut l'utiliser. On ajoute West Europe aux régions cibles (avec un nombre de réplicas adapté au nombre de VM créées en même temps).</p>",
@@ -1039,9 +1039,9 @@ AZ.questions.push(
  "stem": "<p>Des milliers de VM vont être créées en même temps à partir de la même version d'image dans West Europe. Les créations ralentissent.</p><p>Que devez-vous augmenter ?</p>",
  "opts": [
   "Le nombre de domaines d'erreur",
-  "Le nombre de réplicas de la version d'image dans la région",
-  "La taille des VM",
-  "Le quota de stockage"
+  "Le nombre de réplicas dans la région",
+  "La taille des VM déployées",
+  "Le quota de stockage de l'abonnement"
  ],
  "ans": 1,
  "expl": "<p>Chaque <b>réplica</b> d'une version d'image peut servir un nombre limité de créations simultanées. Augmenter le nombre de réplicas dans la région répartit la charge et accélère les déploiements à grande échelle.</p>",
@@ -1069,10 +1069,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Un développeur veut ouvrir une invite de commande dans l'environnement de son application web pour inspecter les fichiers déployés.</p><p>Quel outil d'App Service doit-il utiliser ?</p>",
  "opts": [
-  "Azure Bastion",
-  "La console série",
-  "La console Kudu (Outils avancés, site SCM)",
-  "RDP vers l'instance"
+  "Azure Bastion vers l'instance",
+  "La console série de l'application",
+  "La console Kudu (site SCM)",
+  "RDP vers l'instance du plan"
  ],
  "ans": 2,
  "expl": "<p><b>Kudu</b> (Outils avancés, à l'adresse <code>&lt;app&gt;.scm.azurewebsites.net</code>) donne une console de débogage, l'explorateur de fichiers, les variables d'environnement, les journaux et les déploiements. Sous Linux, on dispose aussi de SSH dans le conteneur.</p><p>On ne se connecte pas en RDP aux instances App Service.</p>",
@@ -1105,10 +1105,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une application web doit exécuter en continu un script de traitement en arrière-plan, sur les mêmes instances que l'application.</p><p>Quelle fonctionnalité d'App Service devez-vous utiliser ?</p>",
  "opts": [
-  "Un emplacement de déploiement",
-  "Le contrôle d'intégrité",
-  "Une sauvegarde planifiée",
-  "Une tâche web (WebJob) continue, avec Always On activé"
+  "Un emplacement de déploiement dédié",
+  "Le contrôle d'intégrité de l'application",
+  "Une sauvegarde planifiée toutes les heures",
+  "Une WebJob continue avec Always On"
  ],
  "ans": 3,
  "expl": "<p>Les <b>WebJobs</b> exécutent des scripts ou programmes en arrière-plan dans le contexte de l'application, de façon <b>continue</b> ou <b>déclenchée</b> (planifiée). Une tâche continue exige <b>Always On</b> pour ne pas s'arrêter quand l'application se décharge.</p>",
@@ -1143,8 +1143,8 @@ AZ.questions.push(
  "opts": [
   "Non, un plan est soit Windows soit Linux",
   "Oui, si les deux applications utilisent .NET",
-  "Oui, sans restriction",
-  "Oui, si le plan est Premium"
+  "Oui, sans aucune restriction de système",
+  "Oui, si le plan est au niveau Premium"
  ],
  "ans": 0,
  "expl": "<p>Le système d'exploitation est une propriété du <b>plan</b> : un plan Windows n'héberge que des applications Windows, et un plan Linux que des applications Linux (code ou conteneurs).</p>",
@@ -1174,8 +1174,8 @@ AZ.questions.push(
  "stem": "<p>Une application web hébergée dans Azure doit accéder à une API interne d'un serveur local, sans VPN, avec seulement des connexions sortantes depuis le site local.</p><p>Que devez-vous utiliser ?</p>",
  "opts": [
   "Un emplacement de déploiement",
-  "Les connexions hybrides d'App Service",
-  "Des restrictions d'accès",
+  "Les connexions hybrides",
+  "Des restrictions d'accès sortantes",
   "Un point de terminaison privé"
  ],
  "ans": 1,
@@ -1210,10 +1210,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous voulez voir en direct les journaux d'une application web pendant que vous reproduisez un bug.</p><p>Que devez-vous utiliser ?</p>",
  "opts": [
-  "Le journal d'activité",
-  "La page Sauvegardes",
-  "Le flux de journaux (Log stream), après avoir activé la journalisation des applications",
-  "Azure Advisor"
+  "Le journal d'activité de l'application",
+  "La page Sauvegardes de l'application",
+  "Le flux de journaux (journalisation activée)",
+  "Azure Advisor, onglet Performances"
  ],
  "ans": 2,
  "expl": "<p>Le <b>flux de journaux</b> affiche en temps réel les journaux d'application et de serveur web, à condition que la journalisation soit activée dans <b>Journaux App Service</b>. On peut aussi les suivre avec <code>az webapp log tail</code>.</p>",
@@ -1243,8 +1243,8 @@ AZ.questions.push(
  "stem": "<p>Une application web lente renvoie des erreurs 500. Vous voulez un diagnostic guidé avec des analyses automatiques des causes courantes.</p><p>Quel outil d'App Service devez-vous ouvrir ?</p>",
  "opts": [
   "Identité",
-  "Domaines personnalisés",
-  "Centre de déploiement",
+  "Domaines personnalisés et certificats",
+  "Centre de déploiement, onglet Journaux",
   "Diagnostiquer et résoudre les problèmes"
  ],
  "ans": 3,
@@ -1278,9 +1278,9 @@ AZ.questions.push(
  "stem": "<p>Vous déployez un fichier ZIP contenant le code d'une application sur WebApp22, avec Azure CLI.</p><p>Quelle commande devez-vous utiliser ?</p>",
  "opts": [
   "az webapp deploy --src-path app.zip --type zip",
-  "az acr build app.zip",
-  "az webapp create --zip app.zip",
-  "az storage blob upload app.zip"
+  "az acr build --file app.zip --registry ACR1",
+  "az webapp create --zip app.zip --name webapp1",
+  "az storage blob upload --file app.zip"
  ],
  "ans": 0,
  "expl": "<p><code>az webapp deploy --resource-group RG1 --name WebApp22 --src-path app.zip --type zip</code> déploie le paquet (ZIP deploy). L'ancienne commande <code>az webapp deployment source config-zip</code> fait la même chose.</p>",
@@ -1304,10 +1304,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous voulez que les images non étiquetées (manifestes orphelins) de ACR6 soient supprimées automatiquement après 7 jours.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "La géoréplication",
-  "Une stratégie de rétention des manifestes non étiquetés (niveau Premium)",
+  "La géoréplication vers une seconde région",
+  "La rétention des manifestes non étiquetés",
   "Une stratégie de cycle de vie de compte de stockage",
-  "Le compte administrateur"
+  "Le compte administrateur du registre"
  ],
  "ans": 1,
  "expl": "<p>La <b>stratégie de rétention</b> d'ACR supprime automatiquement les manifestes <b>non étiquetés</b> après un nombre de jours. Elle est disponible au niveau <b>Premium</b>. On peut aussi utiliser des tâches ACR de purge (<code>acr purge</code>) planifiées.</p>",
@@ -1340,10 +1340,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous voulez que l'image de votre application soit reconstruite automatiquement dans ACR7 chaque fois que l'image de base (par exemple node:20) est mise à jour.</p><p>Que devez-vous utiliser ?</p>",
  "opts": [
-  "La géoréplication",
+  "La géoréplication du registre",
   "Un webhook vers Azure Advisor",
-  "Une tâche ACR avec un déclencheur de mise à jour de l'image de base",
-  "Une stratégie de rétention"
+  "Une tâche ACR (mise à jour de l'image de base)",
+  "Une stratégie de rétention des manifestes"
  ],
  "ans": 2,
  "expl": "<p>Les <b>tâches ACR</b> peuvent se déclencher sur un commit de code source, une planification ou la <b>mise à jour de l'image de base</b> : elles reconstruisent alors automatiquement l'image dépendante, par exemple pour appliquer des correctifs de sécurité.</p>",
@@ -1376,10 +1376,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Un partenaire doit pouvoir tirer uniquement les images du dépôt app-partenaire de ACR8, et aucun autre dépôt.</p><p>Que devez-vous créer ?</p>",
  "opts": [
-  "Un point de terminaison privé",
-  "Le rôle AcrPull sur le registre",
-  "Le compte administrateur",
-  "Un jeton délimité au dépôt avec une carte d'étendue (scope map) qui autorise le tirage sur app-partenaire"
+  "Un point de terminaison privé pour le partenaire",
+  "Le rôle AcrPull sur le registre entier",
+  "Le compte administrateur du registre",
+  "Un jeton avec une carte d'étendue"
  ],
  "ans": 3,
  "expl": "<p>Les <b>jetons délimités aux dépôts</b>, associés à une <b>carte d'étendue</b>, donnent des droits (lecture, écriture) sur des dépôts précis. Le rôle AcrPull s'applique à <b>tous</b> les dépôts du registre.</p>",
@@ -1445,7 +1445,7 @@ AZ.questions.push(
  "stem": "<p>Une application Azure Container Apps ne doit être joignable que par les autres applications du même environnement, jamais depuis Internet.</p><p>Comment devez-vous configurer l'entrée (ingress) ?</p>",
  "opts": [
   "Désactivée",
-  "Activée, avec un trafic limité à l'environnement Container Apps (interne)",
+  "Activée, limitée à l'environnement",
   "Activée, avec un trafic accepté de partout",
   "Activée avec une adresse IP publique statique"
  ],
@@ -1481,9 +1481,9 @@ AZ.questions.push(
  "stem": "<p>Plusieurs applications Azure Container Apps doivent partager le même réseau virtuel et le même espace de travail Log Analytics.</p><p>Où définissez-vous ces réglages communs ?</p>",
  "opts": [
   "Dans le registre de conteneurs",
-  "Dans le plan App Service",
+  "Dans le plan App Service associé",
   "Dans l'environnement Container Apps",
-  "Dans chaque révision"
+  "Dans chaque révision de l'application"
  ],
  "ans": 2,
  "expl": "<p>L'<b>environnement</b> Container Apps est la limite sécurisée qui regroupe des applications : il définit le réseau virtuel, la journalisation (Log Analytics) et les profils de charge de travail. Les applications d'un même environnement communiquent entre elles.</p>",
@@ -1517,10 +1517,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Un traitement conteneurisé doit s'exécuter chaque nuit à 2 h dans Azure Container Apps, puis s'arrêter.</p><p>Que devez-vous créer ?</p>",
  "opts": [
-  "Une révision par jour",
-  "Un groupe de conteneurs ACI avec Always",
+  "Une nouvelle révision chaque jour",
+  "Un groupe ACI avec la stratégie Always",
   "Une application avec entrée externe",
-  "Un travail (job) Container Apps de type planifié"
+  "Un travail Container Apps planifié"
  ],
  "ans": 3,
  "expl": "<p>Les <b>travaux</b> Container Apps exécutent des conteneurs qui se terminent : déclenchement <b>manuel</b>, <b>planifié</b> (expression cron) ou <b>par événement</b>. Ils conviennent mieux qu'une application qui tourne en permanence.</p>",
@@ -2016,10 +2016,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>Vous devez réduire au minimum le coût d'un environnement de test de 10 VM utilisé uniquement en semaine de 8 h à 18 h.</p><p>Quelles <b>deux</b> actions devez-vous effectuer ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
  "opts": [
-  "Configurer l'arrêt automatique des VM à 18 h",
-  "Démarrer les VM à 8 h avec une automatisation (par exemple Start/Stop VMs v2 ou un runbook)",
-  "Acheter des réservations de 3 ans",
-  "Utiliser des disques Ultra"
+  "Configurer l'arrêt automatique à 18 h",
+  "Démarrer les VM à 8 h par une automatisation",
+  "Acheter des réservations de 3 ans pour les VM",
+  "Utiliser des disques Ultra à la place des Premium"
  ],
  "ans": [
   0,
@@ -2056,7 +2056,7 @@ AZ.questions.push(
  "stem": "<p>Vous déployez un modèle ARM qui contient un mot de passe administrateur.</p><p>Quelles <b>deux</b> pratiques protègent le mieux ce secret ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
  "opts": [
   "Définir le mot de passe comme valeur par défaut du paramètre",
-  "Référencer le secret depuis Key Vault dans le fichier de paramètres",
+  "Référencer le secret Key Vault dans le fichier de paramètres",
   "Déclarer le paramètre avec le type securestring",
   "Renvoyer le mot de passe dans une sortie (output)"
  ],
@@ -2089,10 +2089,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez déployer à la fois un modèle principal et plusieurs modèles liés stockés dans un compte de stockage privé.</p><p>Comment le modèle principal peut-il accéder aux modèles liés ?</p>",
  "opts": [
-  "Avec une URL qui contient un jeton SAS (templateLink.uri)",
-  "Avec un chemin local C:\\templates",
-  "Les modèles liés doivent être publics, sans exception",
-  "Avec la clé du compte dans le modèle"
+  "Avec une URL qui contient un jeton SAS",
+  "Avec un chemin local C:\\templates\\vnet.json",
+  "Les modèles liés doivent toujours être publics",
+  "Avec la clé du compte écrite dans le modèle"
  ],
  "ans": 0,
  "expl": "<p>Un <b>modèle lié</b> est référencé par une URL (<code>templateLink.uri</code>) que Resource Manager doit pouvoir lire. Pour un stockage privé, on ajoute un <b>jeton SAS</b> à l'URL (passé en paramètre sécurisé). Les Template Specs et les modules Bicep évitent aujourd'hui ce besoin.</p>",
@@ -2118,9 +2118,9 @@ AZ.questions.push(
  "stem": "<p>Vous devez permettre aux administrateurs de se connecter en RDP à VM34 uniquement pendant 3 heures, sur demande, avec le port 3389 fermé le reste du temps.</p><p>Quelle fonctionnalité devez-vous utiliser ?</p>",
  "opts": [
   "Un emplacement de déploiement",
-  "L'accès juste-à-temps (JIT) aux VM de Microsoft Defender pour le cloud",
+  "L'accès juste-à-temps (JIT) de Defender",
   "Un groupe à haute disponibilité",
-  "Les diagnostics de démarrage"
+  "Les diagnostics de démarrage avec console"
  ],
  "ans": 1,
  "expl": "<p>L'<b>accès JIT</b> ferme les ports de gestion par des règles de NSG (ou du Pare-feu Azure) et ne les ouvre, sur demande approuvée, que pour l'adresse IP du demandeur et une durée limitée. Il demande Defender pour serveurs. Azure Bastion est une autre solution qui évite tout port ouvert.</p>",

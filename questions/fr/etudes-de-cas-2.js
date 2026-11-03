@@ -143,9 +143,9 @@ AZ.cases.push(
    "stem": "<p>Vous devez répondre à l'exigence de test de WebApp-Portail.</p><p>Quelles <b>deux</b> actions devez-vous effectuer ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
    "opts": [
     "Créer une seconde application dans un plan De base",
-    "Passer le plan App Service au niveau Standard",
-    "Créer un emplacement de déploiement nommé test",
-    "Activer la mise à l'échelle automatique"
+    "Passer le plan App Service en Standard",
+    "Créer un emplacement de déploiement test",
+    "Activer la mise à l'échelle automatique du plan"
    ],
    "ans": [
     1,
@@ -410,10 +410,10 @@ AZ.cases.push(
    "type": "single",
    "stem": "<p>Vous devez répondre à l'exigence de réplication des images de conteneurs.</p><p>Que devez-vous faire ?</p>",
    "opts": [
-    "Activer une stratégie de rétention",
+    "Activer une stratégie de rétention sur ACR-Tailwind",
     "Créer un second registre De base en West Europe",
-    "Activer le compte administrateur",
-    "Passer ACR-Tailwind au niveau Premium et ajouter une géoréplication en West Europe"
+    "Activer le compte administrateur du registre",
+    "ACR-Tailwind en Premium, géoréplication West Europe"
    ],
    "ans": 3,
    "expl": "<p>La <b>géoréplication</b> n'est disponible qu'au niveau <b>Premium</b>. Un second registre indépendant obligerait à pousser les images deux fois.</p>",

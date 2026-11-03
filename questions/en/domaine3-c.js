@@ -69,9 +69,9 @@ AZ.questions.push(
  "stem": "<p>You need to build a container image from a Dockerfile and place it in the registry ACR1, without installing Docker on your computer.</p><p>Which command should you use?</p>",
  "opts": [
   "az acr build --registry ACR1 --image app:v1 .",
-  "az container create --image app:v1",
-  "docker push ACR1/app:v1",
-  "az acr import --name ACR1"
+  "az container create --image app:v1 --file Dockerfile",
+  "docker push ACR1/app:v1 without local Docker",
+  "az acr import --name ACR1 --source ./Dockerfile"
  ],
  "ans": 0,
  "expl": "<p><b>az acr build</b> (ACR Tasks) sends the build context to the registry, which builds the image in Azure and stores it. No local Docker is needed.</p><p>docker push requires Docker and an already built image. az acr import copies an image from another registry. az container create runs a container in ACI.</p>",
@@ -122,9 +122,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Azure Container Instances must pull a private image from ACR3. You don't want to enable the registry's admin account.</p><p>Which method is recommended?</p>",
  "opts": [
-  "The admin account with its password",
-  "Make the registry public",
-  "A managed identity (or a service principal) with the AcrPull role on ACR3",
+  "The registry's admin account",
+  "Make the registry publicly readable",
+  "A managed identity with AcrPull",
   "Copy the image to a storage account"
  ],
  "ans": 2,
@@ -220,10 +220,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to run a nightly processing container that lasts 20 minutes, without managing a server or an orchestrator, and pay only while it runs.</p><p>Which service should you use?</p>",
  "opts": [
-  "A virtual machine scale set",
+  "A virtual machine scale set with 1 instance",
   "A VM with Docker running all the time",
-  "App Service Premium plan",
-  "Azure Container Instances with the OnFailure or Never restart policy"
+  "A dedicated App Service Premium v3 plan",
+  "Container Instances (OnFailure or Never restart)"
  ],
  "ans": 3,
  "expl": "<p><b>Azure Container Instances</b> starts a container in seconds and bills CPU and memory per second. With the <b>OnFailure</b> or <b>Never</b> restart policy, the container stops at the end of processing and so does billing.</p><p>With <b>Always</b> (default), ACI would restart the container endlessly. A VM or an App Service plan would cost all the time.</p>",
@@ -318,10 +318,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A web application and a logging container must run together in Azure Container Instances, share the same IP address and lifecycle, and communicate over localhost.</p><p>What should you deploy?</p>",
  "opts": [
-  "A Linux container group containing both containers",
+  "One container group with both",
   "An availability set",
   "Two separate container groups",
-  "Two container registries"
+  "Two separate container registries"
  ],
  "ans": 0,
  "expl": "<p>A <b>container group</b> groups containers scheduled on the same host, which share the lifecycle, network (IP address, ports, localhost), and volumes. It's the “sidecar” pattern. Multi-container groups are only supported for <b>Linux</b>.</p><p>Two separate groups would have two IP addresses.</p>",
@@ -390,10 +390,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>An ACI container group must be reachable on the internet by a stable name, for example <code>app1.francecentral.azurecontainer.io</code>.</p><p>What should you configure?</p>",
  "opts": [
-  "A private DNS zone",
+  "A private DNS zone linked to the group",
   "A private endpoint",
-  "A public IP address with a DNS name label",
-  "A VPN gateway"
+  "A public IP with a DNS name label",
+  "A point-to-site VPN gateway"
  ],
  "ans": 2,
  "expl": "<p>When creating the container group, you choose a <b>public IP address</b> and a <b>DNS name label</b>, which gives a name like <code>&lt;label&gt;.&lt;region&gt;.azurecontainer.io</code>. The IP address may change on restart, but the name stays.</p>",
@@ -432,9 +432,9 @@ AZ.questions.push(
  "stem": "<p>An ACI container group must access a database that only has a private IP address in VNet1, with no internet exposure.</p><p>What should you do?</p>",
  "opts": [
   "Enable registry geo-replication",
-  "Give the container group a public IP address",
+  "Give the container group a public IP",
   "Use the Never restart policy",
-  "Deploy the container group in a delegated subnet of VNet1"
+  "Deploy in a delegated subnet of VNet1"
  ],
  "ans": 3,
  "expl": "<p>ACI can be deployed <b>in a virtual network</b>, in a subnet delegated to <code>Microsoft.ContainerInstance/containerGroups</code>. The group gets a private IP address and communicates with the other resources on the network.</p>",
@@ -466,10 +466,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You deploy a container in ACI with 2 vCPUs and 4 GB of memory. A week later, it runs out of memory.</p><p>How do you increase the memory?</p>",
  "opts": [
-  "Redeploy the container group with a higher resource request",
-  "Add a data disk",
-  "Enable ACI horizontal autoscale",
-  "Change the restart policy"
+  "Redeploy with a higher resource request",
+  "Add a data disk to the container group",
+  "Enable ACI autoscale",
+  "Change the restart policy to Always"
  ],
  "ans": 0,
  "expl": "<p>An ACI container's resources (CPU and memory) are fixed in its definition. To change them, you <b>redeploy</b> the container group with the new values (within the region's limits).</p><p>ACI has no built-in autoscale: for that, choose Azure Container Apps instead.</p>",
@@ -543,10 +543,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You deploy a new version of your application in Azure Container Apps. You want to send 10% of traffic to the new version and 90% to the old one.</p><p>What should you configure?</p>",
  "opts": [
-  "Two Container Apps environments",
-  "A restart policy",
-  "Multiple revision mode with traffic splitting between revisions",
-  "Two container registries"
+  "Two separate Container Apps environments",
+  "A restart policy per revision",
+  "Multiple revision mode with traffic splitting",
+  "Two container registries, one per version"
  ],
  "ans": 2,
  "expl": "<p>Each deployment of a new configuration creates a <b>revision</b>. In <b>multiple revision</b> mode, several revisions stay active and you split incoming traffic in percentages between them (progressive rollout, A/B testing).</p>",
@@ -787,9 +787,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A web app in a Standard S1 plan becomes slow during the day, when the number of users triples. At night, a single instance is enough.</p><p>What should you configure?</p>",
  "opts": [
-  "Plan autoscale out (horizontal), based on CPU or a schedule",
+  "Horizontal autoscale of the plan",
   "A permanent move to the Premium tier (scale up)",
-  "A scheduled backup",
+  "A scheduled backup before each peak",
   "An extra deployment slot"
  ],
  "ans": 0,
@@ -828,9 +828,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A web app needs more memory per instance, and a network feature available only in the Premium v3 tier.</p><p>What should you do?</p>",
  "opts": [
-  "Enable Always On",
-  "Scale up the App Service plan to Premium v3",
-  "Add instances (scale out)",
+  "Enable Always On on the app",
+  "Scale the plan up to Premium v3",
+  "Add instances to the plan (scale out)",
   "Create a deployment slot"
  ],
  "ans": 1,
@@ -863,8 +863,8 @@ AZ.questions.push(
  "opts": [
   "Each app is billed as a separate plan",
   "Only the first app runs on the 2 instances",
-  "The three apps run on the same 2 instances and share their resources",
-  "Each app has its own 2 instances"
+  "All three run on the same 2 instances",
+  "Each app gets its own 2 instances within the plan"
  ],
  "ans": 2,
  "expl": "<p>An <b>App Service plan</b> defines a set of machines (size and number of instances). All apps in the plan run on <b>all</b> its instances and share CPU and memory. You pay for the plan, not each app.</p><p>If one app uses too much, move it to another plan.</p>",
@@ -900,7 +900,7 @@ AZ.questions.push(
   "ASP2 must be in the Free tier",
   "WebApp2 must be deleted and recreated",
   "ASP2 must be in another subscription",
-  "ASP2 must be in the same region and the same resource group (same deployment unit) as the current plan"
+  "Same region and same resource group"
  ],
  "ans": 3,
  "expl": "<p>You can change an app's plan (Change App Service plan) to a plan in the <b>same region</b> and the same “webspace” (in practice the same resource group and original region). Otherwise, you must clone or redeploy the app.</p>",
@@ -971,10 +971,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>WebApp4 has the production and staging slots. The database connection string must <b>stay</b> attached to each slot (test database for staging, production database for production) during a swap.</p><p>What should you configure?</p>",
  "opts": [
-  "Check “Deployment slot setting” on the connection string in each slot",
-  "Disable auto swap",
-  "Use the same connection string in both slots",
-  "Create a third slot"
+  "Mark the string as “Deployment slot setting”",
+  "Disable auto swap on staging",
+  "Use the same connection string everywhere",
+  "Create a third slot for the test database"
  ],
  "ans": 0,
  "expl": "<p>A setting marked <b>Deployment slot setting</b> (sticky) stays attached to the slot: it doesn't follow the code during a swap. Unchecked settings are swapped with the code.</p>",
@@ -1005,10 +1005,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Every time new code is pushed to the staging slot of WebApp5, you want it swapped to production automatically after warm-up.</p><p>What should you enable?</p>",
  "opts": [
-  "Autoscale",
-  "Auto swap on the staging slot",
-  "100% traffic routing",
-  "Always On on production"
+  "Autoscale on the plan",
+  "Auto swap on staging",
+  "Routing 100% of traffic to staging",
+  "Always On on the production slot"
  ],
  "ans": 1,
  "expl": "<p><b>Auto swap</b>, enabled on the source slot (staging), swaps with the target slot as soon as deployment finishes and the app is warmed up.</p>",
@@ -1039,9 +1039,9 @@ AZ.questions.push(
  "stem": "<p>You want to send 20% of production users to the beta slot of WebApp6, without swapping, to test a new feature.</p><p>What should you configure?</p>",
  "opts": [
   "A swap with preview",
-  "A load balancer",
-  "Traffic routing (Testing in production) with 20% to beta",
-  "A second App Service plan"
+  "A load balancer in front of the app",
+  "Traffic routing: 20% to beta",
+  "A second App Service plan for beta"
  ],
  "ans": 2,
  "expl": "<p>Slot <b>traffic routing</b> (Testing in production) sends a percentage of production requests to another slot. A cookie keeps each user on the same slot for their session.</p>",
@@ -1074,10 +1074,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to associate the custom domain www.contoso.com with WebApp7.</p><p>Which DNS records should you create at your DNS host?</p>",
  "opts": [
-  "A PTR record",
-  "An SRV record",
+  "A PTR record to the app's address",
+  "An SRV record to webapp7.azurewebsites.net",
   "An MX record to webapp7.azurewebsites.net",
-  "A CNAME www to webapp7.azurewebsites.net, and a TXT asuid.www with the verification ID"
+  "A CNAME www and a TXT asuid.www"
  ],
  "ans": 3,
  "expl": "<p>For a subdomain like www, you create a <b>CNAME</b> to <code>webapp7.azurewebsites.net</code>, and a <b>TXT</b> <code>asuid.www</code> containing the domain verification ID (shown in the portal), which proves you own the domain.</p><p>For the root domain (contoso.com), you use an <b>A</b> record to the app's IP address, plus the <code>asuid</code> TXT.</p>",
@@ -1107,10 +1107,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>WebApp8 is in a <b>Free (F1)</b> plan. You want to add the domain www.contoso.com, with HTTPS.</p><p>What should you do first?</p>",
  "opts": [
-  "Move the plan to the Basic tier or higher",
-  "Create an MX record",
+  "Move the plan to Basic or higher",
+  "Create an MX record for the domain",
   "Create a deployment slot",
-  "Enable Always On"
+  "Enable Always On on the app"
  ],
  "ans": 0,
  "expl": "<p>The <b>Free</b> tier doesn't support custom domains. The <b>Shared</b> tier accepts them without TLS. From <b>Basic</b> on, you can add a custom domain with a TLS certificate (including a free App Service managed certificate).</p>",
@@ -1179,10 +1179,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>WebApp10 must call an API hosted on a VM that only has a private IP address in VNet2.</p><p>What should you configure on WebApp10?</p>",
  "opts": [
-  "A custom domain",
+  "A custom domain for WebApp10",
   "A private endpoint for WebApp10",
-  "Virtual network integration with a subnet of VNet2",
-  "Access restrictions"
+  "Virtual network integration (VNet2)",
+  "Access restrictions on WebApp10"
  ],
  "ans": 2,
  "expl": "<p><b>Virtual network integration</b> concerns <b>outbound</b> traffic: the app can reach resources in the virtual network (and, through it, whatever is peered or connected by VPN). It uses a dedicated delegated subnet.</p><p>A <b>private endpoint</b> concerns <b>inbound</b> traffic: it gives the app a private address. Access restrictions also filter inbound traffic.</p>",
@@ -1214,10 +1214,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>WebApp11 must only be reachable from VNet3 and the on-premises site connected by VPN, never from the internet.</p><p>What should you configure?</p>",
  "opts": [
-  "A deployment slot",
+  "A dedicated deployment slot",
   "A static public IP address",
-  "Virtual network integration only",
-  "A private endpoint for WebApp11 in VNet3, and disable public access"
+  "Virtual network integration with VNet3, with nothing else",
+  "A private endpoint, public access off"
  ],
  "ans": 3,
  "expl": "<p>The <b>private endpoint</b> gives the app a private IP address in VNet3: <b>inbound</b> traffic arrives through the private network (and through the VPN from on-premises). You then disable <b>public network access</b>.</p><p>Virtual network integration only handles outbound traffic.</p>",
@@ -1249,9 +1249,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>WebApp12 must accept only traffic from your office's public IP range, 203.0.113.0/24, without changing the network architecture.</p><p>What should you configure?</p>",
  "opts": [
-  "Access restrictions with an Allow rule for 203.0.113.0/24",
-  "A service endpoint",
-  "A storage account firewall",
+  "Access restrictions (Allow 203.0.113.0/24)",
+  "A service endpoint on the app",
+  "A storage account firewall in front of the app",
   "A network security group associated with the app"
  ],
  "ans": 0,
@@ -1323,8 +1323,8 @@ AZ.questions.push(
  "opts": [
   "HTTPS only",
   "Health check",
-  "ARR affinity (sticky sessions)",
-  "Always On"
+  "ARR affinity",
+  "Always On on all instances"
  ],
  "ans": 2,
  "expl": "<p><b>ARR affinity</b> sets a cookie that sends each user back to the same instance. For a <b>stateless</b> app, disabling it spreads load better across instances.</p>",
@@ -1354,9 +1354,9 @@ AZ.questions.push(
  "stem": "<p>An instance of WebApp15 sometimes becomes unhealthy without restarting. You want the load balancer to stop sending it traffic, then replace it if it stays unhealthy.</p><p>What should you configure?</p>",
  "opts": [
   "Web server logs",
-  "A budget alert",
-  "Always On",
-  "Health check with a path such as /health"
+  "A budget alert on the plan",
+  "Always On on the instances",
+  "Health check (/health)"
  ],
  "ans": 3,
  "expl": "<p><b>Health check</b> regularly pings a path in the app on each instance. An instance that responds poorly is removed from rotation, then replaced if it stays unhealthy. You need at least two instances to benefit.</p>",
@@ -1389,10 +1389,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to configure custom backups of WebApp16 (files and configuration) to a storage account, on a schedule.</p><p>What should you use?</p>",
  "opts": [
-  "The App Service Backups feature, with a target storage container",
-  "Azure Backup with a Recovery Services vault for VMs",
-  "A managed disk snapshot",
-  "Azure Site Recovery"
+  "App Service backups (target container)",
+  "Azure Backup with a Recovery Services vault",
+  "A managed disk snapshot of the app",
+  "Azure Site Recovery for the app"
  ],
  "ans": 0,
  "expl": "<p>App Service has its own <b>backup</b> feature: built-in automatic backups (Basic tier and above), and scheduled <b>custom</b> backups to a storage container, with a linked database if needed.</p><p>Azure Backup for VMs, snapshots, and Site Recovery don't apply to App Service apps.</p>",
@@ -1429,10 +1429,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want every commit to the main branch of a GitHub repository to be deployed automatically to WebApp17.</p><p>What should you configure?</p>",
  "opts": [
-  "Application logs",
-  "Deployment Center with GitHub as the source (GitHub Actions)",
-  "A scheduled backup",
-  "A deployment slot"
+  "Application logs to GitHub",
+  "Deployment Center with GitHub",
+  "A scheduled backup from the repository",
+  "A deployment slot linked to the repository"
  ],
  "ans": 1,
  "expl": "<p><b>Deployment Center</b> configures continuous deployment from GitHub, Azure Repos, Bitbucket, or a local Git repository. With GitHub, it creates a GitHub Actions workflow that builds and deploys on each commit.</p>",
@@ -1470,9 +1470,9 @@ AZ.questions.push(
  "stem": "<p>A web app must read an ApiUrl setting that differs between development and production, without changing the code.</p><p>Where should you define this setting?</p>",
  "opts": [
   "In a resource lock",
-  "In the App Service plan",
-  "In each app's application settings (environment variables)",
-  "In an Azure tag"
+  "In the shared App Service plan",
+  "In the application settings",
+  "In an Azure tag on each app"
  ],
  "ans": 2,
  "expl": "<p><b>Application settings</b> (Configuration > Environment variables) are exposed to the app as environment variables and override values in the config file. They can reference a Key Vault secret (<code>@Microsoft.KeyVault(...)</code>).</p>",
@@ -1501,10 +1501,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A web app reads a connection string. You don't want the secret to appear in the App Service configuration.</p><p>What should you do?</p>",
  "opts": [
-  "Encrypt the secret with a SAS",
-  "Put the secret in the source code",
-  "Put the secret in a tag",
-  "Store the secret in Key Vault and use a Key Vault reference in the setting, with the app's managed identity"
+  "Encrypt the secret with an account SAS",
+  "Put the secret in the source code, obfuscated, then compile it",
+  "Put the secret in a tag on the app",
+  "A Key Vault reference and the managed identity"
  ],
  "ans": 3,
  "expl": "<p>A <b>Key Vault reference</b> (<code>@Microsoft.KeyVault(SecretUri=...)</code>) in an app setting makes the value read from Key Vault at startup, with the app's <b>managed identity</b>, which must be able to read secrets.</p>",
@@ -2147,8 +2147,8 @@ AZ.questions.push(
  "opts": [
   "Disable Always On",
   "Move the plan to the Basic tier",
-  "Move the plan to the Standard tier or higher",
-  "Deploy to a staging slot, then swap"
+  "Move the plan to Standard or higher",
+  "Deploy to staging, then swap"
  ],
  "ans": [
   2,
@@ -2185,10 +2185,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>An ACI application must pull a private image from ACR4 and write persistent files.</p><p>Which <b>two</b> configurations are required?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
-  "A deployment slot",
+  "A deployment slot for the container",
   "A managed disk attached to the container group",
-  "An Azure Files volume mounted in the container",
-  "Credentials for ACR4 (identity with AcrPull or a service principal)"
+  "A mounted Azure Files volume",
+  "Credentials for ACR4 (AcrPull)"
  ],
  "ans": [
   2,
@@ -2225,10 +2225,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A web app in a Premium plan must keep working if a datacenter in the region fails.</p><p>What should you enable?</p>",
  "opts": [
-  "Zone redundancy of the App Service plan (at least 2 instances)",
-  "A deployment slot",
-  "Scheduled backups",
-  "Always On"
+  "Zone redundancy of the plan",
+  "A deployment slot per zone",
+  "Hourly scheduled backups",
+  "Always On on the production slot"
  ],
  "ans": 0,
  "expl": "<p>A Premium v2/v3 (or Isolated v2) plan can be <b>zone redundant</b>: its instances are spread across several availability zones in the region. You need at least 2 instances (3 were originally required).</p><p>Slots and Always On don't protect against a zone failure. Backups let you restore, not stay available.</p>",
@@ -2262,9 +2262,9 @@ AZ.questions.push(
  "stem": "<p>A web app must be available even if the entire France Central region fails.</p><p>Which architecture should you put in place?</p>",
  "opts": [
   "A deployment slot in France South",
-  "Two apps in two regions, behind Azure Front Door or Traffic Manager",
+  "Two apps, two regions, Front Door",
   "A plan with 10 instances in France Central",
-  "Zone redundancy"
+  "Zone redundancy of the plan in France Central"
  ],
  "ans": 1,
  "expl": "<p>To survive a <b>region</b> failure, you need the app in <b>two regions</b>, with a global service that routes traffic to the healthy region: <b>Azure Front Door</b> (HTTP, layer 7) or <b>Traffic Manager</b> (DNS).</p><p>Instances and zone redundancy stay within the region. A slot is in the same region as its app.</p>",
@@ -2333,10 +2333,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to host 15 small, rarely visited web apps, at the lowest cost, with custom domains and HTTPS.</p><p>Which solution is the cheapest?</p>",
  "opts": [
-  "15 Premium v3 plans",
+  "15 Premium v3 plans, one per app",
   "15 Basic plans, one per app",
-  "15 B-series VMs",
-  "A single Basic (or Standard) plan hosting all 15 apps"
+  "15 B-series VMs with IIS",
+  "A single Basic plan for all 15"
  ],
  "ans": 3,
  "expl": "<p>You pay for the <b>plan</b>, not the app: a single plan can host several apps that share its instances. For rarely visited apps, a Basic plan (or Standard if you want slots or autoscale) is enough.</p>",

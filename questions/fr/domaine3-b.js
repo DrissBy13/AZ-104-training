@@ -161,10 +161,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Un fichier de paramètres de modèle ARM doit fournir le mot de passe administrateur depuis le coffre de clés KV1, sans le copier dans le fichier.</p><p>Quelle condition KV1 doit-il remplir ?</p>",
  "opts": [
-  "KV1 doit utiliser des stratégies d'accès uniquement",
-  "KV1 doit avoir un point de terminaison public désactivé",
-  "KV1 doit être dans le même groupe de ressources que la VM",
-  "L'option « Azure Resource Manager pour le déploiement de modèles » doit être activée sur KV1"
+  "KV1 doit utiliser des stratégies d'accès, sans RBAC",
+  "KV1 doit avoir son point de terminaison public désactivé",
+  "KV1 doit être dans le même groupe de ressources que la VM déployée",
+  "KV1 doit autoriser Resource Manager pour les modèles"
  ],
  "ans": 3,
  "expl": "<p>Pour qu'un déploiement lise un secret par référence (<code>\"reference\": { \"keyVault\": { \"id\": ... }, \"secretName\": ... }</code>), le coffre doit avoir <b>enabledForTemplateDeployment</b> activé, et l'utilisateur qui déploie doit avoir l'autorisation <code>Microsoft.KeyVault/vaults/deploy/action</code>.</p><p>Le coffre peut être dans un autre groupe de ressources, et le modèle d'autorisation n'a pas d'importance pour ce réglage.</p>",
@@ -193,10 +193,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous déployez une VM et son interface réseau avec un modèle ARM. Le déploiement échoue parfois car la VM est créée avant l'interface réseau.</p><p>Que devez-vous ajouter à la ressource VM ?</p>",
  "opts": [
-  "Un élément dependsOn qui référence l'interface réseau",
-  "Une condition",
-  "Un élément copy",
-  "Une sortie (output)"
+  "Un élément dependsOn vers l'interface",
+  "Une condition sur la ressource VM",
+  "Un élément copy sur l'interface",
+  "Une sortie (output) avec l'ID de l'interface"
  ],
  "ans": 0,
  "expl": "<p><b>dependsOn</b> indique à Resource Manager qu'une ressource doit attendre la fin du déploiement d'une autre. Sans dépendance, les ressources sont déployées en parallèle.</p><p>En Bicep, les dépendances sont le plus souvent déduites automatiquement quand une ressource référence une propriété d'une autre (par exemple <code>nic.id</code>).</p>",
@@ -253,10 +253,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous avez créé à la main une VM avec son réseau dans le portail. Vous voulez obtenir un modèle ARM qui la décrit, pour la recréer à l'identique ailleurs.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Utiliser Azure Advisor",
-  "Ouvrir le journal d'activité",
-  "Utiliser Exporter le modèle sur la VM ou sur le groupe de ressources",
-  "Créer une image de la VM"
+  "Utiliser Azure Advisor, onglet Excellence opérationnelle",
+  "Ouvrir le journal d'activité du groupe",
+  "Utiliser Exporter le modèle",
+  "Créer une image généralisée de la VM"
  ],
  "ans": 2,
  "expl": "<p><b>Exporter le modèle</b> génère un modèle ARM (et propose une version Bicep) à partir de ressources existantes, ou de l'historique d'un déploiement. Le modèle doit souvent être nettoyé et paramétré avant réutilisation.</p><p>Une image capture le disque, pas la configuration Azure (réseau, taille…).</p>",
@@ -429,9 +429,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez convertir un modèle ARM JSON existant en fichier Bicep pour le maintenir plus facilement.</p><p>Quelle commande devez-vous utiliser ?</p>",
  "opts": [
-  "az bicep publish",
+  "az bicep publish --file template.json",
   "az bicep build --file template.json",
-  "az deployment group export",
+  "az deployment group export --name deploy1",
   "az bicep decompile --file template.json"
  ],
  "ans": 3,
@@ -456,10 +456,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous voulez réutiliser la définition d'un réseau virtuel standard dans plusieurs fichiers Bicep.</p><p>Que devez-vous créer ?</p>",
  "opts": [
-  "Un module Bicep, appelé avec le mot-clé module",
-  "Une variable globale",
-  "Un verrou de ressource",
-  "Une sortie dans chaque fichier"
+  "Un module Bicep (mot-clé module)",
+  "Une variable globale partagée",
+  "Un verrou de ressource par fichier",
+  "Une sortie dans chaque fichier, sans module"
  ],
  "ans": 0,
  "expl": "<p>Un <b>module</b> est un fichier Bicep réutilisable, appelé depuis un autre fichier avec <code>module vnet './vnet.bicep' = { name: ..., params: {...} }</code>. On peut le stocker localement, dans un registre Bicep ou en Template Spec.</p>",
@@ -484,10 +484,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Un fichier Bicep doit ajouter un sous-réseau à un réseau virtuel <b>déjà existant</b> nommé VNet1, sans le redéployer.</p><p>Comment devez-vous référencer VNet1 ?</p>",
  "opts": [
-  "param vnet object",
-  "resource vnet 'Microsoft.Network/virtualNetworks@2023-04-01' existing = { name: 'VNet1' }",
-  "output vnet string",
-  "module vnet './vnet.bicep'"
+  "param vnet object = { name: 'VNet1', id: resourceId('…/virtualNetworks', 'VNet1') }",
+  "resource vnet '…/virtualNetworks@2023-04-01' existing = { name: 'VNet1' }",
+  "output vnet string = 'VNet1'",
+  "module vnet './vnet.bicep' = { name: 'VNet1', params: { mode: 'existing' } }"
  ],
  "ans": 1,
  "expl": "<p>Le mot-clé <b>existing</b> déclare une ressource qui existe déjà : on peut lire ses propriétés et l'utiliser comme parent (<code>parent: vnet</code>) sans la redéployer.</p><p>Un paramètre objet ne référence pas une ressource. Un module redéploierait le réseau. Une sortie renvoie une valeur.</p>",
@@ -553,10 +553,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez redimensionner VM1 de Standard_D2s_v5 vers Standard_E8s_v5. La nouvelle taille n'apparaît pas dans la liste des tailles disponibles pendant que la VM est démarrée.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Supprimer et recréer VM1",
-  "Ajouter un disque de données",
+  "Supprimer VM1 et la recréer dans la nouvelle taille",
+  "Ajouter un disque de données à VM1",
   "Déplacer VM1 dans un autre groupe de ressources",
-  "Arrêter (libérer) VM1, puis choisir la nouvelle taille"
+  "Arrêter (libérer) VM1, puis redimensionner"
  ],
  "ans": 3,
  "expl": "<p>Une VM démarrée ne peut prendre qu'une taille disponible sur le <b>cluster matériel</b> où elle tourne. Une fois <b>arrêtée et libérée</b>, elle peut être placée sur un autre cluster : toutes les tailles disponibles dans la région apparaissent.</p><p>Un redimensionnement redémarre toujours la VM, même sans libération.</p>",
@@ -657,9 +657,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous déployez trois VM dans un <b>groupe à haute disponibilité</b> avec 3 domaines d'erreur et 5 domaines de mise à jour.</p><p>Contre quoi le groupe à haute disponibilité protège-t-il ?</p>",
  "opts": [
-  "Une panne matérielle d'un rack et la maintenance planifiée de l'hôte",
-  "La suppression accidentelle d'une VM",
-  "La panne d'une région entière",
+  "Une panne de rack et la maintenance de l'hôte",
+  "La suppression accidentelle d'une VM du groupe",
+  "La panne d'une région entière et de sa jumelle",
   "La panne d'un centre de données entier"
  ],
  "ans": 0,
@@ -834,8 +834,8 @@ AZ.questions.push(
  "stem": "<p>Une application tourne sur deux VM dans la région France Central. Elle doit rester disponible en cas de panne d'un centre de données entier de la région.</p><p>Que devez-vous faire ?</p>",
  "opts": [
   "Placer les VM dans un groupe à haute disponibilité",
-  "Utiliser des disques SSD Premium",
-  "Déployer les VM dans deux zones de disponibilité différentes",
+  "Utiliser des disques SSD Premium sur les deux VM",
+  "Déployer les VM dans deux zones différentes",
   "Placer les VM dans un groupe de placement de proximité"
  ],
  "ans": 2,
@@ -908,10 +908,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>VMSS1 a une règle : « Si le CPU moyen dépasse 75 % pendant 10 minutes, ajouter 2 instances », avec un temps de refroidissement de 5 minutes. Le CPU reste à 90 % pendant une heure.</p><p>Pourquoi les instances ne sont-elles pas ajoutées toutes les minutes ?</p>",
  "opts": [
-  "Le temps de refroidissement empêche une nouvelle action pendant 5 minutes après chaque mise à l'échelle",
+  "Le temps de refroidissement bloque toute action 5 minutes",
   "Les VMSS ne prennent en charge qu'une action par heure",
-  "La règle de diminution annule l'augmentation",
-  "Le nombre par défaut est atteint"
+  "La règle de diminution annule celle d'augmentation",
+  "Le nombre d'instances par défaut est déjà atteint"
  ],
  "ans": 0,
  "expl": "<p>Le <b>temps de refroidissement</b> (cool down) laisse aux nouvelles instances le temps de démarrer et aux métriques de se stabiliser avant une nouvelle évaluation. Pendant ce délai, aucune autre action de mise à l'échelle n'a lieu. Le nombre maximal d'instances limite aussi l'augmentation.</p>",
@@ -942,9 +942,9 @@ AZ.questions.push(
  "stem": "<p>VMSS1 a une seule règle de mise à l'échelle : ajouter une instance quand le CPU dépasse 70 %. Après un pic de charge, le nombre d'instances ne redescend jamais.</p><p>Que devez-vous ajouter ?</p>",
  "opts": [
   "Un temps de refroidissement plus long",
-  "Une règle de diminution (scale in), par exemple retirer une instance quand le CPU est inférieur à 30 %",
+  "Une règle de diminution (CPU sous 30 %)",
   "Un nombre maximal d'instances plus bas",
-  "Une sonde d'intégrité"
+  "Une sonde d'intégrité sur l'équilibreur"
  ],
  "ans": 1,
  "expl": "<p>La mise à l'échelle automatique ne retire des instances que si une <b>règle de diminution</b> existe. Bonne pratique : toujours associer une règle d'augmentation et une règle de diminution, avec un écart suffisant entre les seuils (par exemple 70 % et 30 %) pour éviter des oscillations.</p>",
@@ -980,7 +980,7 @@ AZ.questions.push(
   "Manuelle",
   "Aucune",
   "Propagée (Rolling)",
-  "Automatique"
+  "Automatique, sans ordre défini"
  ],
  "ans": 2,
  "expl": "<p>La stratégie <b>Propagée</b> met à jour les instances par lots, avec une pause et une vérification de l'intégrité (sonde ou extension d'intégrité de l'application) entre les lots.</p><ul><li><b>Manuelle</b> : rien n'est mis à jour tant que vous ne mettez pas à niveau chaque instance.</li><li><b>Automatique</b> : toutes les instances peuvent être mises à jour en même temps, dans un ordre quelconque.</li></ul>",
@@ -1056,7 +1056,7 @@ AZ.questions.push(
   "L'extension Custom Script",
   "Un groupe à haute disponibilité",
   "Les diagnostics de démarrage",
-  "La console série"
+  "La console série de la VM"
  ],
  "ans": 0,
  "expl": "<p>L'<b>extension Custom Script</b> télécharge et exécute un script (depuis un compte de stockage ou GitHub) dans la VM. Elle se déploie par le portail, PowerShell, CLI ou un modèle, et convient à la configuration après déploiement.</p><p>Les diagnostics de démarrage capturent l'écran de démarrage. La console série donne un accès texte en cas de panne. Un groupe à haute disponibilité ne configure rien.</p>",
@@ -1085,10 +1085,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez configurer automatiquement des VM Linux au <b>premier démarrage</b> (installer des paquets, créer des utilisateurs), avec un fichier passé lors de la création de la VM.</p><p>Que devez-vous utiliser ?</p>",
  "opts": [
-  "La commande Run (exécuter une commande)",
-  "cloud-init, via les données personnalisées (custom data)",
-  "Azure Advisor",
-  "L'extension VMAccess"
+  "La commande Run sur chaque VM",
+  "cloud-init (données personnalisées)",
+  "Azure Advisor, recommandations",
+  "L'extension VMAccess pour Linux"
  ],
  "ans": 1,
  "expl": "<p><b>cloud-init</b> est l'outil standard de configuration au premier démarrage des distributions Linux. On passe le fichier cloud-config dans les <b>données personnalisées</b> à la création de la VM.</p><p>VMAccess sert à réinitialiser l'accès (mot de passe, clé SSH). La commande Run exécute un script ponctuel sur une VM existante.</p>",
@@ -1119,9 +1119,9 @@ AZ.questions.push(
  "stem": "<p>Un administrateur a oublié le mot de passe du compte administrateur local de VM6 (Windows). VM6 n'est pas jointe à un domaine.</p><p>Que devez-vous faire ?</p>",
  "opts": [
   "Restaurer VM6 depuis la dernière sauvegarde",
-  "Redéployer VM6",
-  "Utiliser « Réinitialiser le mot de passe » dans le portail",
-  "Créer un instantané du disque du système d'exploitation"
+  "Redéployer VM6 sur un autre hôte",
+  "Utiliser « Réinitialiser le mot de passe »",
+  "Créer un instantané du disque système"
  ],
  "ans": 2,
  "expl": "<p><b>Réinitialiser le mot de passe</b> (Aide > Réinitialiser le mot de passe) utilise l'extension <b>VMAccess</b> pour définir un nouveau mot de passe, ou réinitialiser la configuration RDP. Pour Linux, il permet aussi de réinitialiser une clé SSH.</p><p>Redéployer déplace la VM vers un autre hôte. Restaurer une sauvegarde est inutilement lourd. Un instantané ne change pas le mot de passe.</p>",
@@ -1154,10 +1154,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>VM7 ne répond plus en RDP. Vous voulez voir une capture de l'écran de la VM pour savoir si Windows est bloqué au démarrage.</p><p>Que devez-vous utiliser ?</p>",
  "opts": [
-  "Azure Advisor",
-  "Le journal d'activité",
-  "Network Watcher Vérification du flux IP",
-  "Les diagnostics de démarrage (capture d'écran)"
+  "Azure Advisor, onglet Fiabilité",
+  "Le journal d'activité de la VM",
+  "Network Watcher : vérification du flux IP",
+  "Les diagnostics de démarrage"
  ],
  "ans": 3,
  "expl": "<p>Les <b>diagnostics de démarrage</b> conservent une capture d'écran (et, pour Linux, le journal de la console). On voit par exemple un écran bleu, une mise à jour en cours ou une demande de vérification du disque.</p><p>Vérification du flux IP teste les règles réseau. Le journal d'activité trace les opérations Azure, pas l'état du système d'exploitation.</p>",
@@ -1225,9 +1225,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une application stocke des fichiers de cache sur le disque <b>D:</b> (disque temporaire) de VM9, sous Windows. Après une maintenance, les fichiers ont disparu.</p><p>Pourquoi ?</p>",
  "opts": [
-  "La sauvegarde a écrasé le disque",
-  "Le disque temporaire n'est pas persistant : son contenu peut être perdu lors d'une maintenance, d'un redéploiement ou d'une libération",
-  "Le disque D: est chiffré",
+  "La sauvegarde Azure a écrasé le contenu du disque",
+  "Le disque temporaire n'est pas persistant",
+  "Le disque D: est chiffré par BitLocker et verrouillé au démarrage",
   "Le disque D: est un disque de données Premium"
  ],
  "ans": 1,
@@ -1325,7 +1325,7 @@ AZ.questions.push(
  "opts": [
   "La taille d'un disque managé ne peut jamais changer",
   "Il faut créer un nouveau disque et copier les données",
-  "Vous pouvez augmenter la taille dans Azure, puis étendre le volume dans le système d'exploitation",
+  "Augmenter dans Azure, puis étendre le volume",
   "Vous pouvez réduire puis augmenter la taille librement"
  ],
  "ans": 2,
@@ -1395,7 +1395,7 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez sauvegarder ponctuellement le disque du système d'exploitation de VM12 avant une mise à jour risquée, de façon rapide et peu coûteuse.</p><p>Que devez-vous créer ?</p>",
  "opts": [
-  "Un instantané incrémentiel du disque",
+  "Un instantané incrémentiel",
   "Une galerie Azure Compute",
   "Un groupe à haute disponibilité",
   "Une image managée généralisée"
@@ -1540,10 +1540,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez chiffrer les disques managés de plusieurs VM avec vos propres clés, stockées dans Key Vault, au niveau du service de stockage.</p><p>Quelle ressource devez-vous créer et associer aux disques ?</p>",
  "opts": [
-  "Une Template Spec",
+  "Une Template Spec avec la clé",
   "Une galerie Azure Compute",
   "Un groupe de placement de proximité",
-  "Un jeu de chiffrement de disque (Disk Encryption Set)"
+  "Un jeu de chiffrement de disque"
  ],
  "ans": 3,
  "expl": "<p>Un <b>jeu de chiffrement de disque</b> référence une clé de Key Vault et dispose d'une identité managée pour l'utiliser. On l'associe aux disques managés pour un chiffrement côté serveur avec <b>clés gérées par le client</b>.</p>",
@@ -1615,9 +1615,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous voulez attacher un disque SSD Premium à VM18, de taille Standard_D2_v4. L'option n'est pas disponible.</p><p>Pourquoi ?</p>",
  "opts": [
-  "La taille D2_v4 ne prend pas en charge le stockage Premium : il faut une taille avec « s », comme D2s_v4",
-  "VM18 doit être sous Linux",
-  "Les disques Premium nécessitent un groupe à haute disponibilité",
+  "D2_v4 ne prend pas en charge Premium (il faut « s »)",
+  "VM18 doit être sous Linux pour un disque Premium",
+  "Les disques Premium exigent que la VM soit dans un groupe à haute disponibilité",
   "Les disques Premium ne sont disponibles qu'en zone"
  ],
  "ans": 0,
@@ -1651,10 +1651,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Deux VM d'un cluster de basculement Windows doivent accéder en même temps au même disque managé.</p><p>Quelle fonctionnalité devez-vous utiliser ?</p>",
  "opts": [
-  "Un partage Azure Files Premium",
-  "Les disques partagés (maxShares supérieur à 1)",
-  "Un instantané du disque",
-  "Le disque temporaire"
+  "Un partage Azure Files Premium monté par les nœuds",
+  "Les disques partagés (maxShares > 1)",
+  "Un instantané du disque attaché aux deux VM",
+  "Le disque temporaire de chaque nœud"
  ],
  "ans": 1,
  "expl": "<p>Les <b>disques partagés</b> permettent d'attacher un disque managé (SSD Premium, SSD Premium v2 ou Ultra) à plusieurs VM en même temps, avec un nombre maximal défini par <b>maxShares</b>. L'application (cluster de basculement, SCSI PR) gère l'accès concurrent.</p><p>Azure Files est une alternative en SMB, mais ce n'est pas un disque partagé.</p>",
@@ -1687,9 +1687,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez déplacer VM19 de France Central vers West Europe, avec ses disques et sa configuration réseau.</p><p>Que devez-vous utiliser ?</p>",
  "opts": [
-  "L'option Redéployer",
+  "L'option Redéployer vers la région",
   "L'option Déplacer vers un autre groupe de ressources",
-  "Azure Resource Mover (ou Azure Site Recovery)",
+  "Azure Resource Mover (ou Site Recovery)",
   "Le changement de région dans Propriétés"
  ],
  "ans": 2,
@@ -1724,9 +1724,9 @@ AZ.questions.push(
  "stem": "<p>VM20 est dans Subnet1 de VNet1. Vous devez la déplacer dans Subnet2 du même réseau virtuel.</p><p>Que devez-vous faire ?</p>",
  "opts": [
   "Déplacer la VM dans un autre groupe de ressources",
-  "Recréer la VM",
+  "Recréer la VM dans Subnet2",
   "Créer un appairage entre Subnet1 et Subnet2",
-  "Modifier la configuration IP de l'interface réseau pour choisir Subnet2 (la VM redémarre)"
+  "Changer le sous-réseau de la configuration IP"
  ],
  "ans": 3,
  "expl": "<p>Dans le même réseau virtuel, on peut changer le <b>sous-réseau</b> de la configuration IP de l'interface réseau. La VM redémarre et reçoit une nouvelle adresse IP privée.</p><p>Pour changer de <b>réseau virtuel</b>, en revanche, il faut recréer la VM (ou utiliser Resource Mover). On n'appaire pas des sous-réseaux.</p>",
@@ -1758,7 +1758,7 @@ AZ.questions.push(
   "Exécuter la commande (Run command)",
   "Une nouvelle extension DSC",
   "Les diagnostics de démarrage",
-  "Un instantané"
+  "Un instantané du disque système"
  ],
  "ans": 0,
  "expl": "<p><b>Exécuter la commande</b> (Run command) lance un script PowerShell ou shell dans la VM via l'agent de VM, sans connexion réseau à la VM. C'est idéal pour diagnostiquer ou corriger quand RDP ou SSH ne fonctionne plus.</p><p>Les diagnostics de démarrage montrent l'écran. DSC sert à la configuration souhaitée durable. Un instantané copie un disque.</p>",
@@ -1819,9 +1819,9 @@ AZ.questions.push(
  "stem": "<p>Vous déployez des calculs par lots qui peuvent être interrompus et repris. Vous voulez réduire le coût au maximum, en acceptant qu'Azure récupère les VM à tout moment.</p><p>Quelle option devez-vous choisir ?</p>",
  "opts": [
   "Des VM avec une réservation de 3 ans",
-  "Des hôtes dédiés",
-  "Des VM Spot avec la stratégie d'éviction Libérer ou Supprimer",
-  "Des VM de série B"
+  "Des hôtes dédiés partagés entre équipes",
+  "Des VM Spot (éviction Libérer ou Supprimer)",
+  "Des VM de série B en mode burst"
  ],
  "ans": 2,
  "expl": "<p>Les <b>VM Spot</b> utilisent la capacité inutilisée d'Azure avec une forte remise. Azure peut les <b>évincer</b> avec un préavis de 30 secondes quand il a besoin de la capacité ou que le prix dépasse votre maximum. La stratégie d'éviction choisit Libérer (on garde les disques) ou Supprimer.</p><p>Une réservation de 3 ans engage sur une charge continue. Les hôtes dédiés coûtent plus cher.</p>",
@@ -1951,10 +1951,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez arrêter VM23 pour ne plus payer le calcul pendant le week-end. Elle doit garder ses disques.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Redémarrer la VM",
+  "Redémarrer la VM depuis le portail",
   "L'arrêter depuis Windows (Arrêter le système)",
-  "L'arrêter depuis le portail (état Arrêtée (libérée))",
-  "Supprimer la VM"
+  "L'arrêter depuis le portail (libérée)",
+  "Supprimer la VM et garder ses disques"
  ],
  "ans": 2,
  "expl": "<p>Arrêter depuis le <b>portail</b> (ou avec <code>az vm deallocate</code>) <b>libère</b> la VM : le calcul n'est plus facturé, les disques restent (et sont facturés). L'adresse IP publique dynamique est libérée.</p><p>Arrêter depuis le système d'exploitation laisse la VM à l'état <b>Arrêtée</b> (non libérée) : le calcul continue d'être facturé.</p>",
