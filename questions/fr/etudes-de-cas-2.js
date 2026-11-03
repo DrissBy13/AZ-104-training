@@ -70,10 +70,10 @@ AZ.cases.push(
    "type": "single",
    "stem": "<p>Vous devez répondre à l'exigence d'accès de GRP-Etudes au conteneur rapports.</p><p>Que devez-vous faire ?</p>",
    "opts": [
-    "Attribuer le rôle Lecteur à GRP-Etudes sur stlitwaredata",
-    "Attribuer le rôle Lecteur des données blob du stockage à GRP-Etudes sur le conteneur rapports",
-    "Attribuer le rôle Contributeur aux données blob du stockage à GRP-Etudes sur stlitwaredata",
-    "Générer une SAS de compte en lecture pour GRP-Etudes"
+    "Lecteur à GRP-Etudes sur stlitwaredata",
+    "Lecteur des données blob sur le conteneur rapports",
+    "Contributeur aux données blob sur stlitwaredata",
+    "Une SAS de compte en lecture pour GRP-Etudes"
    ],
    "ans": 1,
    "expl": "<p><b>Lecteur des données blob du stockage</b> donne la lecture des données avec l'identité Entra ; l'étendue <b>conteneur</b> limite l'accès à rapports. Lecteur ne donne pas accès aux données ; Contributeur aux données permet d'écrire ; une SAS n'utilise pas le compte Entra.</p>",

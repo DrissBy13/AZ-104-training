@@ -6,10 +6,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez créer un compte de stockage qui héberge des partages de fichiers Azure <b>Premium</b> avec le protocole NFS.</p><p>Quel type de compte de stockage devez-vous créer ?</p>",
  "opts": [
-  "Premium, type de compte Partages de fichiers (FileStorage)",
-  "Premium, type de compte Objets blob de blocs",
-  "Premium, type de compte Objets blob de pages",
-  "Standard universel v2"
+  "Premium, type Partages de fichiers",
+  "Premium, type Objets blob de blocs",
+  "Premium, type Objets blob de pages",
+  "Standard universel v2 avec partages volumineux"
  ],
  "ans": 0,
  "expl": "<p>Les partages de fichiers <b>Premium</b> (SSD) n'existent que dans un compte <b>Premium de type Partages de fichiers</b> (FileStorage). C'est aussi le seul type qui prend en charge les partages <b>NFS</b>.</p><ul><li><b>Standard universel v2</b> : partages SMB standard (HDD), pas de NFS pour Azure Files.</li><li><b>Objets blob de blocs Premium</b> : blobs à faible latence, pas de partages de fichiers.</li><li><b>Objets blob de pages Premium</b> : surtout pour des disques non managés.</li></ul>",
@@ -286,10 +286,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Le compte de stockage storage4 utilise la redondance LRS. Vous devez passer à <b>ZRS</b> sans interrompre l'accès aux données.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Modifier la redondance dans Configuration, comme pour passer à GRS",
-  "Activer la géoréplication dans le pare-feu",
-  "Supprimer et recréer le compte en ZRS",
-  "Demander une conversion vers ZRS (conversion gérée par Microsoft ou lancée depuis le portail)"
+  "Modifier la redondance dans Configuration, comme pour GRS",
+  "Activer la géoréplication dans le pare-feu du compte",
+  "Supprimer le compte et le recréer en ZRS",
+  "Demander une conversion vers ZRS"
  ],
  "ans": 3,
  "expl": "<p>Passer de LRS à GRS se fait d'un simple clic dans <b>Configuration</b>. Mais passer à <b>ZRS</b> change la répartition physique dans la région : il faut une <b>conversion</b> (lancée depuis la page Redondance du portail ou via une demande de support), réalisée sans interruption.</p><p>On peut aussi migrer manuellement (nouveau compte + copie avec AzCopy), mais cela demande une interruption. Le pare-feu n'a aucun lien avec la redondance.</p>",
@@ -360,7 +360,7 @@ AZ.questions.push(
  "opts": [
   "Froid (Cool)",
   "Archive",
-  "Chaud",
+  "Chaud (Hot)",
   "Très froid (Cold)"
  ],
  "ans": 1,
@@ -492,8 +492,8 @@ AZ.questions.push(
  "stem": "<p>Les blobs du conteneur logs doivent passer au niveau Froid 30 jours après leur dernière modification, au niveau Archive après 90 jours, et être supprimés après 365 jours, automatiquement.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
   "La suppression réversible des blobs",
-  "Une stratégie d'immuabilité",
-  "La réplication d'objets",
+  "Une stratégie d'immuabilité temporelle",
+  "La réplication d'objets vers un compte moins cher",
   "Une stratégie de gestion du cycle de vie"
  ],
  "ans": 3,
@@ -537,8 +537,8 @@ AZ.questions.push(
  "stem": "<p>Vous voulez qu'une règle de cycle de vie déplace vers le niveau Froid les blobs qui n'ont pas été <b>lus</b> depuis 60 jours, même s'ils ont été créés il y a longtemps.</p><p>Quel prérequis devez-vous activer sur le compte de stockage ?</p>",
  "opts": [
   "Le suivi de l'heure du dernier accès",
-  "L'espace de noms hiérarchique",
-  "Le flux de modification",
+  "L'espace de noms hiérarchique (Data Lake)",
+  "Le flux de modification du compte",
   "Le contrôle de version des blobs"
  ],
  "ans": 0,
@@ -572,8 +572,8 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous venez de créer une stratégie de gestion du cycle de vie qui supprime les blobs de plus de 30 jours. Une heure plus tard, les vieux blobs sont toujours là.</p><p>Pourquoi ?</p>",
  "opts": [
-  "Il faut redémarrer le compte de stockage",
-  "La stratégie s'exécute une fois par jour et peut prendre jusqu'à 24 heures pour s'appliquer la première fois",
+  "Il faut redémarrer le compte de stockage pour activer la règle",
+  "La stratégie s'exécute une fois par jour (jusqu'à 24 h la 1re fois)",
   "La suppression réversible empêche la stratégie de fonctionner",
   "Les stratégies ne s'appliquent qu'aux nouveaux blobs"
  ],
@@ -608,10 +608,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>Vous devez pouvoir récupérer les blobs <b>écrasés</b> ou <b>supprimés</b> par erreur dans storage5 au cours des 30 derniers jours.</p><p>Quelles <b>deux</b> fonctionnalités devez-vous activer ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
  "opts": [
-  "Suppression réversible des blobs avec une rétention de 30 jours",
+  "Suppression réversible des blobs (30 jours)",
   "Stratégie d'immuabilité avec conservation légale",
-  "Contrôle de version des blobs",
-  "Réplication d'objets"
+  "Contrôle de version des blobs du compte",
+  "Réplication d'objets vers un second compte"
  ],
  "ans": [
   0,
@@ -682,10 +682,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez pouvoir remettre <b>tous</b> les blobs de blocs d'un compte de stockage dans l'état où ils étaient à une date précise des 14 derniers jours, après une corruption par une application.</p><p>Quelle fonctionnalité devez-vous utiliser ?</p>",
  "opts": [
-  "Le basculement géographique",
-  "Les instantanés de blobs manuels",
-  "La réplication d'objets",
-  "La restauration à un point dans le temps des conteneurs"
+  "Le basculement géographique du compte",
+  "Des instantanés de blobs manuels",
+  "La réplication d'objets vers un autre compte",
+  "La restauration à un point dans le temps"
  ],
  "ans": 3,
  "expl": "<p>La <b>restauration à un point dans le temps</b> remet des conteneurs (ou des plages de blobs) de blobs de blocs dans leur état à une date choisie. Elle exige le <b>contrôle de version</b>, le <b>flux de modification</b> et la <b>suppression réversible des blobs</b>, avec une période de restauration inférieure à la rétention de la suppression réversible.</p><p>Les instantanés manuels demandent une gestion blob par blob. La réplication et le basculement copieraient aussi la corruption.</p>",
@@ -718,9 +718,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Un régulateur impose que les rapports financiers ne puissent être ni modifiés ni supprimés pendant 7 ans, même par un administrateur. La règle elle-même ne doit pas pouvoir être raccourcie.</p><p>Que devez-vous configurer sur le conteneur ?</p>",
  "opts": [
-  "Une stratégie de rétention temporelle de 7 ans, puis la verrouiller",
-  "Une conservation légale",
-  "Une stratégie de rétention temporelle déverrouillée",
+  "Une rétention temporelle de 7 ans, verrouillée",
+  "Une conservation légale sur le conteneur",
+  "Une rétention temporelle de 7 ans, déverrouillée",
   "Un verrou Suppression impossible sur le compte"
  ],
  "ans": 0,
@@ -832,8 +832,8 @@ AZ.questions.push(
  "stem": "<p>Une application cliente doit pouvoir télécharger un seul blob pendant 2 heures, sans recevoir de clé d'accès du compte.</p><p>Que devez-vous lui fournir ?</p>",
  "opts": [
   "Le rôle Contributeur sur le compte de stockage",
-  "La clé d'accès key1 du compte",
-  "Une signature d'accès partagé (SAS) sur le blob, avec l'autorisation Lecture et une expiration dans 2 heures",
+  "La clé d'accès key1 du compte, à révoquer ensuite",
+  "Une SAS en lecture sur le blob, valable 2 heures",
   "L'URL du blob, après avoir rendu le conteneur public"
  ],
  "ans": 2,
@@ -922,10 +922,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous avez distribué à des partenaires plusieurs SAS de service sur le conteneur partage, toutes associées à la stratégie d'accès stockée PolPartenaires. Vous devez révoquer immédiatement ces SAS, sans affecter les autres applications qui utilisent les clés du compte.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Régénérer key1 et key2",
-  "Supprimer le conteneur partage",
+  "Régénérer key1 et key2 du compte",
+  "Supprimer le conteneur partage et le recréer",
   "Activer le pare-feu du compte de stockage",
-  "Supprimer ou modifier la stratégie d'accès stockée PolPartenaires"
+  "Modifier la stratégie d'accès stockée"
  ],
  "ans": 3,
  "expl": "<p>Une SAS de service associée à une <b>stratégie d'accès stockée</b> tire ses autorisations et son expiration de cette stratégie. En supprimant la stratégie (ou en changeant son expiration), on révoque toutes les SAS associées.</p><p>Régénérer les clés révoquerait aussi ces SAS, mais casserait toutes les applications qui utilisent les clés. Supprimer le conteneur détruit les données. Le pare-feu filtre le réseau, pas les SAS.</p>",
@@ -1048,9 +1048,9 @@ AZ.questions.push(
  "stem": "<p>Votre politique de sécurité interdit l'accès aux données de storage8 avec les clés du compte et les SAS signées par ces clés. Seule l'authentification Microsoft Entra doit être possible.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
   "Désactiver le transfert sécurisé obligatoire",
-  "Désactiver « Autoriser l'accès à la clé du compte de stockage » (Shared Key)",
-  "Régénérer les deux clés chaque jour",
-  "Activer l'espace de noms hiérarchique"
+  "Désactiver l'accès par clé du compte (Shared Key)",
+  "Régénérer les deux clés d'accès chaque jour",
+  "Activer l'espace de noms hiérarchique du compte"
  ],
  "ans": 1,
  "expl": "<p>Le paramètre <b>Autoriser l'accès à la clé du compte de stockage</b> (AllowSharedKeyAccess = false) bloque toute requête autorisée par clé partagée, y compris les SAS de compte et de service. Les SAS de délégation d'utilisateur, signées via Entra, continuent de fonctionner.</p><p>Régénérer les clés ne les interdit pas. L'espace de noms hiérarchique concerne Data Lake. Désactiver le transfert sécurisé autoriserait HTTP : l'inverse de la sécurité.</p>",
@@ -1080,10 +1080,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez permettre à n'importe qui sur Internet de lire les images du conteneur images de storage9, sans authentification. Les autres conteneurs doivent rester privés.</p><p>Le paramètre « Autoriser l'accès anonyme aux objets blob » du compte est désactivé. Que devez-vous faire ?</p>",
  "opts": [
-  "Activer le site web statique",
-  "Créer une SAS sans date d'expiration",
-  "Activer l'accès anonyme sur le compte, puis régler le conteneur images sur le niveau d'accès Blob",
-  "Régler le conteneur images sur le niveau d'accès Conteneur, sans toucher au compte"
+  "Activer le site web statique sur le compte",
+  "Créer une SAS sans date d'expiration pour images",
+  "Accès anonyme sur le compte, conteneur au niveau Blob",
+  "Régler le conteneur au niveau Conteneur, sans toucher au compte"
  ],
  "ans": 2,
  "expl": "<p>L'accès anonyme se règle à deux niveaux. Le <b>compte</b> doit l'autoriser ; sinon, les réglages des conteneurs sont ignorés. Ensuite, chaque <b>conteneur</b> a un niveau d'accès : <b>Privé</b>, <b>Blob</b> (lecture anonyme des blobs, sans pouvoir lister) ou <b>Conteneur</b> (lecture et liste des blobs).</p><p>Régler seulement le conteneur ne suffit pas quand le compte l'interdit. Une SAS a toujours une expiration. Le site web statique utilise le conteneur $web, pas images.</p>",
@@ -1116,10 +1116,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Des machines virtuelles du sous-réseau Subnet1 de VNet1 doivent accéder à storage10. Tout autre accès réseau doit être refusé. Vous ne voulez pas d'adresse IP privée pour le compte de stockage.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Un point de terminaison privé dans Subnet1",
-  "Une règle de groupe de sécurité réseau sortante vers Internet",
-  "Une passerelle NAT sur Subnet1",
-  "Un point de terminaison de service Microsoft.Storage sur Subnet1, et une règle de réseau virtuel dans le pare-feu de storage10"
+  "Un point de terminaison privé dans Subnet1, sans zone DNS",
+  "Une règle NSG sortante vers l'étiquette Internet",
+  "Une passerelle NAT sur Subnet1 avec une IP autorisée",
+  "Un point de terminaison de service et une règle de VNet"
  ],
  "ans": 3,
  "expl": "<p>Un <b>point de terminaison de service</b> fait passer le trafic du sous-réseau vers le stockage par le réseau Azure, en l'identifiant comme venant de Subnet1. On ajoute ensuite Subnet1 dans le <b>pare-feu</b> du compte (« Activé à partir des réseaux virtuels et adresses IP sélectionnés »). Le compte garde son adresse publique.</p><p>Un point de terminaison privé donnerait une adresse IP privée au compte, ce qui n'est pas voulu. Un NSG ou une passerelle NAT ne restreignent pas l'accès côté compte.</p>",
@@ -1152,9 +1152,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Les serveurs de votre site local, reliés à VNet1 par un VPN site à site, doivent accéder à storage11 par une adresse IP <b>privée</b>, sans passer par Internet.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Un point de terminaison privé pour storage11 dans VNet1, avec la résolution DNS de privatelink.blob.core.windows.net",
+  "Un point de terminaison privé et la zone privatelink.blob",
   "Une règle d'adresse IP du site local dans le pare-feu",
-  "Le niveau d'accès Archive",
+  "Le niveau d'accès Archive pour les blobs sensibles",
   "Un point de terminaison de service sur le GatewaySubnet"
  ],
  "ans": 0,
@@ -1235,10 +1235,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Le pare-feu de storage13 n'autorise que certains réseaux virtuels. Azure Backup et Azure Monitor doivent pourtant pouvoir y écrire.</p><p>Que devez-vous activer ?</p>",
  "opts": [
-  "Le site web statique",
-  "L'exception « Autoriser les services Azure de la liste des services approuvés à accéder à ce compte de stockage »",
-  "L'accès anonyme aux blobs",
-  "La géoredondance"
+  "Le site web statique du compte",
+  "L'exception des services Azure approuvés",
+  "L'accès anonyme aux blobs du conteneur",
+  "La géoredondance avec lecture secondaire"
  ],
  "ans": 1,
  "expl": "<p>L'exception pour les <b>services approuvés</b> (trusted Microsoft services) laisse passer certains services Azure (Backup, Monitor, Event Grid…) qui ne peuvent pas passer par vos réseaux virtuels. On peut aussi utiliser des règles d'instance de ressource, plus précises.</p><p>L'accès anonyme exposerait les données à tous. Les deux autres options n'ont pas de rapport.</p>",
@@ -1273,7 +1273,7 @@ AZ.questions.push(
  "opts": [
   "Une SAS de délégation d'utilisateur",
   "Le transfert sécurisé obligatoire",
-  "Des clés gérées par le client, stockées dans Azure Key Vault",
+  "Des clés gérées par le client (Key Vault)",
   "Le chiffrement géré par Microsoft (par défaut)"
  ],
  "ans": 2,
@@ -1308,10 +1308,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>Vous configurez des clés gérées par le client pour storage15, avec le coffre de clés KV1.</p><p>Quelles <b>deux</b> conditions KV1 et storage15 doivent-ils remplir ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
  "opts": [
-  "storage15 doit utiliser la redondance GRS",
-  "L'identité managée de storage15 doit pouvoir lire et utiliser la clé dans KV1",
-  "KV1 doit être dans un autre abonnement",
-  "KV1 doit avoir la suppression réversible et la protection contre le vidage"
+  "storage15 doit utiliser la redondance GRS ou GZRS",
+  "L'identité de storage15 doit pouvoir utiliser la clé",
+  "KV1 doit être dans un autre abonnement que storage15",
+  "KV1 doit avoir la protection contre le vidage"
  ],
  "ans": [
   1,
@@ -1346,9 +1346,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une norme interne impose un double chiffrement des données, au niveau du service et au niveau de l'infrastructure, pour un nouveau compte de stockage.</p><p>Quand devez-vous activer le chiffrement d'infrastructure ?</p>",
  "opts": [
-  "Il est activé par défaut",
-  "Après avoir copié les données",
-  "À tout moment depuis Chiffrement",
+  "Il est activé par défaut sur tous les comptes",
+  "Après avoir copié les données dans le compte",
+  "À tout moment, depuis la page Chiffrement",
   "À la création du compte de stockage"
  ],
  "ans": 3,
@@ -1415,10 +1415,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Des serveurs Windows de votre site local doivent monter le partage de fichiers Azure share1, sur storage17, avec le protocole SMB. Le montage échoue.</p><p>Quelle est la cause la plus fréquente ?</p>",
  "opts": [
-  "Le port TCP 3389 est fermé",
-  "Le port TCP 445 sortant est bloqué par le fournisseur d'accès ou le pare-feu",
-  "storage17 utilise la redondance LRS",
-  "Le partage est en niveau Chaud"
+  "Le port TCP 3389 est fermé sur le poste",
+  "Le port TCP 445 sortant est bloqué",
+  "storage17 utilise la redondance LRS, pas ZRS",
+  "Le partage est au niveau Chaud, pas Optimisé"
  ],
  "ans": 1,
  "expl": "<p>SMB utilise le port <b>TCP 445</b>. Beaucoup de fournisseurs d'accès et de pare-feu d'entreprise le bloquent vers Internet. Solutions : ouvrir le port, passer par un VPN ou ExpressRoute avec un point de terminaison privé, ou utiliser Azure File Sync.</p><p>Le niveau et la redondance n'empêchent pas le montage. Le port 3389 concerne RDP.</p>",
@@ -1506,9 +1506,9 @@ AZ.questions.push(
  "stem": "<p>Un utilisateur a écrasé un fichier Excel du partage share2 il y a 2 jours. Des instantanés de partage sont pris chaque nuit.</p><p>Comment l'utilisateur peut-il récupérer le fichier lui-même depuis Windows ?</p>",
  "opts": [
   "En réhydratant le fichier depuis le niveau Archive",
-  "En demandant une restauration à Microsoft",
-  "Avec l'onglet Versions précédentes des propriétés du fichier",
-  "Avec la corbeille de Windows"
+  "En ouvrant une demande de restauration auprès de Microsoft",
+  "Avec l'onglet Versions précédentes du fichier",
+  "Avec la corbeille de Windows du poste client"
  ],
  "ans": 2,
  "expl": "<p>Les <b>instantanés de partage</b> Azure Files sont exposés dans Windows sous l'onglet <b>Versions précédentes</b> : l'utilisateur peut ouvrir ou restaurer une ancienne version.</p><p>La corbeille de Windows ne voit pas les fichiers du partage réseau. Azure Files n'a pas de niveau Archive.</p>",
@@ -1540,9 +1540,9 @@ AZ.questions.push(
  "stem": "<p>Le partage de fichiers share3 a été supprimé par erreur ce matin. La suppression réversible des partages de fichiers est activée avec 14 jours de rétention.</p><p>Que devez-vous faire ?</p>",
  "opts": [
   "Restaurer share3 depuis un instantané de share3",
-  "Créer un nouveau partage share3 : les données réapparaissent",
+  "Créer un nouveau partage share3 : les données reviennent",
   "Rien : un partage supprimé ne peut pas être restauré",
-  "Afficher les partages supprimés dans le compte de stockage et annuler la suppression de share3"
+  "Afficher les partages supprimés et annuler la suppression"
  ],
  "ans": 3,
  "expl": "<p>Avec la <b>suppression réversible des partages</b>, un partage supprimé est conservé pendant la durée de rétention. On l'affiche dans la liste des partages (option « Afficher les partages supprimés ») et on <b>annule la suppression</b>, avec ses instantanés.</p><p>Les instantanés sont supprimés avec le partage s'il n'y a pas de suppression réversible. Créer un partage du même nom ne restaure rien.</p>",
@@ -1575,10 +1575,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Les utilisateurs de votre domaine AD DS, synchronisé avec Microsoft Entra ID, doivent accéder au partage share4 avec leur compte du domaine et des autorisations NTFS.</p><p>Que devez-vous configurer d'abord sur le compte de stockage ?</p>",
  "opts": [
-  "L'authentification basée sur l'identité avec AD DS (jonction du compte de stockage au domaine)",
-  "Le protocole NFS",
-  "L'accès anonyme",
-  "Une SAS de compte"
+  "L'authentification par identité avec AD DS",
+  "Le protocole NFS 4.1 sur un compte Premium",
+  "L'accès anonyme au partage en lecture",
+  "Une SAS de compte distribuée aux utilisateurs"
  ],
  "ans": 0,
  "expl": "<p>Pour utiliser les comptes du domaine, on active l'<b>authentification basée sur l'identité</b> du compte de stockage : AD DS local (le compte de stockage est représenté par un objet ordinateur dans le domaine, par exemple avec le module AzFilesHybrid), Microsoft Entra Domain Services, ou Microsoft Entra Kerberos pour les identités hybrides.</p><p>On attribue ensuite les permissions au niveau du partage (rôles RBAC) puis les permissions NTFS sur les dossiers et fichiers.</p>",
@@ -1673,7 +1673,7 @@ AZ.questions.push(
  "opts": [
   "L'accès anonyme au niveau du conteneur",
   "Une permission par défaut au niveau du partage",
-  "Une SAS de compte en lecture",
+  "Une SAS de compte en lecture, distribuée à tous",
   "Le rôle Lecteur sur le compte de stockage"
  ],
  "ans": 1,
@@ -1881,10 +1881,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Chaque nuit, vous devez mettre à jour le conteneur backup avec les fichiers nouveaux ou modifiés du dossier D:\\Backup, et supprimer du conteneur les fichiers qui n'existent plus localement.</p><p>Quelle commande AzCopy devez-vous utiliser ?</p>",
  "opts": [
-  "azcopy make",
+  "azcopy make sur le conteneur cible",
   "azcopy copy avec --recursive",
   "azcopy copy avec --overwrite=false",
-  "azcopy sync avec --delete-destination=true"
+  "azcopy sync --delete-destination=true"
  ],
  "ans": 3,
  "expl": "<p><b>azcopy sync</b> compare la source et la destination (par la date de dernière modification) et ne copie que les différences. Avec <b>--delete-destination=true</b>, il supprime de la destination ce qui n'existe plus à la source.</p><p><code>azcopy copy</code> recopie tout et ne supprime jamais. <code>--overwrite=false</code> évite d'écraser, mais ne copie pas les fichiers modifiés et ne supprime rien. <code>make</code> crée un conteneur. Attention : sync est <b>unidirectionnel</b>.</p>",
@@ -2081,9 +2081,9 @@ AZ.questions.push(
  "stem": "<p>Vous devez stocker des données pour Azure Synapse avec des dossiers réels (renommer un dossier doit être une opération unique et rapide) et des listes de contrôle d'accès POSIX.</p><p>Quelle option devez-vous activer sur le compte Standard universel v2 ?</p>",
  "opts": [
   "Le contrôle de version des blobs",
-  "L'espace de noms hiérarchique (Data Lake Storage Gen2)",
-  "Le protocole NFS 3.0 uniquement",
-  "Les étendues de chiffrement"
+  "L'espace de noms hiérarchique",
+  "Le protocole NFS 3.0 uniquement, sans espace de noms",
+  "Les étendues de chiffrement par conteneur"
  ],
  "ans": 1,
  "expl": "<p>L'<b>espace de noms hiérarchique</b> transforme le stockage blob en <b>Azure Data Lake Storage Gen2</b> : vrais répertoires (renommer ou supprimer un dossier est atomique), ACL de type POSIX sur les dossiers et fichiers, point de terminaison <code>dfs.core.windows.net</code>.</p><p>On l'active à la création, ou par une mise à niveau irréversible d'un compte existant. Certaines fonctions blob (comme la réplication d'objets) ne sont pas compatibles.</p>",
@@ -2113,10 +2113,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Des machines Linux doivent monter un conteneur blob avec le protocole <b>NFS 3.0</b>.</p><p>Quelle condition le compte de stockage doit-il remplir ?</p>",
  "opts": [
-  "Être un compte Premium partages de fichiers",
-  "Utiliser la redondance GRS",
-  "Avoir l'espace de noms hiérarchique activé et l'accès réseau limité à des réseaux virtuels",
-  "Avoir l'accès anonyme activé"
+  "Être un compte Premium de partages de fichiers",
+  "Utiliser la redondance GRS ou RA-GRS",
+  "Espace de noms hiérarchique et accès réseau limité",
+  "Avoir l'accès anonyme activé sur le conteneur"
  ],
  "ans": 2,
  "expl": "<p>NFS 3.0 sur le stockage <b>blob</b> exige l'<b>espace de noms hiérarchique</b>, activé à la création avec l'option NFS v3, et un accès réseau restreint (réseaux virtuels sélectionnés ou point de terminaison privé), car NFS 3.0 n'utilise pas d'authentification par compte.</p><p>Le compte Premium partages de fichiers concerne NFS sur <b>Azure Files</b>, un autre service. La redondance et l'accès anonyme ne sont pas en cause.</p>",
@@ -2154,10 +2154,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez permettre à un partenaire de déposer des fichiers dans un conteneur blob avec un client <b>SFTP</b>, sans utiliser de SAS ni de clé d'accès.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Activer le site web statique",
-  "Créer un partage NFS",
-  "Activer l'accès anonyme en écriture",
-  "Activer SFTP sur un compte avec espace de noms hiérarchique et créer un utilisateur local"
+  "Activer le site web statique avec un dossier d'upload",
+  "Créer un partage NFS accessible depuis Internet",
+  "Activer l'accès anonyme en écriture sur le conteneur",
+  "Activer SFTP et créer un utilisateur local"
  ],
  "ans": 3,
  "expl": "<p>Le <b>support SFTP</b> d'Azure Blob Storage exige l'<b>espace de noms hiérarchique</b>. On crée des <b>utilisateurs locaux</b> (avec mot de passe ou clé SSH) auxquels on donne des autorisations sur des conteneurs.</p><p>Le site web statique est en lecture seule. NFS n'est pas SFTP. L'accès anonyme ne permet jamais l'écriture.</p>",

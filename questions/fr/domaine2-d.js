@@ -104,10 +104,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Votre entreprise a 10 agences, chacune avec un serveur de fichiers local. Elle veut un seul ensemble de données central dans Azure, avec un accès local rapide aux fichiers chauds dans chaque agence.</p><p>Que devez-vous recommander ?</p>",
  "opts": [
-  "Un compte de stockage par agence",
-  "Azure Files avec Azure File Sync et la hiérarchisation cloud",
-  "Azure Data Box",
-  "AzCopy planifié dans chaque agence"
+  "Un compte de stockage par agence, avec AzCopy",
+  "Azure Files, File Sync et hiérarchisation cloud",
+  "Azure Data Box envoyé chaque mois",
+  "AzCopy planifié dans chaque agence vers un compte"
  ],
  "ans": 1,
  "expl": "<p><b>Azure File Sync</b> synchronise plusieurs serveurs (un point de terminaison serveur par agence) avec le même partage Azure (point de terminaison cloud). La <b>hiérarchisation cloud</b> garde en local les fichiers les plus utilisés.</p><p>Un compte par agence ne centralise rien. AzCopy ne fait pas de synchronisation multidirectionnelle. Data Box est un transfert ponctuel.</p>",
@@ -138,8 +138,8 @@ AZ.questions.push(
  "stem": "<p>Le même fichier rapport.docx a été modifié en même temps sur deux serveurs de la même synchronisation Azure File Sync, FS-PARIS et FS-LYON.</p><p>Que fait Azure File Sync ?</p>",
  "opts": [
   "Il bloque la synchronisation jusqu'à une décision manuelle",
-  "Il fusionne le contenu des deux fichiers",
-  "Il garde les deux versions : l'une avec son nom d'origine, l'autre renommée avec un suffixe (par exemple le nom du serveur)",
+  "Il fusionne le contenu des deux fichiers en conflit",
+  "Il garde les deux : l'un est renommé avec un suffixe",
   "Il garde uniquement la version la plus récente"
  ],
  "ans": 2,
@@ -171,8 +171,8 @@ AZ.questions.push(
  "opts": [
   "Le portail ne peut pas écrire dans un partage synchronisé",
   "La hiérarchisation cloud bloque les nouveaux fichiers",
-  "Il faut redémarrer l'agent",
-  "Les modifications faites directement dans le partage Azure sont détectées par une tâche qui s'exécute toutes les 24 heures"
+  "Il faut redémarrer l'agent sur le serveur",
+  "Une tâche détecte ces changements toutes les 24 h"
  ],
  "ans": 3,
  "expl": "<p>Les changements faits sur un <b>serveur</b> sont détectés en temps réel par l'agent. Ceux faits <b>directement dans le partage Azure</b> (portail, SMB direct, API) sont détectés par une <b>tâche de détection des modifications</b> qui s'exécute une fois toutes les 24 heures. On peut la lancer à la demande avec <code>Invoke-AzStorageSyncChangeDetection</code>.</p>",
@@ -233,10 +233,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Un blob est placé au niveau <b>Froid (Cool)</b>. 10 jours plus tard, une règle de cycle de vie le déplace vers <b>Archive</b>.</p><p>Que se passe-t-il pour la facturation ?</p>",
  "opts": [
-  "Le déplacement est refusé avant 30 jours",
-  "Des frais de suppression anticipée de 20 jours au niveau Froid sont facturés",
-  "Aucun frais supplémentaire",
-  "Des frais de 180 jours au niveau Archive sont facturés immédiatement"
+  "Le déplacement est refusé avant 30 jours au niveau Froid",
+  "Des frais de suppression anticipée de 20 jours",
+  "Aucun frais supplémentaire, le niveau change",
+  "Des frais de 180 jours au niveau Archive, tout de suite"
  ],
  "ans": 1,
  "expl": "<p>Le niveau Froid a une durée minimale de <b>30 jours</b>. Le blob y est resté 10 jours : on paie les <b>20 jours restants</b> (frais de suppression anticipée). Ensuite, le compteur des 180 jours du niveau Archive démarre.</p><p>Le déplacement n'est jamais refusé ; seule la facturation en tient compte.</p>",
@@ -274,7 +274,7 @@ AZ.questions.push(
   "daysAfterCreationGreaterThan",
   "prefixMatch",
   "daysAfterLastTierChangeGreaterThan",
-  "blobTypes"
+  "daysAfterLastAccessTimeGreaterThan"
  ],
  "ans": 2,
  "expl": "<p>La condition <b>daysAfterLastTierChangeGreaterThan</b> (jours depuis le dernier changement de niveau) s'utilise avec tierToArchive : un blob qui vient d'être réhydraté ne sera pas réarchivé avant le délai choisi.</p><p>La date de création et la date de modification ne changent pas lors d'une réhydratation, d'où le problème.</p>",
@@ -307,9 +307,9 @@ AZ.questions.push(
  "stem": "<p>Vous avez lancé la réhydratation d'un blob archivé avec la priorité <b>Standard</b>. L'utilisateur en a finalement besoin d'urgence.</p><p>Que pouvez-vous faire ?</p>",
  "opts": [
   "Rien : la priorité ne peut pas être modifiée",
-  "Copier le blob archivé vers un autre conteneur au niveau Archive",
-  "Annuler et attendre 24 heures",
-  "Relancer l'opération avec la priorité Élevée : la priorité peut être augmentée pendant la réhydratation"
+  "Copier le blob vers un autre conteneur au niveau Archive",
+  "Annuler la réhydratation et attendre 24 heures",
+  "Relancer l'opération avec la priorité Élevée"
  ],
  "ans": 3,
  "expl": "<p>Pendant une réhydratation en attente, on peut <b>passer de Standard à Élevée</b> (en refaisant Set Blob Tier avec la priorité High). On ne peut pas faire l'inverse. La priorité Élevée coûte plus cher.</p>",
@@ -341,10 +341,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez lire un blob archivé sans modifier le blob d'origine, qui doit rester au niveau Archive.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Copier le blob archivé vers un nouveau blob au niveau Chaud ou Froid",
+  "Copier le blob archivé vers un blob Chaud ou Froid",
   "Créer un instantané du blob archivé et le lire",
-  "Lire le blob avec une SAS",
-  "Changer le niveau du blob d'origine"
+  "Lire le blob archivé avec une SAS de service",
+  "Changer le niveau du blob d'origine en Chaud"
  ],
  "ans": 0,
  "expl": "<p>La <b>copie</b> d'un blob archivé vers un nouveau blob en ligne (opération Copy Blob avec un niveau cible) réhydrate la copie, tandis que l'original reste au niveau Archive.</p><p>Changer le niveau modifierait l'original. Un instantané d'un blob archivé est lui aussi hors ligne. Une SAS ne rend pas un blob archivé lisible.</p>",
@@ -422,10 +422,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous voulez appliquer des stratégies d'immuabilité différentes à des blobs précis d'un même conteneur, et non au conteneur entier.</p><p>Quel prérequis devez-vous activer ?</p>",
  "opts": [
-  "La géoredondance",
-  "Le contrôle de version des blobs, avec la prise en charge de l'immuabilité au niveau de la version",
+  "La géoredondance avec lecture dans la région secondaire",
+  "Le contrôle de version et l'immuabilité par version",
   "La suppression réversible des conteneurs",
-  "L'espace de noms hiérarchique"
+  "L'espace de noms hiérarchique du compte"
  ],
  "ans": 1,
  "expl": "<p>L'<b>immuabilité au niveau de la version</b> permet d'appliquer une stratégie de rétention ou une conservation légale à un blob ou une version précis. Elle exige le <b>contrôle de version</b> et s'active sur le compte ou le conteneur.</p><p>Sans elle, les stratégies s'appliquent au niveau du conteneur.</p>",
@@ -459,8 +459,8 @@ AZ.questions.push(
  "opts": [
   "L'accès anonyme aux blobs",
   "Le chiffrement d'infrastructure",
-  "Autoriser la réplication entre locataires sur les comptes de stockage",
-  "Le niveau d'accès par défaut"
+  "La réplication entre locataires",
+  "Le niveau d'accès par défaut des comptes"
  ],
  "ans": 2,
  "expl": "<p>La réplication d'objets vers un compte d'un <b>autre locataire Microsoft Entra</b> doit être autorisée par le paramètre <b>Autoriser la réplication entre locataires</b> (AllowCrossTenantReplication), désactivé par défaut sur les nouveaux comptes.</p>",
@@ -491,8 +491,8 @@ AZ.questions.push(
  "opts": [
   "Ils sont toujours répliqués en premier",
   "Ils ne sont jamais répliqués",
-  "Ils sont déplacés et supprimés de la source",
-  "Selon l'option choisie, vous pouvez copier tous les objets, uniquement les nouveaux, ou ceux créés après une date"
+  "Ils sont déplacés vers la destination et supprimés de la source",
+  "Selon l'option : tous, nouveaux seuls, ou après une date"
  ],
  "ans": 3,
  "expl": "<p>Une règle de réplication d'objets propose de <b>copier tous les objets</b>, <b>uniquement les nouveaux objets</b>, ou un filtre de date personnalisé. La réplication <b>copie</b> les blobs ; elle ne les supprime jamais de la source.</p>",
@@ -521,10 +521,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous utilisez des clés gérées par le client dans Key Vault pour storage63. Vous voulez que le compte utilise automatiquement chaque nouvelle version de la clé après une rotation.</p><p>Comment devez-vous configurer la clé dans le compte ?</p>",
  "opts": [
-  "Indiquer l'URI de la clé sans version (mise à jour automatique de la version)",
+  "Indiquer l'URI de la clé sans version",
   "Copier la clé dans le compte de stockage",
-  "Indiquer l'URI d'une version précise",
-  "Utiliser une SAS"
+  "Indiquer l'URI d'une version précise de la clé",
+  "Utiliser une SAS de compte à la place"
  ],
  "ans": 0,
  "expl": "<p>Si l'on indique l'URI de la clé <b>sans numéro de version</b>, Azure Storage vérifie régulièrement et adopte automatiquement la dernière version. Avec une version précise, il faut mettre à jour le compte à chaque rotation.</p>",
@@ -593,10 +593,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez configurer les permissions NTFS racine du partage share16, qui utilise l'authentification AD DS.</p><p>Quelle méthode Microsoft recommande-t-elle pour la configuration initiale ?</p>",
  "opts": [
-  "Utiliser une SAS de compte",
+  "Utiliser une SAS de compte en écriture",
   "Configurer les permissions dans le pare-feu",
-  "Monter le partage avec un compte qui a le rôle Contributeur élevé de partage SMB (ou avec la clé du compte), puis utiliser l'Explorateur Windows ou icacls",
-  "Configurer les permissions dans le portail Azure"
+  "Monter avec Contributeur élevé (ou la clé), puis icacls",
+  "Configurer les permissions NTFS dans le portail Azure"
  ],
  "ans": 2,
  "expl": "<p>Les ACL NTFS se gèrent depuis un client Windows : on monte le partage avec une identité qui a le droit de modifier les ACL (<b>Contributeur élevé de partage SMB</b>, ou la clé du compte, qui agit en super-utilisateur), puis on utilise l'<b>Explorateur Windows</b> ou <b>icacls</b>.</p><p>Le portail ne gère pas les ACL NTFS d'Azure Files.</p>",
@@ -625,10 +625,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une application web en JavaScript, hébergée sur www.contoso.com, doit charger directement des fichiers dans storage64 depuis le navigateur. Le navigateur bloque les requêtes.</p><p>Que devez-vous configurer sur le service blob ?</p>",
  "opts": [
-  "L'accès anonyme en écriture",
-  "Un point de terminaison privé",
-  "La redondance RA-GRS",
-  "Une règle CORS autorisant l'origine https://www.contoso.com"
+  "L'accès anonyme en écriture sur le conteneur",
+  "Un point de terminaison privé pour le compte",
+  "La redondance RA-GRS pour la lecture",
+  "Une règle CORS pour https://www.contoso.com"
  ],
  "ans": 3,
  "expl": "<p>Les navigateurs bloquent les requêtes vers un autre domaine sauf si le serveur les autorise par <b>CORS</b> (partage des ressources entre origines). Une règle CORS sur le service blob, avec l'origine, les méthodes (PUT, GET…) et les en-têtes autorisés, résout le problème. L'authentification passera par une SAS ou Entra.</p>",
@@ -661,10 +661,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous hébergez un site web statique dans storage65. Il doit être accessible en HTTPS sur www.contoso.com.</p><p>Que devez-vous ajouter ?</p>",
  "opts": [
-  "Azure Front Door (ou Azure CDN) avec le domaine personnalisé et un certificat",
-  "La suppression réversible",
-  "Un point de terminaison privé",
-  "Une SAS"
+  "Azure Front Door avec le domaine et un certificat",
+  "La suppression réversible des blobs du site",
+  "Un point de terminaison privé sur le site web",
+  "Une SAS de compte ajoutée aux URL du site"
  ],
  "ans": 0,
  "expl": "<p>Le site web statique accepte un domaine personnalisé en HTTP, mais <b>pas en HTTPS</b> avec un certificat personnalisé. Pour HTTPS sur votre domaine, on place <b>Azure Front Door</b> (ou Azure CDN) devant le compte, qui gère le certificat.</p>",
@@ -1064,10 +1064,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>Un compte de stockage a le pare-feu activé (réseaux sélectionnés). Un utilisateur reçoit l'erreur « Cette requête n'est pas autorisée » en ouvrant un conteneur dans le portail, depuis son bureau.</p><p>Quelles <b>deux</b> solutions permettent l'accès ?</p><p>Chaque réponse correcte présente une solution complète.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
  "opts": [
-  "Désactiver la suppression réversible",
-  "Ajouter l'adresse IP publique du bureau dans le pare-feu",
+  "Désactiver la suppression réversible des blobs",
+  "Ajouter l'IP publique du bureau au pare-feu",
   "Se connecter depuis une VM d'un sous-réseau autorisé",
-  "Lui attribuer le rôle Propriétaire du compte"
+  "Lui attribuer le rôle Propriétaire sur le compte de stockage"
  ],
  "ans": [
   1,
@@ -1103,7 +1103,7 @@ AZ.questions.push(
  "opts": [
   "Site web statique",
   "NFS 3.0 pour le stockage blob",
-  "Réplication d'objets",
+  "Réplication d'objets entre comptes",
   "SFTP pour le stockage blob"
  ],
  "ans": [
@@ -1139,9 +1139,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous voulez convertir un compte universel v2 existant en compte Data Lake Storage Gen2. Il utilise le contrôle de version et la réplication d'objets.</p><p>Que se passe-t-il au lancement de la mise à niveau ?</p>",
  "opts": [
-  "La mise à niveau crée un nouveau compte",
-  "La validation échoue : il faut d'abord désactiver les fonctions incompatibles",
-  "La mise à niveau réussit et désactive ces fonctions automatiquement",
+  "La mise à niveau crée un nouveau compte à côté",
+  "La validation échoue : désactivez d'abord ces fonctions",
+  "La mise à niveau réussit et désactive ces fonctions seule",
   "La mise à niveau est réversible à tout moment"
  ],
  "ans": 1,
@@ -1173,8 +1173,8 @@ AZ.questions.push(
  "opts": [
   "Lecture (r) et Traitement (p)",
   "Liste (l) sur le compte",
-  "Ajouter (a) sur la file d'attente commandes",
-  "Suppression (d)"
+  "Ajouter (a) sur la file commandes",
+  "Suppression (d) sur la file commandes"
  ],
  "ans": 2,
  "expl": "<p>Pour une file d'attente, l'autorisation <b>Ajouter</b> permet d'insérer des messages. <b>Lecture</b> permet de consulter les messages, <b>Traitement</b> (process) de les retirer (Get + Delete). Une SAS de service limitée à la file commandes, avec l'autorisation Ajouter et une expiration à 7 jours, suffit.</p>",
@@ -1236,10 +1236,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous voulez savoir combien de gigaoctets de données contient le compte storage72, et comment ce volume évolue depuis un mois.</p><p>Où devez-vous regarder ?</p>",
  "opts": [
-  "Les métriques du compte (Capacité utilisée) dans Azure Monitor",
-  "Les clés d'accès",
-  "Le journal d'activité",
-  "La page Redondance"
+  "Les métriques du compte (Capacité utilisée)",
+  "Les clés d'accès du compte",
+  "Le journal d'activité de l'abonnement",
+  "La page Redondance du compte de stockage"
  ],
  "ans": 0,
  "expl": "<p>La métrique <b>Capacité utilisée</b> (Used capacity), et par service la capacité blob ou fichier, montre le volume stocké et son évolution dans le temps. Les métriques de capacité sont mises à jour une fois par jour environ.</p>",
@@ -1271,10 +1271,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous gérez un compte <b>Premium objets blob de blocs</b>. Vous voulez qu'une règle de cycle de vie déplace les anciens blobs vers le niveau Froid.</p><p>Que se passe-t-il ?</p>",
  "opts": [
-  "Le compte devient Standard",
-  "Les comptes Premium n'ont pas de niveaux d'accès : seule l'action de suppression est disponible",
-  "Les blobs passent en Archive",
-  "La règle fonctionne normalement"
+  "Le compte devient Standard pour appliquer la règle",
+  "Premium n'a pas de niveaux : seule la suppression existe",
+  "Les blobs passent en Archive comme prévu",
+  "La règle fonctionne normalement, sans changement"
  ],
  "ans": 1,
  "expl": "<p>Les comptes <b>Premium</b> ne prennent pas en charge les niveaux Chaud, Froid, Très froid et Archive. La gestion du cycle de vie y permet seulement de <b>supprimer</b> des blobs. Pour hiérarchiser, il faut copier les données vers un compte Standard.</p>",
@@ -1306,10 +1306,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une équipe doit supprimer tous les blobs du dossier temp/ du conteneur data, avec AzCopy.</p><p>Quelle commande devez-vous utiliser ?</p>",
  "opts": [
-  "azcopy make",
-  "azcopy copy --overwrite=false",
-  "azcopy remove \"https://storage73.blob.core.windows.net/data/temp?&lt;SAS&gt;\" --recursive",
-  "azcopy sync --delete-destination=true"
+  "azcopy make \"https://storage73.blob.core.windows.net/data/temp\"",
+  "azcopy copy --overwrite=false sur le dossier temp",
+  "azcopy remove \"…/data/temp?xSASx\" --recursive",
+  "azcopy sync --delete-destination=true vers le dossier temp"
  ],
  "ans": 2,
  "expl": "<p><code>azcopy remove</code> avec <code>--recursive</code> supprime tous les blobs sous le préfixe indiqué.</p><p>sync supprime seulement ce qui n'existe plus à la source. make crée un conteneur. copy ne supprime jamais rien.</p>",
@@ -1335,8 +1335,8 @@ AZ.questions.push(
  "opts": [
   "Avec la clé du compte uniquement",
   "Avec son compte Microsoft Entra uniquement",
-  "Avec un point de terminaison privé",
-  "Avec l'option « Conteneur d'objets blob » ou « URL de signature d'accès partagé (SAS) »"
+  "Avec un point de terminaison privé du compte",
+  "Avec « Conteneur d'objets blob » ou « URL SAS »"
  ],
  "ans": 3,
  "expl": "<p>Storage Explorer peut se connecter de plusieurs façons : compte Microsoft Entra (abonnements), clé et nom du compte, chaîne de connexion, ou <b>URL SAS</b> d'une ressource (compte, conteneur, partage, file). Avec une SAS de conteneur, il ne voit que ce conteneur.</p>",
@@ -1368,10 +1368,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Les données de storage74 sont chiffrées au repos. Un auditeur demande quel algorithme est utilisé par défaut.</p><p>Que devez-vous répondre ?</p>",
  "opts": [
-  "AES 256 bits, avec des clés gérées par Microsoft par défaut",
-  "3DES",
+  "AES 256 bits, clés gérées par Microsoft",
+  "3DES, clés gérées par le client",
   "Aucun chiffrement par défaut",
-  "RSA 2048 bits"
+  "RSA 2048 bits, clés gérées par Microsoft"
  ],
  "ans": 0,
  "expl": "<p>Le <b>chiffrement du service de stockage</b> (SSE) chiffre toujours les données au repos avec <b>AES 256 bits</b>. Il ne peut pas être désactivé. Les clés sont gérées par Microsoft par défaut, ou par vous (clés gérées par le client).</p>",
@@ -1405,8 +1405,8 @@ AZ.questions.push(
  "opts": [
   "Aucune SAS n'est possible",
   "Une SAS de délégation d'utilisateur",
-  "Une SAS de compte",
-  "Une SAS de service"
+  "Une SAS de compte signée par key1",
+  "Une SAS de service signée par key1"
  ],
  "ans": 1,
  "expl": "<p>Quand l'accès par <b>clé partagée</b> est désactivé, les SAS de compte et de service (signées par une clé du compte) sont refusées. La <b>SAS de délégation d'utilisateur</b>, signée via Microsoft Entra, reste utilisable.</p>",
@@ -1437,10 +1437,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous voulez que les nouveaux blobs de storage75 soient au niveau <b>Froid</b> par défaut, et que seuls certains soient en Chaud.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Une stratégie d'immuabilité",
-  "Une SAS par blob",
-  "Le niveau d'accès par défaut du compte à Froid",
-  "La redondance ZRS"
+  "Une stratégie d'immuabilité sur le conteneur",
+  "Une SAS par blob, avec niveau Froid",
+  "Le niveau d'accès par défaut à Froid",
+  "La redondance ZRS du compte"
  ],
  "ans": 2,
  "expl": "<p>Le <b>niveau d'accès par défaut</b> du compte (Configuration) s'applique aux blobs dont le niveau n'est pas défini explicitement. On peut ensuite fixer le niveau Chaud sur certains blobs, ou utiliser une règle de cycle de vie.</p>",
@@ -1982,8 +1982,8 @@ AZ.questions.push(
  "opts": [
   "Des étiquettes d'index de blob",
   "Des métadonnées de blob",
-  "Les propriétés système",
-  "Le nom du conteneur"
+  "Les propriétés système des blobs",
+  "Le nom du conteneur de chaque blob"
  ],
  "ans": 0,
  "expl": "<p>Les <b>étiquettes d'index</b> sont indexées par le service : l'opération <b>Find Blobs by Tags</b> retrouve les blobs correspondants dans tout le compte. Elles servent aussi de filtre aux règles de cycle de vie.</p><p>Les <b>métadonnées</b> sont stockées avec le blob mais ne sont pas indexées : il faudrait lire chaque blob.</p>",
@@ -2016,10 +2016,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Votre application doit continuer à <b>écrire</b> dans le stockage même si la région primaire tombe en panne, sans intervention.</p><p>Quelle affirmation est vraie ?</p>",
  "opts": [
-  "ZRS écrit dans la région jumelée",
-  "Aucune redondance ne permet d'écrire automatiquement dans la région secondaire : il faut un basculement",
+  "ZRS écrit aussi dans la région jumelée",
+  "Aucune : il faut un basculement",
   "GZRS bascule automatiquement les écritures",
-  "RA-GRS permet d'écrire dans la région secondaire"
+  "RA-GRS permet d'écrire dans le secondaire"
  ],
  "ans": 1,
  "expl": "<p>La région secondaire des comptes géoredondants est en <b>lecture seule</b> (avec RA-) jusqu'à un <b>basculement</b>, qui doit être lancé (par le client, ou par Microsoft dans des cas extrêmes). RA-GRS et RA-GZRS ne permettent que la lecture.</p><p>ZRS reste dans une seule région. Pour écrire sans interruption dans plusieurs régions, il faut une architecture applicative (par exemple deux comptes).</p>",
@@ -2052,7 +2052,7 @@ AZ.questions.push(
  "stem": "<p>Vous devez permettre à un serveur local d'utiliser Azure File Sync. Le serveur exécute Windows Server 2022.</p><p>Quel composant devez-vous installer sur le serveur ?</p>",
  "opts": [
   "L'agent Azure Monitor",
-  "AzCopy",
+  "AzCopy planifié",
   "L'agent Azure File Sync",
   "Microsoft Entra Connect"
  ],
@@ -2083,9 +2083,9 @@ AZ.questions.push(
  "stem": "<p>Vous retirez un serveur d'une synchronisation Azure File Sync. Vous voulez que les fichiers hiérarchisés restent utilisables sur ce serveur.</p><p>Que devez-vous faire avant de supprimer le point de terminaison serveur ?</p>",
  "opts": [
   "Désinstaller l'agent immédiatement",
-  "Supprimer le partage Azure",
-  "Supprimer le service de synchronisation",
-  "Rappeler tous les fichiers hiérarchisés (Invoke-StorageSyncFileRecall) ou désactiver la hiérarchisation et attendre le rappel"
+  "Supprimer le partage Azure synchronisé",
+  "Supprimer le service de synchronisation de stockage",
+  "Rappeler tous les fichiers hiérarchisés"
  ],
  "ans": 3,
  "expl": "<p>Les fichiers hiérarchisés ne sont que des <b>pointeurs</b> vers Azure. Si on supprime le point de terminaison sans les rappeler, ils deviennent inaccessibles sur le serveur. On les <b>rappelle</b> d'abord, par exemple avec <code>Invoke-StorageSyncFileRecall</code>.</p><p>Supprimer le partage ou le service détruirait les données ou la configuration.</p>",
@@ -2113,10 +2113,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Un compte de stockage contient 20 To de vidéos lues tous les jours pendant leur premier mois, puis presque jamais, mais qui doivent rester lisibles immédiatement pendant 3 ans.</p><p>Quelle stratégie est la plus économique ?</p>",
  "opts": [
-  "Niveau Chaud au départ, règle de cycle de vie vers Froid après 30 jours puis Très froid après 90 jours, suppression après 3 ans",
-  "Compte Premium objets blob de blocs",
-  "Niveau Archive dès le chargement",
-  "Niveau Chaud pendant 3 ans"
+  "Chaud, puis Froid à 30 j, Très froid à 90 j, suppression à 3 ans",
+  "Un compte Premium objets blob de blocs pendant 3 ans",
+  "Le niveau Archive dès le chargement, puis suppression à 3 ans",
+  "Le niveau Chaud pendant 3 ans, puis suppression"
  ],
  "ans": 0,
  "expl": "<p>Les vidéos sont chaudes au début puis froides : une règle de cycle de vie les fait descendre progressivement vers des niveaux <b>en ligne</b> moins chers (Froid puis Très froid), et les supprime à 3 ans.</p><p>Archive empêcherait la lecture immédiate. Rester en Chaud ou en Premium coûterait beaucoup plus cher.</p>",

@@ -70,10 +70,10 @@ AZ.cases.push(
    "type": "single",
    "stem": "<p>You need to meet the GRP-Etudes access requirement for the reports container.</p><p>What should you do?</p>",
    "opts": [
-    "Assign the Reader role to GRP-Etudes on stlitwaredata",
-    "Assign the Storage Blob Data Reader role to GRP-Etudes on the reports container",
-    "Assign the Storage Blob Data Contributor role to GRP-Etudes on stlitwaredata",
-    "Generate a read account SAS for GRP-Etudes"
+    "Reader to GRP-Etudes on stlitwaredata",
+    "Storage Blob Data Reader on the reports container",
+    "Storage Blob Data Contributor on stlitwaredata",
+    "A read account SAS for GRP-Etudes"
    ],
    "ans": 1,
    "expl": "<p><b>Storage Blob Data Reader</b> grants read access to data with the Entra identity; the <b>container</b> scope limits access to reports. Reader doesn't give access to data; Data Contributor allows writing; a SAS doesn't use the Entra account.</p>",

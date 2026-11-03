@@ -181,10 +181,10 @@ AZ.cases.push(
    "type": "single",
    "stem": "<p>Vous devez répondre à l'exigence concernant les documents non modifiés de stfabdocs.</p><p>Que devez-vous configurer ?</p>",
    "opts": [
-    "Une règle de gestion du cycle de vie qui déplace vers Archive les blobs non modifiés depuis 90 jours",
-    "Une stratégie d'immuabilité basée sur le temps de 90 jours",
+    "Une règle de cycle de vie vers Archive après 90 jours",
+    "Une stratégie d'immuabilité temporelle de 90 jours",
     "Le niveau d'accès par défaut du compte sur Archive",
-    "La réplication d'objets vers un second compte"
+    "La réplication d'objets vers un second compte Archive"
    ],
    "ans": 0,
    "expl": "<p>Une règle de <b>gestion du cycle de vie</b> déplace automatiquement les blobs vers <b>Archive</b> quand leur dernière modification date de plus de 90 jours.</p><p>L'immuabilité empêche la modification mais ne change pas le niveau. Archive ne peut pas être le niveau par défaut d'un compte (seulement Chaud ou Froid). La réplication d'objets copie, elle ne déplace pas de niveau.</p>",

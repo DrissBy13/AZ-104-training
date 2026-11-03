@@ -104,10 +104,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Your company has 10 branches, each with an on-premises file server. It wants a single central dataset in Azure, with fast local access to hot files in each branch.</p><p>What should you recommend?</p>",
  "opts": [
-  "One storage account per branch",
-  "Azure Files with Azure File Sync and cloud tiering",
-  "Azure Data Box",
-  "Scheduled AzCopy in each branch"
+  "One storage account per branch, with AzCopy",
+  "Azure Files, File Sync and cloud tiering",
+  "Azure Data Box shipped every month",
+  "Scheduled AzCopy in each branch to one account"
  ],
  "ans": 1,
  "expl": "<p><b>Azure File Sync</b> syncs several servers (one server endpoint per branch) with the same Azure share (cloud endpoint). <b>Cloud tiering</b> keeps the most used files locally.</p><p>One account per branch centralizes nothing. AzCopy doesn't do multi-directional sync. Data Box is a one-off transfer.</p>",
@@ -138,8 +138,8 @@ AZ.questions.push(
  "stem": "<p>The same file report.docx was modified at the same time on two servers in the same Azure File Sync sync group, FS-PARIS and FS-LYON.</p><p>What does Azure File Sync do?</p>",
  "opts": [
   "It blocks sync until a manual decision",
-  "It merges the content of both files",
-  "It keeps both versions: one with its original name, the other renamed with a suffix (for example the server name)",
+  "It merges the content of both conflicting files",
+  "It keeps both: one is renamed with a suffix",
   "It keeps only the most recent version"
  ],
  "ans": 2,
@@ -171,8 +171,8 @@ AZ.questions.push(
  "opts": [
   "The portal can't write to a synced share",
   "Cloud tiering blocks new files",
-  "The agent must be restarted",
-  "Changes made directly in the Azure share are detected by a job that runs every 24 hours"
+  "The agent must be restarted on the server",
+  "A job detects these changes every 24 hours"
  ],
  "ans": 3,
  "expl": "<p>Changes made on a <b>server</b> are detected in real time by the agent. Those made <b>directly in the Azure share</b> (portal, direct SMB, API) are detected by a <b>change detection job</b> that runs once every 24 hours. You can start it on demand with <code>Invoke-AzStorageSyncChangeDetection</code>.</p>",
@@ -233,10 +233,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A blob is placed in the <b>Cool</b> tier. 10 days later, a lifecycle rule moves it to <b>Archive</b>.</p><p>What happens with billing?</p>",
  "opts": [
-  "The move is denied before 30 days",
-  "Early deletion fees for 20 days in the Cool tier are billed",
-  "No extra fees",
-  "Fees for 180 days in the Archive tier are billed immediately"
+  "The move is denied before 30 days in the Cool tier",
+  "Early deletion fees for 20 days",
+  "No extra fees, the tier simply changes",
+  "Fees for 180 days in the Archive tier, right away"
  ],
  "ans": 1,
  "expl": "<p>The Cool tier has a minimum duration of <b>30 days</b>. The blob stayed there 10 days: you pay the <b>remaining 20 days</b> (early deletion fees). Then the Archive tier's 180-day counter starts.</p><p>The move is never denied; only billing accounts for it.</p>",
@@ -274,7 +274,7 @@ AZ.questions.push(
   "daysAfterCreationGreaterThan",
   "prefixMatch",
   "daysAfterLastTierChangeGreaterThan",
-  "blobTypes"
+  "daysAfterLastAccessTimeGreaterThan"
  ],
  "ans": 2,
  "expl": "<p>The <b>daysAfterLastTierChangeGreaterThan</b> condition (days since the last tier change) is used with tierToArchive: a blob that was just rehydrated won't be re-archived before the chosen delay.</p><p>The creation date and modification date don't change during rehydration, hence the problem.</p>",
@@ -307,9 +307,9 @@ AZ.questions.push(
  "stem": "<p>You started rehydrating an archived blob with <b>Standard</b> priority. The user ends up needing it urgently.</p><p>What can you do?</p>",
  "opts": [
   "Nothing: the priority can't be changed",
-  "Copy the archived blob to another container in the Archive tier",
-  "Cancel and wait 24 hours",
-  "Rerun the operation with High priority: priority can be raised during rehydration"
+  "Copy the blob to another container in the Archive tier",
+  "Cancel the rehydration and wait 24 hours",
+  "Rerun the operation with High priority"
  ],
  "ans": 3,
  "expl": "<p>During a pending rehydration, you can <b>switch from Standard to High</b> (by running Set Blob Tier again with High priority). You can't do the reverse. High priority costs more.</p>",
@@ -341,10 +341,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to read an archived blob without changing the original blob, which must stay in the Archive tier.</p><p>What should you do?</p>",
  "opts": [
-  "Copy the archived blob to a new blob in the Hot or Cool tier",
+  "Copy the archived blob to a Hot or Cool blob",
   "Create a snapshot of the archived blob and read it",
-  "Read the blob with a SAS",
-  "Change the original blob's tier"
+  "Read the archived blob with a service SAS",
+  "Change the original blob's tier to Hot"
  ],
  "ans": 0,
  "expl": "<p><b>Copying</b> an archived blob to a new online blob (Copy Blob operation with a target tier) rehydrates the copy, while the original stays in the Archive tier.</p><p>Changing the tier would modify the original. A snapshot of an archived blob is also offline. A SAS doesn't make an archived blob readable.</p>",
@@ -422,10 +422,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to apply different immutability policies to specific blobs in the same container, not to the whole container.</p><p>Which prerequisite should you enable?</p>",
  "opts": [
-  "Geo-redundancy",
-  "Blob versioning, with version-level immutability support",
+  "Geo-redundancy with reads in the secondary region",
+  "Versioning and version-level immutability",
   "Container soft delete",
-  "Hierarchical namespace"
+  "The account's hierarchical namespace"
  ],
  "ans": 1,
  "expl": "<p><b>Version-level immutability</b> lets you apply a retention policy or legal hold to a specific blob or version. It requires <b>versioning</b> and is enabled on the account or container.</p><p>Without it, policies apply at the container level.</p>",
@@ -459,8 +459,8 @@ AZ.questions.push(
  "opts": [
   "Anonymous blob access",
   "Infrastructure encryption",
-  "Allow cross-tenant replication on the storage accounts",
-  "The default access tier"
+  "Cross-tenant replication",
+  "The accounts' default access tier"
  ],
  "ans": 2,
  "expl": "<p>Object replication to an account in <b>another Microsoft Entra tenant</b> must be allowed by the <b>Allow cross-tenant replication</b> setting (AllowCrossTenantReplication), disabled by default on new accounts.</p>",
@@ -489,10 +489,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You create an object replication policy on a container that already holds 10,000 blobs.</p><p>What happens to the existing blobs?</p>",
  "opts": [
-  "They are always replicated first",
-  "They are never replicated",
-  "They are moved and deleted from the source",
-  "Depending on the option chosen, you can copy all objects, only new ones, or those created after a date"
+  "They're always replicated first",
+  "They're never replicated",
+  "They're moved to the destination and deleted from the source",
+  "Depending on the option: all, new only, or after a date"
  ],
  "ans": 3,
  "expl": "<p>An object replication rule offers to <b>copy all objects</b>, <b>only new objects</b>, or a custom date filter. Replication <b>copies</b> blobs; it never deletes them from the source.</p>",
@@ -521,10 +521,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You use customer-managed keys in Key Vault for storage63. You want the account to automatically use each new version of the key after a rotation.</p><p>How should you configure the key in the account?</p>",
  "opts": [
-  "Specify the key URI without a version (automatic version update)",
+  "Specify the key URI without a version",
   "Copy the key into the storage account",
-  "Specify the URI of a specific version",
-  "Use a SAS"
+  "Specify the URI of a specific key version",
+  "Use an account SAS instead"
  ],
  "ans": 0,
  "expl": "<p>If you specify the key URI <b>without a version number</b>, Azure Storage checks regularly and automatically adopts the latest version. With a specific version, you must update the account at each rotation.</p>",
@@ -593,10 +593,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to configure the root NTFS permissions of the share share16, which uses AD DS authentication.</p><p>Which method does Microsoft recommend for the initial configuration?</p>",
  "opts": [
-  "Use an account SAS",
+  "Use a write account SAS",
   "Configure the permissions in the firewall",
-  "Mount the share with an account that has the SMB Share Elevated Contributor role (or with the account key), then use Windows Explorer or icacls",
-  "Configure the permissions in the Azure portal"
+  "Mount with Elevated Contributor (or the key), then icacls",
+  "Configure the NTFS permissions in the Azure portal"
  ],
  "ans": 2,
  "expl": "<p>NTFS ACLs are managed from a Windows client: you mount the share with an identity allowed to change ACLs (<b>SMB Share Elevated Contributor</b>, or the account key, which acts as a superuser), then use <b>Windows Explorer</b> or <b>icacls</b>.</p><p>The portal doesn't manage Azure Files NTFS ACLs.</p>",
@@ -625,10 +625,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A JavaScript web application, hosted on www.contoso.com, must upload files directly to storage64 from the browser. The browser blocks the requests.</p><p>What should you configure on the blob service?</p>",
  "opts": [
-  "Anonymous write access",
-  "A private endpoint",
-  "RA-GRS redundancy",
-  "A CORS rule allowing the origin https://www.contoso.com"
+  "Anonymous write access on the container",
+  "A private endpoint for the account",
+  "RA-GRS redundancy for reads",
+  "A CORS rule for https://www.contoso.com"
  ],
  "ans": 3,
  "expl": "<p>Browsers block requests to another domain unless the server allows them through <b>CORS</b> (cross-origin resource sharing). A CORS rule on the blob service, with the allowed origin, methods (PUT, GET…), and headers, solves the problem. Authentication will go through a SAS or Entra.</p>",
@@ -661,10 +661,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You host a static website in storage65. It must be accessible over HTTPS on www.contoso.com.</p><p>What should you add?</p>",
  "opts": [
-  "Azure Front Door (or Azure CDN) with the custom domain and a certificate",
-  "Soft delete",
-  "A private endpoint",
-  "A SAS"
+  "Azure Front Door with the domain and a certificate",
+  "Soft delete for the site's blobs",
+  "A private endpoint on the static website",
+  "An account SAS added to the site's URLs"
  ],
  "ans": 0,
  "expl": "<p>The static website accepts a custom domain over HTTP, but <b>not over HTTPS</b> with a custom certificate. For HTTPS on your domain, you put <b>Azure Front Door</b> (or Azure CDN) in front of the account, which manages the certificate.</p>",
@@ -1064,10 +1064,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>A storage account has its firewall enabled (selected networks). A user gets the error “This request is not authorized” when opening a container in the portal, from their office.</p><p>Which <b>two</b> solutions give access?</p><p>Each correct answer presents a complete solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
-  "Disable soft delete",
-  "Add the office's public IP address to the firewall",
+  "Disable blob soft delete",
+  "Add the office's public IP to the firewall",
   "Connect from a VM in an allowed subnet",
-  "Assign them the Owner role on the account"
+  "Assign them the Owner role on the storage account"
  ],
  "ans": [
   1,
@@ -1103,7 +1103,7 @@ AZ.questions.push(
  "opts": [
   "Static website",
   "NFS 3.0 for blob storage",
-  "Object replication",
+  "Object replication between accounts",
   "SFTP for blob storage"
  ],
  "ans": [
@@ -1139,9 +1139,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to convert an existing general-purpose v2 account to a Data Lake Storage Gen2 account. It uses versioning and object replication.</p><p>What happens when you start the upgrade?</p>",
  "opts": [
-  "The upgrade creates a new account",
-  "Validation fails: incompatible features must be disabled first",
-  "The upgrade succeeds and disables these features automatically",
+  "The upgrade creates a new account alongside",
+  "Validation fails: disable those features first",
+  "The upgrade succeeds and disables those features itself",
   "The upgrade can be reversed at any time"
  ],
  "ans": 1,
@@ -1174,7 +1174,7 @@ AZ.questions.push(
   "Read (r) and Process (p)",
   "List (l) on the account",
   "Add (a) on the orders queue",
-  "Delete (d)"
+  "Delete (d) on the orders queue"
  ],
  "ans": 2,
  "expl": "<p>For a queue, the <b>Add</b> permission allows inserting messages. <b>Read</b> lets you peek at messages, <b>Process</b> lets you remove them (Get + Delete). A service SAS limited to the orders queue, with the Add permission and a 7-day expiry, is enough.</p>",
@@ -1236,10 +1236,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to know how many gigabytes of data the account storage72 holds, and how this volume has changed over the past month.</p><p>Where should you look?</p>",
  "opts": [
-  "The account's metrics (Used capacity) in Azure Monitor",
-  "The access keys",
-  "The activity log",
-  "The Redundancy page"
+  "The account's metrics (Used capacity)",
+  "The account's access keys",
+  "The subscription's activity log",
+  "The storage account's Redundancy page"
  ],
  "ans": 0,
  "expl": "<p>The <b>Used capacity</b> metric, and per service the blob or file capacity, shows the stored volume and its change over time. Capacity metrics are updated about once a day.</p>",
@@ -1271,10 +1271,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You manage a <b>Premium block blobs</b> account. You want a lifecycle rule to move old blobs to the Cool tier.</p><p>What happens?</p>",
  "opts": [
-  "The account becomes Standard",
-  "Premium accounts have no access tiers: only the delete action is available",
-  "The blobs move to Archive",
-  "The rule works normally"
+  "The account becomes Standard to apply the rule",
+  "Premium has no tiers: only deletion is available",
+  "The blobs move to Archive as planned",
+  "The rule works normally, with no change"
  ],
  "ans": 1,
  "expl": "<p><b>Premium</b> accounts don't support the Hot, Cool, Cold, and Archive tiers. Lifecycle management there can only <b>delete</b> blobs. To tier, you must copy the data to a Standard account.</p>",
@@ -1306,10 +1306,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A team must delete all blobs in the temp/ folder of the data container, with AzCopy.</p><p>Which command should you use?</p>",
  "opts": [
-  "azcopy make",
-  "azcopy copy --overwrite=false",
-  "azcopy remove \"https://storage73.blob.core.windows.net/data/temp?&lt;SAS&gt;\" --recursive",
-  "azcopy sync --delete-destination=true"
+  "azcopy make \"https://storage73.blob.core.windows.net/data/temp\"",
+  "azcopy copy --overwrite=false on the temp folder",
+  "azcopy remove \"…/data/temp?xSASx\" --recursive",
+  "azcopy sync --delete-destination=true to the temp folder"
  ],
  "ans": 2,
  "expl": "<p><code>azcopy remove</code> with <code>--recursive</code> deletes all blobs under the given prefix.</p><p>sync only deletes what no longer exists at the source. make creates a container. copy never deletes anything.</p>",
@@ -1335,8 +1335,8 @@ AZ.questions.push(
  "opts": [
   "With the account key only",
   "With his Microsoft Entra account only",
-  "With a private endpoint",
-  "With the “Blob container” or “Shared access signature URL (SAS)” option"
+  "With a private endpoint of the account",
+  "With “Blob container” or “SAS URL”"
  ],
  "ans": 3,
  "expl": "<p>Storage Explorer can connect in several ways: Microsoft Entra account (subscriptions), account name and key, connection string, or a resource's <b>SAS URL</b> (account, container, share, queue). With a container SAS, he sees only that container.</p>",
@@ -1368,10 +1368,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>storage74's data is encrypted at rest. An auditor asks which algorithm is used by default.</p><p>What should you answer?</p>",
  "opts": [
-  "256-bit AES, with Microsoft-managed keys by default",
-  "3DES",
+  "256-bit AES, Microsoft-managed keys",
+  "3DES, customer-managed keys",
   "No encryption by default",
-  "2048-bit RSA"
+  "2048-bit RSA, Microsoft-managed keys"
  ],
  "ans": 0,
  "expl": "<p><b>Storage Service Encryption</b> (SSE) always encrypts data at rest with <b>256-bit AES</b>. It can't be disabled. Keys are managed by Microsoft by default, or by you (customer-managed keys).</p>",
@@ -1405,8 +1405,8 @@ AZ.questions.push(
  "opts": [
   "No SAS is possible",
   "A user delegation SAS",
-  "An account SAS",
-  "A service SAS"
+  "An account SAS signed with key1",
+  "A service SAS signed with key1"
  ],
  "ans": 1,
  "expl": "<p>When <b>shared key</b> access is disabled, account and service SAS (signed by an account key) are rejected. The <b>user delegation SAS</b>, signed through Microsoft Entra, remains usable.</p>",
@@ -1437,10 +1437,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want new blobs in storage75 to be in the <b>Cool</b> tier by default, and only some in Hot.</p><p>What should you configure?</p>",
  "opts": [
-  "An immutability policy",
-  "A SAS per blob",
-  "The account's default access tier set to Cool",
-  "ZRS redundancy"
+  "An immutability policy on the container",
+  "A SAS per blob, with the Cool tier",
+  "The default access tier set to Cool",
+  "The account's ZRS redundancy"
  ],
  "ans": 2,
  "expl": "<p>The account's <b>default access tier</b> (Configuration) applies to blobs whose tier isn't set explicitly. You can then set the Hot tier on some blobs, or use a lifecycle rule.</p>",
@@ -1982,8 +1982,8 @@ AZ.questions.push(
  "opts": [
   "Blob index tags",
   "Blob metadata",
-  "System properties",
-  "The container name"
+  "The blobs' system properties",
+  "Each blob's container name"
  ],
  "ans": 0,
  "expl": "<p><b>Index tags</b> are indexed by the service: the <b>Find Blobs by Tags</b> operation finds matching blobs across the whole account. They also serve as a filter for lifecycle rules.</p><p><b>Metadata</b> is stored with the blob but isn't indexed: you'd have to read each blob.</p>",
@@ -2016,10 +2016,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Your application must keep <b>writing</b> to storage even if the primary region fails, with no intervention.</p><p>Which statement is true?</p>",
  "opts": [
-  "ZRS writes to the paired region",
-  "No redundancy writes automatically to the secondary region: a failover is required",
+  "ZRS also writes to the paired region",
+  "None: a failover is required",
   "GZRS fails writes over automatically",
-  "RA-GRS allows writing to the secondary region"
+  "RA-GRS allows writing to the secondary"
  ],
  "ans": 1,
  "expl": "<p>The secondary region of geo-redundant accounts is <b>read-only</b> (with RA-) until a <b>failover</b>, which must be started (by the customer, or by Microsoft in extreme cases). RA-GRS and RA-GZRS only allow reading.</p><p>ZRS stays in a single region. To write without interruption in several regions, you need an application architecture (for example two accounts).</p>",
@@ -2052,7 +2052,7 @@ AZ.questions.push(
  "stem": "<p>You need to let an on-premises server use Azure File Sync. The server runs Windows Server 2022.</p><p>Which component should you install on the server?</p>",
  "opts": [
   "The Azure Monitor agent",
-  "AzCopy",
+  "Scheduled AzCopy",
   "The Azure File Sync agent",
   "Microsoft Entra Connect"
  ],
@@ -2083,9 +2083,9 @@ AZ.questions.push(
  "stem": "<p>You remove a server from an Azure File Sync sync. You want tiered files to remain usable on this server.</p><p>What should you do before deleting the server endpoint?</p>",
  "opts": [
   "Uninstall the agent immediately",
-  "Delete the Azure share",
+  "Delete the synced Azure share",
   "Delete the Storage Sync Service",
-  "Recall all tiered files (Invoke-StorageSyncFileRecall) or disable tiering and wait for the recall"
+  "Recall all tiered files"
  ],
  "ans": 3,
  "expl": "<p>Tiered files are only <b>pointers</b> to Azure. If you delete the endpoint without recalling them, they become inaccessible on the server. You <b>recall</b> them first, for example with <code>Invoke-StorageSyncFileRecall</code>.</p><p>Deleting the share or the service would destroy data or configuration.</p>",
@@ -2113,10 +2113,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A storage account holds 20 TB of videos read every day during their first month, then almost never, but they must remain immediately readable for 3 years.</p><p>Which strategy is the cheapest?</p>",
  "opts": [
-  "Hot tier at first, lifecycle rule to Cool after 30 days then Cold after 90 days, deletion after 3 years",
-  "Premium block blobs account",
-  "Archive tier from upload",
-  "Hot tier for 3 years"
+  "Hot, then Cool at 30 d, Cold at 90 d, deletion at 3 years",
+  "A Premium block blobs account for 3 years",
+  "Archive tier from upload, then deletion after 3 years",
+  "Hot tier for 3 years, then deletion"
  ],
  "ans": 0,
  "expl": "<p>The videos are hot at first, then cold: a lifecycle rule moves them gradually to cheaper <b>online</b> tiers (Cool then Cold), and deletes them at 3 years.</p><p>Archive would prevent immediate reading. Staying in Hot or Premium would cost much more.</p>",

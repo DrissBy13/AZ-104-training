@@ -181,10 +181,10 @@ AZ.cases.push(
    "type": "single",
    "stem": "<p>You need to meet the requirement for unmodified documents in stfabdocs.</p><p>What should you configure?</p>",
    "opts": [
-    "A lifecycle management rule that moves blobs not modified for 90 days to Archive",
+    "A lifecycle rule to Archive after 90 days",
     "A 90-day time-based immutability policy",
     "The account's default access tier set to Archive",
-    "Object replication to a second account"
+    "Object replication to a second Archive account"
    ],
    "ans": 0,
    "expl": "<p>A <b>lifecycle management</b> rule automatically moves blobs to <b>Archive</b> when their last modification is more than 90 days old.</p><p>Immutability prevents modification but doesn't change the tier. Archive can't be an account's default tier (only Hot or Cool). Object replication copies, it doesn't change tiers.</p>",

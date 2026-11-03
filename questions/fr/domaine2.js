@@ -246,9 +246,9 @@ AZ.questions.push(
  "stem": "<p>Votre domaine AD DS est synchronisé avec Microsoft Entra ID. Le compte de stockage storage1 contient un partage Azure Files nommé share1.</p><p>Les utilisateurs du domaine doivent lire et modifier les fichiers de share1 en utilisant leurs identifiants AD DS.</p><p>Quelles deux actions devez-vous effectuer ? Chaque réponse correcte présente une partie de la solution.</p><p><b>REMARQUE :</b> chaque sélection correcte vaut un point.</p>",
  "opts": [
   "Activer l'authentification AD DS sur storage1",
-  "Générer une SAS pour chaque utilisateur",
-  "Attribuer le rôle Contributeur de partage SMB de données de fichier de stockage sur share1",
-  "Attribuer le rôle Lecteur sur storage1"
+  "Générer une SAS de service pour chaque utilisateur du domaine",
+  "Attribuer Contributeur de partage SMB sur share1",
+  "Attribuer le rôle Lecteur sur le compte storage1"
  ],
  "ans": [
   0,
@@ -424,7 +424,7 @@ AZ.questions.push(
   "Une stratégie de rétention basée sur le temps",
   "Un verrou de type Supprimer sur le compte",
   "Une règle de gestion du cycle de vie",
-  "Une conservation légale"
+  "Une conservation légale sur le conteneur"
  ],
  "ans": 3,
  "expl": "<p>Le stockage <b>immuable</b> (WORM : écriture unique, lectures multiples) propose deux types de stratégies sur un conteneur :</p><ul><li><b>Rétention basée sur le temps</b> : les blobs sont protégés pendant une durée fixée (par exemple 7 ans).</li><li><b>Conservation légale</b> : les blobs sont protégés sans durée, jusqu'à ce que la conservation soit retirée. C'est fait pour un litige dont on ne connaît pas la fin.</li></ul><p>Un verrou de ressource protège le compte sur le plan de contrôle, pas les fichiers. Le cycle de vie déplace ou supprime des blobs, il ne protège rien.</p>",

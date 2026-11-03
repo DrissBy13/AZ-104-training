@@ -6,10 +6,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to create a storage account that hosts <b>Premium</b> Azure file shares with the NFS protocol.</p><p>Which type of storage account should you create?</p>",
  "opts": [
-  "Premium, File shares account type (FileStorage)",
+  "Premium, File shares account type",
   "Premium, Block blobs account type",
   "Premium, Page blobs account type",
-  "Standard general-purpose v2"
+  "Standard general-purpose v2 with large shares"
  ],
  "ans": 0,
  "expl": "<p><b>Premium</b> file shares (SSD) only exist in a <b>Premium File shares</b> account (FileStorage). It's also the only type that supports <b>NFS</b> shares.</p><ul><li><b>Standard general-purpose v2</b>: standard SMB shares (HDD), no NFS for Azure Files.</li><li><b>Premium block blobs</b>: low-latency blobs, no file shares.</li><li><b>Premium page blobs</b>: mostly for unmanaged disks.</li></ul>",
@@ -286,10 +286,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>The storage account storage4 uses LRS redundancy. You need to switch to <b>ZRS</b> without interrupting access to the data.</p><p>What should you do?</p>",
  "opts": [
-  "Change the redundancy in Configuration, as when switching to GRS",
-  "Enable geo-replication in the firewall",
-  "Delete and recreate the account as ZRS",
-  "Request a conversion to ZRS (Microsoft-managed conversion or started from the portal)"
+  "Change the redundancy in Configuration, as for GRS",
+  "Enable geo-replication in the account firewall",
+  "Delete the account and recreate it as ZRS",
+  "Request a conversion to ZRS"
  ],
  "ans": 3,
  "expl": "<p>Switching from LRS to GRS is a single click in <b>Configuration</b>. But switching to <b>ZRS</b> changes the physical layout in the region: it needs a <b>conversion</b> (started from the portal's Redundancy page or through a support request), done without downtime.</p><p>You can also migrate manually (new account + copy with AzCopy), but that requires downtime. The firewall has nothing to do with redundancy.</p>",
@@ -492,8 +492,8 @@ AZ.questions.push(
  "stem": "<p>Blobs in the logs container must move to the Cool tier 30 days after their last modification, to the Archive tier after 90 days, and be deleted after 365 days, automatically.</p><p>What should you configure?</p>",
  "opts": [
   "Blob soft delete",
-  "An immutability policy",
-  "Object replication",
+  "A time-based immutability policy",
+  "Object replication to a cheaper account",
   "A lifecycle management policy"
  ],
  "ans": 3,
@@ -537,8 +537,8 @@ AZ.questions.push(
  "stem": "<p>You want a lifecycle rule to move to the Cool tier the blobs that haven't been <b>read</b> for 60 days, even if they were created long ago.</p><p>Which prerequisite should you enable on the storage account?</p>",
  "opts": [
   "Last access time tracking",
-  "Hierarchical namespace",
-  "Change feed",
+  "Hierarchical namespace (Data Lake)",
+  "The account's change feed",
   "Blob versioning"
  ],
  "ans": 0,
@@ -572,10 +572,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You just created a lifecycle management policy that deletes blobs older than 30 days. An hour later, the old blobs are still there.</p><p>Why?</p>",
  "opts": [
-  "The storage account must be restarted",
-  "The policy runs once a day and can take up to 24 hours to apply the first time",
+  "The storage account must be restarted to activate the rule",
+  "The policy runs once a day (up to 24 h the first time)",
   "Soft delete prevents the policy from working",
-  "Policies apply only to new blobs"
+  "Policies only apply to new blobs"
  ],
  "ans": 1,
  "expl": "<p>The lifecycle engine processes policies <b>once a day</b>. After a policy is created or changed, allow up to 24 hours for it to take effect, and then processing itself can take time depending on the number of blobs.</p><p>A storage account can't be restarted. The policy also applies to existing blobs. Soft delete keeps deleted blobs for its retention period, but doesn't prevent the policy.</p>",
@@ -608,10 +608,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>You need to be able to recover blobs in storage5 that were <b>overwritten</b> or <b>deleted</b> by mistake in the last 30 days.</p><p>Which <b>two</b> features should you enable?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
-  "Blob soft delete with 30-day retention",
-  "Immutability policy with legal hold",
-  "Blob versioning",
-  "Object replication"
+  "Blob soft delete (30 days)",
+  "Immutability policy with a legal hold",
+  "Blob versioning on the account",
+  "Object replication to a second account"
  ],
  "ans": [
   0,
@@ -682,10 +682,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to be able to put <b>all</b> block blobs of a storage account back in the state they were in at a specific date within the last 14 days, after corruption by an application.</p><p>Which feature should you use?</p>",
  "opts": [
-  "Geo-failover",
+  "Geo-failover of the account",
   "Manual blob snapshots",
-  "Object replication",
-  "Point-in-time restore for containers"
+  "Object replication to another account",
+  "Point-in-time restore"
  ],
  "ans": 3,
  "expl": "<p><b>Point-in-time restore</b> puts containers (or blob ranges) of block blobs back in their state at a chosen date. It requires <b>versioning</b>, <b>change feed</b>, and <b>blob soft delete</b>, with a restore period shorter than the soft delete retention.</p><p>Manual snapshots require blob-by-blob management. Replication and failover would copy the corruption too.</p>",
@@ -718,9 +718,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A regulator requires that financial reports can be neither modified nor deleted for 7 years, even by an administrator. The rule itself must not be shortenable.</p><p>What should you configure on the container?</p>",
  "opts": [
-  "A 7-year time-based retention policy, then lock it",
-  "A legal hold",
-  "An unlocked time-based retention policy",
+  "A locked 7-year time-based retention policy",
+  "A legal hold on the container",
+  "An unlocked 7-year time-based retention policy",
   "A CanNotDelete lock on the account"
  ],
  "ans": 0,
@@ -832,8 +832,8 @@ AZ.questions.push(
  "stem": "<p>A client application must be able to download a single blob for 2 hours, without receiving an account access key.</p><p>What should you provide?</p>",
  "opts": [
   "The Contributor role on the storage account",
-  "The account's access key key1",
-  "A shared access signature (SAS) on the blob, with Read permission and an expiry in 2 hours",
+  "The account's key1 access key, revoked afterward",
+  "A read SAS on the blob, valid for 2 hours",
   "The blob's URL, after making the container public"
  ],
  "ans": 2,
@@ -922,10 +922,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You distributed several service SAS on the share container to partners, all tied to the stored access policy PolPartners. You need to revoke these SAS immediately, without affecting the other applications that use the account keys.</p><p>What should you do?</p>",
  "opts": [
-  "Regenerate key1 and key2",
-  "Delete the share container",
+  "Regenerate the account's key1 and key2",
+  "Delete the share container and recreate it",
   "Enable the storage account firewall",
-  "Delete or modify the stored access policy PolPartners"
+  "Modify the stored access policy"
  ],
  "ans": 3,
  "expl": "<p>A service SAS tied to a <b>stored access policy</b> gets its permissions and expiry from that policy. By deleting the policy (or changing its expiry), you revoke all associated SAS.</p><p>Regenerating the keys would also revoke these SAS, but would break every application that uses the keys. Deleting the container destroys the data. The firewall filters the network, not SAS.</p>",
@@ -1048,9 +1048,9 @@ AZ.questions.push(
  "stem": "<p>Your security policy forbids access to storage8's data with the account keys and SAS signed by those keys. Only Microsoft Entra authentication must be possible.</p><p>What should you configure?</p>",
  "opts": [
   "Disable secure transfer required",
-  "Disable “Allow storage account key access” (Shared Key)",
-  "Regenerate both keys every day",
-  "Enable hierarchical namespace"
+  "Disable account key access (Shared Key)",
+  "Regenerate both access keys every day",
+  "Enable the account's hierarchical namespace"
  ],
  "ans": 1,
  "expl": "<p>The <b>Allow storage account key access</b> setting (AllowSharedKeyAccess = false) blocks every request authorized with a shared key, including account and service SAS. User delegation SAS, signed through Entra, keep working.</p><p>Regenerating keys doesn't forbid them. Hierarchical namespace is for Data Lake. Disabling secure transfer would allow HTTP: the opposite of security.</p>",
@@ -1080,10 +1080,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to let anyone on the internet read the images in the images container of storage9, without authentication. Other containers must stay private.</p><p>The account's “Allow Blob anonymous access” setting is disabled. What should you do?</p>",
  "opts": [
-  "Enable static website",
-  "Create a SAS with no expiry date",
-  "Enable anonymous access on the account, then set the images container to the Blob access level",
-  "Set the images container to the Container access level, without touching the account"
+  "Enable static website on the account",
+  "Create a SAS with no expiry for images",
+  "Anonymous access on the account, container at Blob level",
+  "Set the container to Container level, without touching the account"
  ],
  "ans": 2,
  "expl": "<p>Anonymous access is set at two levels. The <b>account</b> must allow it; otherwise, container settings are ignored. Then each <b>container</b> has an access level: <b>Private</b>, <b>Blob</b> (anonymous read of blobs, without listing), or <b>Container</b> (read and list blobs).</p><p>Setting only the container isn't enough when the account forbids it. A SAS always has an expiry. Static website uses the $web container, not images.</p>",
@@ -1116,10 +1116,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Virtual machines in the subnet Subnet1 of VNet1 must access storage10. All other network access must be denied. You don't want a private IP address for the storage account.</p><p>What should you configure?</p>",
  "opts": [
-  "A private endpoint in Subnet1",
-  "An outbound network security group rule to the internet",
-  "A NAT gateway on Subnet1",
-  "A Microsoft.Storage service endpoint on Subnet1, and a virtual network rule in storage10's firewall"
+  "A private endpoint in Subnet1, without a DNS zone",
+  "An outbound NSG rule to the Internet tag",
+  "A NAT gateway on Subnet1 with an allowed IP",
+  "A service endpoint and a virtual network rule"
  ],
  "ans": 3,
  "expl": "<p>A <b>service endpoint</b> routes the subnet's traffic to storage over the Azure network, identifying it as coming from Subnet1. You then add Subnet1 to the account's <b>firewall</b> (“Enabled from selected virtual networks and IP addresses”). The account keeps its public address.</p><p>A private endpoint would give the account a private IP address, which isn't wanted. An NSG or a NAT gateway doesn't restrict access on the account side.</p>",
@@ -1152,9 +1152,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Servers in your on-premises site, connected to VNet1 by a site-to-site VPN, must access storage11 through a <b>private</b> IP address, without going over the internet.</p><p>What should you configure?</p>",
  "opts": [
-  "A private endpoint for storage11 in VNet1, with DNS resolution of privatelink.blob.core.windows.net",
+  "A private endpoint and the privatelink.blob zone",
   "An IP rule for the on-premises site in the firewall",
-  "The Archive access tier",
+  "The Archive access tier for sensitive blobs",
   "A service endpoint on the GatewaySubnet"
  ],
  "ans": 0,
@@ -1235,10 +1235,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>The firewall of storage13 allows only some virtual networks. Azure Backup and Azure Monitor must still be able to write to it.</p><p>What should you enable?</p>",
  "opts": [
-  "Static website",
-  "The exception “Allow Azure services on the trusted services list to access this storage account”",
-  "Anonymous blob access",
-  "Geo-redundancy"
+  "The account's static website",
+  "The trusted Azure services exception",
+  "Anonymous access to the container's blobs",
+  "Geo-redundancy with secondary read"
  ],
  "ans": 1,
  "expl": "<p>The <b>trusted services</b> exception (trusted Microsoft services) lets through certain Azure services (Backup, Monitor, Event Grid…) that can't go through your virtual networks. You can also use resource instance rules, which are more precise.</p><p>Anonymous access would expose the data to everyone. The other two options are unrelated.</p>",
@@ -1273,7 +1273,7 @@ AZ.questions.push(
  "opts": [
   "A user delegation SAS",
   "Secure transfer required",
-  "Customer-managed keys, stored in Azure Key Vault",
+  "Customer-managed keys (Key Vault)",
   "Microsoft-managed encryption (default)"
  ],
  "ans": 2,
@@ -1308,10 +1308,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>You configure customer-managed keys for storage15, with the key vault KV1.</p><p>Which <b>two</b> conditions must KV1 and storage15 meet?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
-  "storage15 must use GRS redundancy",
-  "storage15's managed identity must be able to read and use the key in KV1",
-  "KV1 must be in another subscription",
-  "KV1 must have soft delete and purge protection"
+  "storage15 must use GRS or GZRS redundancy",
+  "storage15's identity must be able to use the key",
+  "KV1 must be in a different subscription from storage15",
+  "KV1 must have purge protection"
  ],
  "ans": [
   1,
@@ -1346,9 +1346,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>An internal standard requires double encryption of data, at the service level and at the infrastructure level, for a new storage account.</p><p>When must you enable infrastructure encryption?</p>",
  "opts": [
-  "It's enabled by default",
-  "After copying the data",
-  "At any time from Encryption",
+  "It's enabled by default on every account",
+  "After copying the data into the account",
+  "At any time, from the Encryption page",
   "When creating the storage account"
  ],
  "ans": 3,
@@ -1415,10 +1415,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Windows servers in your on-premises site must mount the Azure file share share1, on storage17, with the SMB protocol. The mount fails.</p><p>What is the most common cause?</p>",
  "opts": [
-  "TCP port 3389 is closed",
-  "Outbound TCP port 445 is blocked by the ISP or the firewall",
-  "storage17 uses LRS redundancy",
-  "The share is in the Hot tier"
+  "TCP port 3389 is closed on the computer",
+  "Outbound TCP port 445 is blocked",
+  "storage17 uses LRS redundancy, not ZRS",
+  "The share is in the Hot tier, not Optimized"
  ],
  "ans": 1,
  "expl": "<p>SMB uses <b>TCP port 445</b>. Many ISPs and corporate firewalls block it to the internet. Solutions: open the port, go through a VPN or ExpressRoute with a private endpoint, or use Azure File Sync.</p><p>The tier and the redundancy don't prevent mounting. Port 3389 is for RDP.</p>",
@@ -1506,9 +1506,9 @@ AZ.questions.push(
  "stem": "<p>A user overwrote an Excel file in the share share2 2 days ago. Share snapshots are taken every night.</p><p>How can the user recover the file themselves from Windows?</p>",
  "opts": [
   "By rehydrating the file from the Archive tier",
-  "By asking Microsoft for a restore",
-  "With the Previous Versions tab of the file's properties",
-  "With the Windows Recycle Bin"
+  "By opening a restore request with Microsoft",
+  "With the file's Previous Versions tab",
+  "With the client's Windows Recycle Bin"
  ],
  "ans": 2,
  "expl": "<p>Azure Files <b>share snapshots</b> are exposed in Windows on the <b>Previous Versions</b> tab: the user can open or restore an older version.</p><p>The Windows Recycle Bin doesn't see files on the network share. Azure Files has no Archive tier.</p>",
@@ -1540,9 +1540,9 @@ AZ.questions.push(
  "stem": "<p>The file share share3 was deleted by mistake this morning. Soft delete for file shares is enabled with 14 days of retention.</p><p>What should you do?</p>",
  "opts": [
   "Restore share3 from a snapshot of share3",
-  "Create a new share3 share: the data reappears",
+  "Create a new share3 share: the data comes back",
   "Nothing: a deleted share can't be restored",
-  "Show deleted shares in the storage account and undelete share3"
+  "Show deleted shares and undelete share3"
  ],
  "ans": 3,
  "expl": "<p>With <b>share soft delete</b>, a deleted share is kept for the retention period. You display it in the share list (“Show deleted shares” option) and <b>undelete</b> it, with its snapshots.</p><p>Snapshots are deleted with the share when there's no soft delete. Creating a share with the same name restores nothing.</p>",
@@ -1575,10 +1575,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Users in your AD DS domain, synchronized with Microsoft Entra ID, must access the share share4 with their domain account and NTFS permissions.</p><p>What should you configure first on the storage account?</p>",
  "opts": [
-  "Identity-based authentication with AD DS (joining the storage account to the domain)",
-  "The NFS protocol",
-  "Anonymous access",
-  "An account SAS"
+  "Identity-based authentication with AD DS",
+  "The NFS 4.1 protocol on a Premium account",
+  "Anonymous read access to the share",
+  "An account SAS distributed to users"
  ],
  "ans": 0,
  "expl": "<p>To use domain accounts, you enable the storage account's <b>identity-based authentication</b>: on-premises AD DS (the storage account is represented by a computer object in the domain, for example with the AzFilesHybrid module), Microsoft Entra Domain Services, or Microsoft Entra Kerberos for hybrid identities.</p><p>You then assign share-level permissions (RBAC roles), then NTFS permissions on folders and files.</p>",
@@ -1673,7 +1673,7 @@ AZ.questions.push(
  "opts": [
   "Anonymous access at the container level",
   "A default share-level permission",
-  "A read account SAS",
+  "A read account SAS, given to everyone",
   "The Reader role on the storage account"
  ],
  "ans": 1,
@@ -1881,10 +1881,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Every night, you need to update the backup container with new or changed files from the folder D:\\Backup, and delete from the container the files that no longer exist locally.</p><p>Which AzCopy command should you use?</p>",
  "opts": [
-  "azcopy make",
+  "azcopy make on the target container",
   "azcopy copy with --recursive",
   "azcopy copy with --overwrite=false",
-  "azcopy sync with --delete-destination=true"
+  "azcopy sync --delete-destination=true"
  ],
  "ans": 3,
  "expl": "<p><b>azcopy sync</b> compares source and destination (by last modified time) and copies only the differences. With <b>--delete-destination=true</b>, it deletes from the destination what no longer exists at the source.</p><p><code>azcopy copy</code> copies everything again and never deletes. <code>--overwrite=false</code> avoids overwriting, but doesn't copy changed files and deletes nothing. <code>make</code> creates a container. Note: sync is <b>one-way</b>.</p>",
@@ -2081,9 +2081,9 @@ AZ.questions.push(
  "stem": "<p>You need to store data for Azure Synapse with real folders (renaming a folder must be a single, fast operation) and POSIX access control lists.</p><p>Which option should you enable on the Standard general-purpose v2 account?</p>",
  "opts": [
   "Blob versioning",
-  "Hierarchical namespace (Data Lake Storage Gen2)",
-  "NFS 3.0 protocol only",
-  "Encryption scopes"
+  "Hierarchical namespace",
+  "NFS 3.0 protocol only, without the namespace",
+  "Encryption scopes per container"
  ],
  "ans": 1,
  "expl": "<p><b>Hierarchical namespace</b> turns blob storage into <b>Azure Data Lake Storage Gen2</b>: real directories (renaming or deleting a folder is atomic), POSIX-like ACLs on folders and files, <code>dfs.core.windows.net</code> endpoint.</p><p>You enable it at creation, or through an irreversible upgrade of an existing account. Some blob features (such as object replication) aren't compatible.</p>",
@@ -2114,9 +2114,9 @@ AZ.questions.push(
  "stem": "<p>Linux machines must mount a blob container with the <b>NFS 3.0</b> protocol.</p><p>Which condition must the storage account meet?</p>",
  "opts": [
   "Be a Premium file shares account",
-  "Use GRS redundancy",
-  "Have hierarchical namespace enabled and network access restricted to virtual networks",
-  "Have anonymous access enabled"
+  "Use GRS or RA-GRS redundancy",
+  "Hierarchical namespace and restricted network access",
+  "Have anonymous access enabled on the container"
  ],
  "ans": 2,
  "expl": "<p>NFS 3.0 on <b>blob</b> storage requires <b>hierarchical namespace</b>, enabled at creation with the NFS v3 option, and restricted network access (selected virtual networks or a private endpoint), because NFS 3.0 doesn't use account authentication.</p><p>The Premium file shares account concerns NFS on <b>Azure Files</b>, a different service. Redundancy and anonymous access aren't relevant.</p>",
@@ -2154,10 +2154,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to let a partner drop files into a blob container with an <b>SFTP</b> client, without using a SAS or an access key.</p><p>What should you configure?</p>",
  "opts": [
-  "Enable static website",
-  "Create an NFS share",
-  "Enable anonymous write access",
-  "Enable SFTP on an account with hierarchical namespace and create a local user"
+  "Enable static website with an upload folder",
+  "Create an NFS share reachable from the internet",
+  "Enable anonymous write access on the container",
+  "Enable SFTP and create a local user"
  ],
  "ans": 3,
  "expl": "<p><b>SFTP support</b> for Azure Blob Storage requires <b>hierarchical namespace</b>. You create <b>local users</b> (with a password or SSH key) and grant them permissions on containers.</p><p>Static website is read-only. NFS isn't SFTP. Anonymous access never allows writing.</p>",

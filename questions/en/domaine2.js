@@ -246,9 +246,9 @@ AZ.questions.push(
  "stem": "<p>Your AD DS domain is synchronized with Microsoft Entra ID. The storage account storage1 contains an Azure Files share named share1.</p><p>Domain users must read and modify the files in share1 by using their AD DS credentials.</p><p>Which two actions should you perform? Each correct answer presents part of the solution.</p><p><b>NOTE:</b> Each correct selection is worth one point.</p>",
  "opts": [
   "Enable AD DS authentication on storage1",
-  "Generate a SAS for each user",
-  "Assign the Storage File Data SMB Share Contributor role on share1",
-  "Assign the Reader role on storage1"
+  "Generate a service SAS for each domain user",
+  "Assign SMB Share Contributor on share1",
+  "Assign the Reader role on the storage1 account"
  ],
  "ans": [
   0,
@@ -424,7 +424,7 @@ AZ.questions.push(
   "A time-based retention policy",
   "A Delete lock on the account",
   "A lifecycle management rule",
-  "A legal hold"
+  "A legal hold on the container"
  ],
  "ans": 3,
  "expl": "<p><b>Immutable</b> storage (WORM: write once, read many) offers two types of policies on a container:</p><ul><li><b>Time-based retention</b>: blobs are protected for a fixed period (for example 7 years).</li><li><b>Legal hold</b>: blobs are protected with no duration, until the hold is removed. It's designed for litigation whose end isn't known.</li></ul><p>A resource lock protects the account on the control plane, not the files. Lifecycle management moves or deletes blobs; it protects nothing.</p>",

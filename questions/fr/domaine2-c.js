@@ -262,10 +262,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Le compte de stockage storage29 utilise la redondance <b>ZRS</b>. Vous voulez configurer une règle de cycle de vie qui déplace les anciens blobs vers le niveau Archive.</p><p>Que se passe-t-il ?</p>",
  "opts": [
-  "Le niveau Archive n'est pas pris en charge avec ZRS : il faut LRS, GRS ou RA-GRS",
+  "Archive n'est pas pris en charge en ZRS",
   "Les blobs sont convertis en LRS puis archivés",
   "Les blobs sont archivés dans la région jumelée",
-  "La règle fonctionne normalement"
+  "La règle fonctionne normalement, sans erreur"
  ],
  "ans": 0,
  "expl": "<p>Le niveau <b>Archive</b> n'est disponible qu'avec <b>LRS, GRS et RA-GRS</b>. Il n'est pas pris en charge avec ZRS, GZRS ni RA-GZRS. Il faut changer la redondance du compte ou utiliser le niveau Très froid (Cold) à la place.</p><p>Azure ne convertit pas la redondance ni ne déplace de données vers une autre région à votre place.</p>",
@@ -297,9 +297,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Le niveau d'accès par défaut du compte de stockage storage30 est <b>Chaud</b>. Vous le passez à <b>Froid</b>.</p><p>Quels blobs sont concernés ?</p>",
  "opts": [
-  "Aucun : il faut changer chaque blob",
-  "Les blobs dont le niveau est déduit du compte (sans niveau explicite)",
-  "Uniquement les nouveaux blobs créés après la modification",
+  "Aucun : il faut changer chaque blob un par un",
+  "Les blobs dont le niveau est déduit du compte",
+  "Uniquement les blobs créés après la modification",
   "Tous les blobs, y compris ceux au niveau Archive"
  ],
  "ans": 1,
@@ -336,7 +336,7 @@ AZ.questions.push(
   "prefixMatch",
   "containerName",
   "blobIndexMatch",
-  "blobTypes"
+  "daysAfterModificationGreaterThan"
  ],
  "ans": 2,
  "expl": "<p>Le filtre <b>blobIndexMatch</b> sélectionne les blobs selon leurs <b>étiquettes d'index</b> (nom, opérateur, valeur). Les étiquettes d'index sont des paires clé/valeur indexées et interrogeables, différentes des métadonnées.</p><p><b>prefixMatch</b> filtre par préfixe de nom, <b>blobTypes</b> par type de blob. containerName n'est pas un filtre de cycle de vie.</p>",
@@ -368,10 +368,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Le contrôle de version est activé sur storage31. Les anciennes versions s'accumulent et font grimper la facture.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Réduire la redondance en LRS",
-  "Désactiver la suppression réversible",
-  "Activer l'immuabilité",
-  "Ajouter une règle de cycle de vie avec une action sur les versions (version : supprimer après N jours)"
+  "Réduire la redondance du compte en LRS",
+  "Désactiver la suppression réversible des blobs",
+  "Activer l'immuabilité au niveau de la version",
+  "Une règle de cycle de vie sur les versions"
  ],
  "ans": 3,
  "expl": "<p>Une règle de cycle de vie peut agir sur le blob de base, sur les <b>versions</b> précédentes et sur les <b>instantanés</b>. Une action « supprimer les versions de plus de 90 jours » (<code>daysAfterCreationGreaterThan</code> sur version) limite l'accumulation.</p><p>La suppression réversible concerne les blobs supprimés. LRS réduit un peu le coût mais pas l'accumulation. L'immuabilité empêcherait toute suppression.</p>",
@@ -404,9 +404,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Un utilisateur a supprimé le compte de stockage storage32 il y a 3 jours. Aucun autre compte n'a été créé avec ce nom.</p><p>Que pouvez-vous faire ?</p>",
  "opts": [
-  "Le restaurer depuis le portail (Restaurer un compte supprimé), car il est récupérable pendant 14 jours",
+  "Le restaurer depuis le portail (compte supprimé)",
   "Rien : la suppression d'un compte est définitive",
-  "Le restaurer depuis le journal d'activité",
+  "Le restaurer depuis le journal d'activité de l'abonnement",
   "Le restaurer avec la suppression réversible des blobs"
  ],
  "ans": 0,
@@ -432,9 +432,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez empêcher qu'un administrateur supprime par erreur le compte de stockage storage33, qui contient des données de production.</p><p>Quelle est la solution la plus simple ?</p>",
  "opts": [
-  "La redondance RA-GRS",
-  "Un verrou Suppression impossible sur storage33",
-  "La suppression réversible des blobs",
+  "La redondance RA-GRS du compte",
+  "Un verrou Suppression impossible",
+  "La suppression réversible des blobs et conteneurs",
   "Une stratégie de rétention temporelle"
  ],
  "ans": 1,
@@ -464,10 +464,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez déplacer le compte de stockage storage34 de France Central vers West Europe.</p><p>Quelle méthode devez-vous utiliser ?</p>",
  "opts": [
-  "Lancer un basculement géographique",
+  "Lancer un basculement géographique vers West Europe",
   "Utiliser l'option Déplacer vers un autre groupe de ressources",
-  "Exporter le modèle du compte, créer un compte dans West Europe, puis copier les données avec AzCopy",
-  "Changer la région dans Configuration"
+  "Recréer le compte en West Europe et copier avec AzCopy",
+  "Changer la région dans la page Configuration"
  ],
  "ans": 2,
  "expl": "<p>Un compte de stockage ne peut pas changer de région. On <b>exporte son modèle</b> (pour recréer la même configuration), on crée le nouveau compte dans la région cible, puis on <b>copie les données</b> (AzCopy, copie de serveur à serveur), avant de supprimer l'ancien compte.</p><p>Déplacer vers un autre groupe de ressources ne change pas la région. Un basculement géographique bascule vers la région jumelée (France South), pas vers West Europe, et ce n'est pas une méthode de migration.</p>",
@@ -501,8 +501,8 @@ AZ.questions.push(
  "opts": [
   "Changer la redondance en GRS",
   "Activer l'espace de noms hiérarchique",
-  "Recréer le compte en Premium",
-  "Mettre à niveau le compte vers universel v2"
+  "Recréer le compte en Premium blob de blocs",
+  "Mettre à niveau vers universel v2"
  ],
  "ans": 3,
  "expl": "<p>Les niveaux d'accès ne sont disponibles que dans les comptes <b>universel v2</b> (et les anciens comptes BlobStorage). La <b>mise à niveau</b> vers v2 se fait depuis la page Configuration, sans interruption, mais elle est <b>irréversible</b>.</p><p>Les comptes Premium n'ont pas de niveaux d'accès. L'espace de noms hiérarchique et la redondance n'ajoutent pas les niveaux.</p>",
@@ -535,9 +535,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez stocker les messages envoyés par une application web à un service de traitement en arrière-plan, pour les traiter dans l'ordre d'arrivée, de façon simple et peu coûteuse.</p><p>Quel service du compte de stockage devez-vous utiliser ?</p>",
  "opts": [
-  "Stockage File d'attente (Queue)",
-  "Azure Files",
-  "Blob d'ajout",
+  "Stockage File d'attente",
+  "Azure Files avec un dossier partagé",
+  "Blob d'ajout dans un conteneur",
   "Stockage Table"
  ],
  "ans": 0,
@@ -602,7 +602,7 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez créer un partage de fichiers Azure Standard de <b>50 Tio</b> dans un compte universel v2 créé il y a deux ans.</p><p>Que devez-vous activer sur le compte ?</p>",
  "opts": [
-  "Le chiffrement d'infrastructure",
+  "Le chiffrement d'infrastructure du compte",
   "L'espace de noms hiérarchique",
   "Les partages de fichiers volumineux",
   "Le protocole NFS"
@@ -709,7 +709,7 @@ AZ.questions.push(
  "stem": "<p>Des postes <b>joints à Microsoft Entra</b> (sans contrôleur de domaine joignable) doivent accéder au partage share8 avec l'identité hybride de l'utilisateur et des ACL NTFS.</p><p>Quelle méthode d'authentification basée sur l'identité devez-vous activer sur le compte de stockage ?</p>",
  "opts": [
   "Microsoft Entra Kerberos",
-  "AD DS local",
+  "AD DS local avec un contrôleur",
   "SAS de compte",
   "Clé d'accès du compte"
  ],
@@ -743,7 +743,7 @@ AZ.questions.push(
  "opts": [
   "Aucune : utilisez la clé du compte",
   "Microsoft Entra Domain Services",
-  "Microsoft Entra Connect",
+  "Microsoft Entra Connect Sync seul",
   "AD DS local"
  ],
  "ans": 1,
@@ -770,10 +770,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Les serveurs de votre site local accèdent à share10 par un point de terminaison privé. Ils résolvent toujours storage36.file.core.windows.net vers l'adresse IP publique.</p><p>Que devez-vous corriger ?</p>",
  "opts": [
-  "Les permissions NTFS",
-  "La redondance du compte",
-  "La résolution DNS : faire résoudre le nom vers l'adresse privée (zone privatelink.file.core.windows.net et redirecteur conditionnel)",
-  "Le niveau du partage"
+  "Les permissions NTFS du dossier racine",
+  "La redondance du compte de stockage",
+  "La résolution DNS vers l'adresse privée",
+  "Le niveau du partage (Optimisé pour les transactions)"
  ],
  "ans": 2,
  "expl": "<p>Le point de terminaison privé fonctionne, mais le client doit résoudre <code>storage36.file.core.windows.net</code> vers l'<b>adresse privée</b>. Dans Azure, la zone DNS privée <code>privatelink.file.core.windows.net</code> liée au réseau virtuel s'en charge. Depuis le site local, il faut un <b>redirecteur conditionnel</b> vers un résolveur DNS dans Azure (Azure DNS Private Resolver ou un serveur DNS).</p>",
@@ -802,10 +802,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous créez un point de terminaison privé pour storage37 avec la sous-ressource cible <b>blob</b>. Une application doit aussi accéder au partage de fichiers de storage37 par une adresse privée.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Activer un point de terminaison de service sur le sous-réseau",
-  "Ajouter le service file dans le pare-feu",
+  "Activer un point de terminaison de service",
+  "Ajouter le service file dans le pare-feu du compte",
   "Rien : le point de terminaison blob couvre tous les services",
-  "Créer un second point de terminaison privé avec la sous-ressource file"
+  "Un second point de terminaison privé (sous-ressource file)"
  ],
  "ans": 3,
  "expl": "<p>Un point de terminaison privé cible <b>une seule sous-ressource</b> : blob, file, queue, table, dfs ou web. Pour Azure Files, il faut un second point de terminaison privé avec la sous-ressource <b>file</b> (et la zone DNS privatelink.file.core.windows.net).</p>",
@@ -835,9 +835,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une seule instance Azure Synapse de votre abonnement doit pouvoir accéder à storage38, dont le pare-feu bloque tout sauf certains réseaux virtuels. Les autres instances Synapse ne doivent pas y accéder.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Une règle d'instance de ressource dans le pare-feu de storage38",
-  "Une SAS de compte",
-  "L'accès anonyme",
+  "Une règle d'instance de ressource",
+  "Une SAS de compte en lecture",
+  "L'accès anonyme au conteneur",
   "L'exception pour tous les services approuvés"
  ],
  "ans": 0,
@@ -943,10 +943,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez créer une SAS de délégation d'utilisateur valable <b>30 jours</b>.</p><p>Que se passe-t-il ?</p>",
  "opts": [
-  "La SAS est créée sans expiration",
-  "Il faut une stratégie d'accès stockée",
-  "La SAS est créée pour 30 jours",
-  "La création échoue : une SAS de délégation d'utilisateur est valable au maximum 7 jours"
+  "La SAS est créée sans date d'expiration",
+  "Il faut une stratégie d'accès stockée sur le conteneur",
+  "La SAS est créée pour 30 jours, comme demandé",
+  "La création échoue : 7 jours maximum"
  ],
  "ans": 3,
  "expl": "<p>Une SAS de délégation d'utilisateur est signée par une <b>clé de délégation d'utilisateur</b>, valable au maximum <b>7 jours</b>. La SAS ne peut pas durer plus longtemps que cette clé.</p><p>Les SAS de délégation d'utilisateur ne prennent pas en charge les stratégies d'accès stockées. Pour des accès longs, on préfère donner un rôle à une identité.</p>",
@@ -1012,8 +1012,8 @@ AZ.questions.push(
  "opts": [
   "Propriétaire",
   "Lecteur des données blob du stockage",
-  "Contributeur",
-  "Lecteur et accès aux données"
+  "Contributeur sur le compte de stockage",
+  "Lecteur et accès aux données (clés)"
  ],
  "ans": 1,
  "expl": "<p>Lecteur ne donne que le plan de contrôle. Pour lire des blobs avec son identité Entra, il faut un rôle de <b>données</b> : <b>Lecteur des données blob du stockage</b>.</p><p>Contributeur et Propriétaire peuvent lister les clés du compte et donc accéder aux données par clé, mais c'est trop de droits. Le rôle Lecteur et accès aux données permet de lister les clés : il donne aussi trop d'accès.</p>",
@@ -1049,7 +1049,7 @@ AZ.questions.push(
   "Contributeur de compte de stockage",
   "Contributeur de réseau",
   "Contributeur aux données blob du stockage",
-  "Lecteur"
+  "Lecteur et accès aux données"
  ],
  "ans": 2,
  "expl": "<p>Avec l'authentification Entra, AzCopy agit avec les droits de l'identité sur les <b>données</b>. Pour écrire des blobs, il faut <b>Contributeur aux données blob du stockage</b> (ou Propriétaire des données blob) sur le conteneur ou le compte.</p><p>Contributeur de compte de stockage gère le compte, mais n'accorde pas d'accès aux données avec l'identité. Lecteur et Contributeur de réseau non plus.</p>",
@@ -1115,10 +1115,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez exporter 20 To de blobs depuis storage41 vers vos locaux, sur des disques, parce que la connexion est trop lente.</p><p>Quel service devez-vous utiliser ?</p>",
  "opts": [
-  "Azure Import/Export (tâche d'exportation) ou Azure Data Box",
-  "AzCopy sync",
-  "Azure File Sync",
-  "La réplication d'objets"
+  "Azure Import/Export ou Azure Data Box",
+  "AzCopy sync sur une liaison de 100 Mbit/s",
+  "Azure File Sync avec la hiérarchisation",
+  "La réplication d'objets vers le site local"
  ],
  "ans": 0,
  "expl": "<p>Une <b>tâche d'exportation</b> Import/Export copie des blobs sur des disques que Microsoft vous renvoie. Azure Data Box propose aussi l'exportation. Attention : Import/Export n'exporte que des <b>blobs</b>, pas Azure Files.</p><p>File Sync, AzCopy et la réplication passent par le réseau.</p>",
@@ -1211,10 +1211,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>Vous devez donner à une équipe de chercheurs l'accès en lecture et en écriture au seul conteneur recherche de storage42, avec leurs comptes Microsoft Entra.</p><p>Quelles <b>deux</b> actions sont nécessaires ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
  "opts": [
-  "Attribuer le rôle Contributeur aux données blob du stockage au groupe des chercheurs",
-  "Rendre le conteneur public",
-  "Leur fournir key1",
-  "Choisir le conteneur recherche comme étendue de l'attribution"
+  "Attribuer Contributeur aux données blob au groupe",
+  "Rendre le conteneur public le temps du projet",
+  "Leur fournir key1 dans un coffre de clés",
+  "Choisir le conteneur recherche comme étendue"
  ],
  "ans": [
   0,
@@ -1257,9 +1257,9 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>Vous devez réduire les coûts d'un compte de stockage qui contient 50 To de blobs, dont 80 % n'ont pas été lus depuis 6 mois mais doivent rester lisibles immédiatement.</p><p>Quelles <b>deux</b> actions conviennent ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
  "opts": [
-  "Passer le compte en Premium",
-  "Déplacer les blobs vers le niveau Archive",
-  "Créer une règle de cycle de vie qui déplace vers le niveau Très froid (Cold) les blobs non lus depuis 90 jours",
+  "Passer le compte en Premium blob de blocs",
+  "Déplacer tous les blobs vers le niveau Archive",
+  "Une règle vers Très froid après 90 jours sans lecture",
   "Activer le suivi de l'heure du dernier accès"
  ],
  "ans": [
@@ -1296,10 +1296,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>Vous devez configurer la restauration à un point dans le temps sur storage43.</p><p>Quelles <b>deux</b> fonctionnalités doivent aussi être activées ? (En plus de la suppression réversible des blobs.)</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
  "opts": [
-  "L'espace de noms hiérarchique",
+  "L'espace de noms hiérarchique du compte",
   "Le contrôle de version des blobs",
-  "La réplication d'objets",
-  "Le flux de modification"
+  "La réplication d'objets vers un compte de secours",
+  "Le flux de modification du compte"
  ],
  "ans": [
   1,
@@ -1981,10 +1981,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez vérifier quelle quantité de données a été répliquée vers la région secondaire de storage51 (GRS) et à quelle heure.</p><p>Quelle information devez-vous consulter ?</p>",
  "opts": [
-  "Les métriques de transactions",
-  "L'heure de dernière synchronisation (Last Sync Time)",
-  "Le flux de modification",
-  "Le journal d'activité"
+  "Les métriques de transactions du compte",
+  "L'heure de dernière synchronisation",
+  "Le flux de modification du compte",
+  "Le journal d'activité de l'abonnement"
  ],
  "ans": 1,
  "expl": "<p>L'<b>heure de dernière synchronisation</b>, affichée dans la page Redondance (et via PowerShell ou CLI), garantit que toutes les écritures antérieures sont dans la région secondaire. Les écritures postérieures pourraient être perdues en cas de basculement.</p>",
@@ -2013,9 +2013,9 @@ AZ.questions.push(
  "stem": "<p>Vous devez permettre aux utilisateurs de Linux de monter le partage share12 (SMB) de storage52.</p><p>Quelle commande Linux devez-vous utiliser ?</p>",
  "opts": [
   "mount -t nfs storage52.blob.core.windows.net:/share12 /mnt/share12",
-  "net use Z: \\\\storage52.file.core.windows.net\\share12",
-  "mount -t cifs //storage52.file.core.windows.net/share12 /mnt/share12 -o ...",
-  "azcopy mount share12"
+  "net use Z: \\\\storage52.file.core.windows.net\\share12 /persistent",
+  "mount -t cifs //storage52.file.core.windows.net/share12 /mnt/share12",
+  "azcopy mount https://storage52.file.core.windows.net/share12"
  ],
  "ans": 2,
  "expl": "<p>Sous Linux, un partage SMB se monte avec <b>mount -t cifs</b> (paquet cifs-utils), avec le nom du compte et la clé (ou un fichier d'informations d'identification) et la version SMB 3.x.</p><p>NFS est un autre protocole et l'adresse blob ne correspond pas à Azure Files. net use est une commande Windows. AzCopy ne monte pas de partage.</p>",
@@ -2108,10 +2108,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Un administrateur doit faire tourner régulièrement les clés d'accès de storage53. Il veut un rappel automatique tous les 90 jours.</p><p>Que doit-il configurer ?</p>",
  "opts": [
-  "Une stratégie de cycle de vie",
-  "Une stratégie d'expiration de clé (rappel de rotation) dans Clés d'accès",
-  "Une alerte de budget",
-  "Une stratégie d'accès stockée"
+  "Une stratégie de cycle de vie sur les clés",
+  "Une stratégie d'expiration de clé",
+  "Une alerte de budget sur le compte de stockage",
+  "Une stratégie d'accès stockée de 90 jours"
  ],
  "ans": 1,
  "expl": "<p>Dans <b>Clés d'accès</b>, l'option <b>Définir un rappel de rotation</b> crée une stratégie d'expiration de clé : passé le délai, Azure signale la clé comme à faire pivoter (et une stratégie Azure Policy peut contrôler cette règle). Pour une rotation entièrement automatique, on peut aussi confier les clés à Key Vault ou, mieux, utiliser Entra ID.</p>",
@@ -2140,10 +2140,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une application doit être prévenue chaque fois qu'un nouveau blob est créé dans le conteneur upload, pour lancer un traitement.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Un point de terminaison privé",
-  "Une stratégie de cycle de vie",
-  "Un abonnement aux événements Event Grid sur le compte de stockage",
-  "La réplication d'objets"
+  "Un point de terminaison privé sur le compte",
+  "Une stratégie de cycle de vie qui lance l'action",
+  "Un abonnement aux événements Event Grid",
+  "La réplication d'objets vers un compte de traitement"
  ],
  "ans": 2,
  "expl": "<p>Le stockage blob publie des événements (<code>BlobCreated</code>, <code>BlobDeleted</code>…) dans <b>Azure Event Grid</b>. Un abonnement aux événements, filtré sur le conteneur, peut déclencher une fonction, une application logique ou un webhook.</p><p>Les autres options ne notifient rien.</p>",
@@ -2180,7 +2180,7 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez obtenir chaque semaine un fichier CSV listant tous les blobs de storage54 avec leur taille, leur niveau et leur date de modification.</p><p>Quelle fonctionnalité devez-vous utiliser ?</p>",
  "opts": [
-  "Les journaux de diagnostic",
+  "Les journaux de diagnostic du service blob",
   "Le flux de modification",
   "La gestion du cycle de vie",
   "L'inventaire des objets blob"
@@ -2220,10 +2220,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez tracer chaque lecture et suppression de blobs dans storage55, avec l'identité de l'appelant, et analyser ces traces avec KQL.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Un paramètre de diagnostic pour le service blob, catégories StorageRead et StorageDelete, vers un espace de travail Log Analytics",
+  "Un diagnostic blob (StorageRead, StorageDelete)",
   "Le suivi de l'heure du dernier accès",
-  "Le journal d'activité du compte",
-  "Une alerte de métrique sur les transactions"
+  "Le journal d'activité du compte de stockage, exporté",
+  "Une alerte de métrique sur les transactions blob"
  ],
  "ans": 0,
  "expl": "<p>Les <b>journaux de ressources</b> du stockage (StorageRead, StorageWrite, StorageDelete) tracent les opérations sur les données. On les active avec un <b>paramètre de diagnostic</b> sur le service blob et on les envoie vers Log Analytics pour les interroger en KQL.</p><p>Le journal d'activité ne trace que le plan de contrôle. Le suivi du dernier accès ne donne pas l'appelant. Une métrique ne contient pas le détail de chaque requête.</p>",
@@ -2257,8 +2257,8 @@ AZ.questions.push(
  "stem": "<p>Vous devez donner à une application l'accès à des fichiers de Data Lake Storage Gen2 au niveau d'un <b>sous-dossier</b> précis, pas de tout le conteneur.</p><p>Que devez-vous utiliser ?</p>",
  "opts": [
   "Un rôle RBAC sur le sous-dossier",
-  "Les listes de contrôle d'accès (ACL) POSIX sur le dossier",
-  "Une stratégie d'accès stockée",
+  "Les ACL POSIX sur le dossier",
+  "Une stratégie d'accès stockée sur le conteneur",
   "Le niveau d'accès Conteneur"
  ],
  "ans": 1,
@@ -2288,10 +2288,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une application lit des données dans la région secondaire d'un compte RA-GZRS. Les données lues sont parfois légèrement en retard par rapport à la région primaire.</p><p>Pourquoi ?</p>",
  "opts": [
-  "La lecture secondaire utilise le niveau Archive",
+  "La lecture secondaire passe par le niveau Archive",
   "La région secondaire n'est accessible qu'en écriture",
-  "La réplication vers la région secondaire est asynchrone",
-  "RA-GZRS ne réplique que la nuit"
+  "La réplication vers le secondaire est asynchrone",
+  "RA-GZRS ne réplique que la nuit, en heures creuses"
  ],
  "ans": 2,
  "expl": "<p>La réplication géographique est <b>asynchrone</b> : la région secondaire peut avoir quelques minutes de retard (l'objectif de point de récupération est généralement inférieur à 15 minutes, sans garantie). L'application doit tolérer cette cohérence éventuelle.</p>",
@@ -2323,10 +2323,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez permettre à une application d'écrire des blobs dans storage56 pendant 1 an, de façon sécurisée et sans gérer de secret. L'application tourne sur une VM Azure.</p><p>Quelle solution est recommandée ?</p>",
  "opts": [
-  "Stocker key1 dans le code",
-  "Une SAS de compte valable 1 an",
+  "Stocker key1 dans le code de l'application",
+  "Une SAS de compte valable 1 an, renouvelée à la main",
   "Une SAS de délégation d'utilisateur valable 1 an",
-  "Activer une identité managée sur la VM et lui attribuer Contributeur aux données blob du stockage"
+  "Une identité managée avec Contributeur aux données"
  ],
  "ans": 3,
  "expl": "<p>L'<b>identité managée</b> évite tout secret : Azure fournit les jetons à la VM, et le rôle de données donne le droit d'écrire. C'est la méthode recommandée pour les applications qui tournent dans Azure.</p><p>Une SAS d'un an est un secret longue durée difficile à révoquer. Une clé dans le code est la pire option. Une SAS de délégation d'utilisateur ne peut pas dépasser 7 jours.</p>",
@@ -2359,10 +2359,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous changez le niveau du partage de fichiers share13 de <b>Chaud</b> à <b>Froid</b>.</p><p>Quel est l'impact ?</p>",
  "opts": [
-  "Le partage reste accessible ; le coût du stockage baisse et celui des transactions augmente",
-  "Les fichiers doivent être réhydratés avant lecture",
+  "Le partage reste accessible ; stockage moins cher, transactions plus chères",
+  "Les fichiers doivent être réhydratés depuis le niveau froid avant d'être lus",
   "Le partage devient Premium",
-  "Le partage est hors ligne pendant la conversion"
+  "Le partage est hors ligne pendant la conversion de niveau"
  ],
  "ans": 0,
  "expl": "<p>Le changement de niveau d'un partage Standard se fait <b>en ligne</b>. Le niveau Froid a un stockage moins cher et des transactions plus chères. Un changement de niveau génère des frais de transaction pour déplacer les données.</p><p>Azure Files n'a pas de niveau hors ligne comme Archive. On ne passe pas un partage Standard en Premium : il faut un autre compte.</p>",
@@ -2391,9 +2391,9 @@ AZ.questions.push(
  "stem": "<p>Une application doit pouvoir créer des SAS de délégation d'utilisateur pour storage57.</p><p>De quelle autorisation l'identité de l'application a-t-elle besoin au minimum, en plus des droits sur les données ?</p>",
  "opts": [
   "Propriétaire sur l'abonnement",
-  "L'action generateUserDelegationKey, incluse par exemple dans Délégateur Blob du stockage",
-  "Lister les clés du compte",
-  "Administrateur général"
+  "L'action generateUserDelegationKey",
+  "Le droit de lister les clés du compte (listKeys)",
+  "Administrateur général du locataire"
  ],
  "ans": 1,
  "expl": "<p>Pour obtenir une clé de délégation d'utilisateur, l'identité doit pouvoir appeler <code>Microsoft.Storage/storageAccounts/blobServices/generateUserDelegationKey/action</code>, incluse dans le rôle <b>Délégateur Blob du stockage</b> (et dans les rôles de données blob Contributeur, Propriétaire, Lecteur). La SAS ne peut ensuite pas donner plus de droits que l'identité n'en a sur les données.</p><p>Aucun accès aux clés du compte n'est nécessaire : c'est tout l'intérêt de ce type de SAS.</p>",

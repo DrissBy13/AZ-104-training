@@ -262,10 +262,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>The storage account storage29 uses <b>ZRS</b> redundancy. You want to configure a lifecycle rule that moves old blobs to the Archive tier.</p><p>What happens?</p>",
  "opts": [
-  "The Archive tier isn't supported with ZRS: you need LRS, GRS, or RA-GRS",
-  "The blobs are converted to LRS and then archived",
+  "Archive isn't supported with ZRS",
+  "The blobs are converted to LRS, then archived",
   "The blobs are archived in the paired region",
-  "The rule works normally"
+  "The rule works normally, with no error"
  ],
  "ans": 0,
  "expl": "<p>The <b>Archive</b> tier is only available with <b>LRS, GRS, and RA-GRS</b>. It isn't supported with ZRS, GZRS, or RA-GZRS. You must change the account's redundancy or use the Cold tier instead.</p><p>Azure doesn't convert redundancy or move data to another region for you.</p>",
@@ -297,9 +297,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>The default access tier of the storage account storage30 is <b>Hot</b>. You change it to <b>Cool</b>.</p><p>Which blobs are affected?</p>",
  "opts": [
-  "None: each blob must be changed",
-  "Blobs whose tier is inferred from the account (no explicit tier)",
-  "Only new blobs created after the change",
+  "None: each blob must be changed one by one",
+  "Blobs whose tier is inferred from the account",
+  "Only blobs created after the change",
   "All blobs, including those in the Archive tier"
  ],
  "ans": 1,
@@ -336,7 +336,7 @@ AZ.questions.push(
   "prefixMatch",
   "containerName",
   "blobIndexMatch",
-  "blobTypes"
+  "daysAfterModificationGreaterThan"
  ],
  "ans": 2,
  "expl": "<p>The <b>blobIndexMatch</b> filter selects blobs by their <b>index tags</b> (name, operator, value). Index tags are indexed, queryable key/value pairs, different from metadata.</p><p><b>prefixMatch</b> filters by name prefix, <b>blobTypes</b> by blob type. containerName isn't a lifecycle filter.</p>",
@@ -368,10 +368,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Versioning is enabled on storage31. Old versions pile up and push the bill up.</p><p>What should you do?</p>",
  "opts": [
-  "Lower the redundancy to LRS",
-  "Disable soft delete",
-  "Enable immutability",
-  "Add a lifecycle rule with an action on versions (version: delete after N days)"
+  "Lower the account's redundancy to LRS",
+  "Disable blob soft delete",
+  "Enable version-level immutability",
+  "A lifecycle rule on versions"
  ],
  "ans": 3,
  "expl": "<p>A lifecycle rule can act on the base blob, on previous <b>versions</b>, and on <b>snapshots</b>. An action “delete versions older than 90 days” (<code>daysAfterCreationGreaterThan</code> on version) limits the buildup.</p><p>Soft delete concerns deleted blobs. LRS lowers the cost a bit but not the buildup. Immutability would prevent any deletion.</p>",
@@ -404,9 +404,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A user deleted the storage account storage32 3 days ago. No other account has been created with that name.</p><p>What can you do?</p>",
  "opts": [
-  "Restore it from the portal (Restore deleted account), since it's recoverable for 14 days",
+  "Restore it from the portal (deleted account)",
   "Nothing: deleting an account is permanent",
-  "Restore it from the activity log",
+  "Restore it from the subscription's activity log",
   "Restore it with blob soft delete"
  ],
  "ans": 0,
@@ -432,9 +432,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to prevent an administrator from deleting the storage account storage33 by mistake; it contains production data.</p><p>What is the simplest solution?</p>",
  "opts": [
-  "RA-GRS redundancy",
-  "A CanNotDelete lock on storage33",
-  "Blob soft delete",
+  "The account's RA-GRS redundancy",
+  "A CanNotDelete lock",
+  "Blob and container soft delete",
   "A time-based retention policy"
  ],
  "ans": 1,
@@ -464,10 +464,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to move the storage account storage34 from France Central to West Europe.</p><p>Which method should you use?</p>",
  "opts": [
-  "Start a geo-failover",
-  "Use the Move to another resource group option",
-  "Export the account's template, create an account in West Europe, then copy the data with AzCopy",
-  "Change the region in Configuration"
+  "Start a geo-failover to West Europe",
+  "Use the portal option Move to another resource group",
+  "Recreate the account in West Europe and copy with AzCopy",
+  "Change the region on the Configuration page"
  ],
  "ans": 2,
  "expl": "<p>A storage account can't change region. You <b>export its template</b> (to recreate the same configuration), create the new account in the target region, then <b>copy the data</b> (AzCopy, server-to-server), before deleting the old account.</p><p>Moving to another resource group doesn't change the region. A geo-failover switches to the paired region (France South), not West Europe, and it isn't a migration method.</p>",
@@ -501,8 +501,8 @@ AZ.questions.push(
  "opts": [
   "Change the redundancy to GRS",
   "Enable hierarchical namespace",
-  "Recreate the account as Premium",
-  "Upgrade the account to general-purpose v2"
+  "Recreate the account as Premium block blobs",
+  "Upgrade to general-purpose v2"
  ],
  "ans": 3,
  "expl": "<p>Access tiers are only available in <b>general-purpose v2</b> accounts (and legacy BlobStorage accounts). The <b>upgrade</b> to v2 is done from the Configuration page, without downtime, but it's <b>irreversible</b>.</p><p>Premium accounts have no access tiers. Hierarchical namespace and redundancy don't add tiers.</p>",
@@ -536,8 +536,8 @@ AZ.questions.push(
  "stem": "<p>You need to store the messages sent by a web application to a background processing service, to process them in order of arrival, simply and cheaply.</p><p>Which storage account service should you use?</p>",
  "opts": [
   "Queue storage",
-  "Azure Files",
-  "Append blob",
+  "Azure Files with a shared folder",
+  "Append blob in a container",
   "Table storage"
  ],
  "ans": 0,
@@ -602,7 +602,7 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to create a <b>50 TiB</b> Standard Azure file share in a general-purpose v2 account created two years ago.</p><p>What should you enable on the account?</p>",
  "opts": [
-  "Infrastructure encryption",
+  "The account's infrastructure encryption",
   "Hierarchical namespace",
   "Large file shares",
   "The NFS protocol"
@@ -709,7 +709,7 @@ AZ.questions.push(
  "stem": "<p><b>Microsoft Entra joined</b> computers (with no reachable domain controller) must access the share share8 with the user's hybrid identity and NTFS ACLs.</p><p>Which identity-based authentication method should you enable on the storage account?</p>",
  "opts": [
   "Microsoft Entra Kerberos",
-  "On-premises AD DS",
+  "On-premises AD DS with a DC",
   "Account SAS",
   "Account access key"
  ],
@@ -743,7 +743,7 @@ AZ.questions.push(
  "opts": [
   "None: use the account key",
   "Microsoft Entra Domain Services",
-  "Microsoft Entra Connect",
+  "Microsoft Entra Connect Sync alone",
   "On-premises AD DS"
  ],
  "ans": 1,
@@ -770,10 +770,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Servers in your on-premises site access share10 through a private endpoint. They still resolve storage36.file.core.windows.net to the public IP address.</p><p>What should you fix?</p>",
  "opts": [
-  "The NTFS permissions",
-  "The account's redundancy",
-  "DNS resolution: resolve the name to the private address (privatelink.file.core.windows.net zone and a conditional forwarder)",
-  "The share's tier"
+  "The root folder's NTFS permissions",
+  "The storage account's redundancy",
+  "DNS resolution to the private address",
+  "The share's tier (Transaction optimized)"
  ],
  "ans": 2,
  "expl": "<p>The private endpoint works, but the client must resolve <code>storage36.file.core.windows.net</code> to the <b>private address</b>. In Azure, the private DNS zone <code>privatelink.file.core.windows.net</code> linked to the virtual network handles it. From on-premises, you need a <b>conditional forwarder</b> to a DNS resolver in Azure (Azure DNS Private Resolver or a DNS server).</p>",
@@ -802,10 +802,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You create a private endpoint for storage37 with the target sub-resource <b>blob</b>. An application must also reach storage37's file share through a private address.</p><p>What should you do?</p>",
  "opts": [
-  "Enable a service endpoint on the subnet",
-  "Add the file service to the firewall",
+  "Enable a service endpoint",
+  "Add the file service to the account firewall",
   "Nothing: the blob endpoint covers every service",
-  "Create a second private endpoint with the file sub-resource"
+  "A second private endpoint (file sub-resource)"
  ],
  "ans": 3,
  "expl": "<p>A private endpoint targets <b>a single sub-resource</b>: blob, file, queue, table, dfs, or web. For Azure Files, you need a second private endpoint with the <b>file</b> sub-resource (and the privatelink.file.core.windows.net DNS zone).</p>",
@@ -835,9 +835,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Only one Azure Synapse instance in your subscription must be able to access storage38, whose firewall blocks everything except some virtual networks. The other Synapse instances must not access it.</p><p>What should you configure?</p>",
  "opts": [
-  "A resource instance rule in storage38's firewall",
-  "An account SAS",
-  "Anonymous access",
+  "A resource instance rule",
+  "A read account SAS",
+  "Anonymous access on the container",
   "The exception for all trusted services"
  ],
  "ans": 0,
@@ -943,10 +943,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to create a user delegation SAS valid for <b>30 days</b>.</p><p>What happens?</p>",
  "opts": [
-  "The SAS is created with no expiry",
-  "A stored access policy is required",
-  "The SAS is created for 30 days",
-  "The creation fails: a user delegation SAS is valid for at most 7 days"
+  "The SAS is created with no expiry date",
+  "A stored access policy is required on the container",
+  "The SAS is created for 30 days, as requested",
+  "Creation fails: 7 days maximum"
  ],
  "ans": 3,
  "expl": "<p>A user delegation SAS is signed by a <b>user delegation key</b>, valid for at most <b>7 days</b>. The SAS can't last longer than this key.</p><p>User delegation SAS don't support stored access policies. For long-lived access, prefer giving a role to an identity.</p>",
@@ -1012,8 +1012,8 @@ AZ.questions.push(
  "opts": [
   "Owner",
   "Storage Blob Data Reader",
-  "Contributor",
-  "Reader and Data Access"
+  "Contributor on the storage account",
+  "Reader and Data Access (keys)"
  ],
  "ans": 1,
  "expl": "<p>Reader only gives the control plane. To read blobs with his Entra identity, he needs a <b>data</b> role: <b>Storage Blob Data Reader</b>.</p><p>Contributor and Owner can list the account keys and so access data with the key, but that's too many rights. The Reader and Data Access role allows listing keys: it also gives too much access.</p>",
@@ -1049,7 +1049,7 @@ AZ.questions.push(
   "Storage Account Contributor",
   "Network Contributor",
   "Storage Blob Data Contributor",
-  "Reader"
+  "Reader and Data Access"
  ],
  "ans": 2,
  "expl": "<p>With Entra authentication, AzCopy acts with the identity's rights on the <b>data</b>. To write blobs, you need <b>Storage Blob Data Contributor</b> (or Storage Blob Data Owner) on the container or account.</p><p>Storage Account Contributor manages the account, but doesn't grant data access with the identity. Neither do Reader and Network Contributor.</p>",
@@ -1115,10 +1115,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to export 20 TB of blobs from storage41 to your premises, on disks, because the connection is too slow.</p><p>Which service should you use?</p>",
  "opts": [
-  "Azure Import/Export (export job) or Azure Data Box",
-  "AzCopy sync",
-  "Azure File Sync",
-  "Object replication"
+  "Azure Import/Export or Azure Data Box",
+  "AzCopy sync over a 100 Mbps link",
+  "Azure File Sync with cloud tiering",
+  "Object replication to the on-premises site"
  ],
  "ans": 0,
  "expl": "<p>An Import/Export <b>export job</b> copies blobs to disks that Microsoft ships back to you. Azure Data Box also offers export. Note: Import/Export exports only <b>blobs</b>, not Azure Files.</p><p>File Sync, AzCopy, and replication go over the network.</p>",
@@ -1211,10 +1211,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>You need to give a team of researchers read and write access to only the research container of storage42, with their Microsoft Entra accounts.</p><p>Which <b>two</b> actions are required?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
-  "Assign the Storage Blob Data Contributor role to the researchers' group",
-  "Make the container public",
-  "Give them key1",
-  "Choose the research container as the assignment's scope"
+  "Assign Storage Blob Data Contributor to the group",
+  "Make the container public for the project",
+  "Give them key1 through a key vault",
+  "Choose the research container as the scope"
  ],
  "ans": [
   0,
@@ -1257,9 +1257,9 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>You need to reduce the costs of a storage account holding 50 TB of blobs, 80% of which haven't been read for 6 months but must remain readable immediately.</p><p>Which <b>two</b> actions fit?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
-  "Switch the account to Premium",
-  "Move the blobs to the Archive tier",
-  "Create a lifecycle rule that moves blobs not read for 90 days to the Cold tier",
+  "Switch the account to Premium block blobs",
+  "Move all blobs to the Archive tier",
+  "A rule to Cold after 90 days without reads",
   "Enable last access time tracking"
  ],
  "ans": [
@@ -1296,10 +1296,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>You need to configure point-in-time restore on storage43.</p><p>Which <b>two</b> features must also be enabled? (In addition to blob soft delete.)</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
-  "Hierarchical namespace",
-  "Blob versioning",
-  "Object replication",
-  "Change feed"
+  "The account's hierarchical namespace",
+  "Blob versioning on both accounts",
+  "Object replication to a backup account",
+  "Change feed on the source account"
  ],
  "ans": [
   1,
@@ -1981,10 +1981,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to check how much data has been replicated to the secondary region of storage51 (GRS) and as of when.</p><p>Which information should you look at?</p>",
  "opts": [
-  "Transaction metrics",
+  "The account's transaction metrics",
   "Last Sync Time",
-  "Change feed",
-  "Activity log"
+  "The account's change feed",
+  "The subscription's activity log"
  ],
  "ans": 1,
  "expl": "<p>The <b>Last Sync Time</b>, shown on the Redundancy page (and through PowerShell or CLI), guarantees that all earlier writes are in the secondary region. Later writes could be lost in a failover.</p>",
@@ -2013,9 +2013,9 @@ AZ.questions.push(
  "stem": "<p>You need to let Linux users mount the share share12 (SMB) of storage52.</p><p>Which Linux command should you use?</p>",
  "opts": [
   "mount -t nfs storage52.blob.core.windows.net:/share12 /mnt/share12",
-  "net use Z: \\\\storage52.file.core.windows.net\\share12",
-  "mount -t cifs //storage52.file.core.windows.net/share12 /mnt/share12 -o ...",
-  "azcopy mount share12"
+  "net use Z: \\\\storage52.file.core.windows.net\\share12 /persistent",
+  "mount -t cifs //storage52.file.core.windows.net/share12 /mnt/share12",
+  "azcopy mount https://storage52.file.core.windows.net/share12"
  ],
  "ans": 2,
  "expl": "<p>On Linux, an SMB share is mounted with <b>mount -t cifs</b> (cifs-utils package), with the account name and key (or a credentials file) and SMB version 3.x.</p><p>NFS is a different protocol and the blob address doesn't match Azure Files. net use is a Windows command. AzCopy doesn't mount shares.</p>",
@@ -2108,10 +2108,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>An administrator must regularly rotate the access keys of storage53. He wants an automatic reminder every 90 days.</p><p>What should he configure?</p>",
  "opts": [
-  "A lifecycle policy",
-  "A key expiration policy (rotation reminder) in Access keys",
-  "A budget alert",
-  "A stored access policy"
+  "A lifecycle policy on the keys",
+  "A key expiration policy",
+  "A budget alert on the storage account",
+  "A 90-day stored access policy"
  ],
  "ans": 1,
  "expl": "<p>In <b>Access keys</b>, the <b>Set rotation reminder</b> option creates a key expiration policy: past the deadline, Azure flags the key as due for rotation (and an Azure Policy can enforce this rule). For fully automatic rotation, you can also hand the keys to Key Vault or, better, use Entra ID.</p>",
@@ -2140,10 +2140,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>An application must be notified every time a new blob is created in the upload container, to start processing.</p><p>What should you configure?</p>",
  "opts": [
-  "A private endpoint",
-  "A lifecycle policy",
-  "An Event Grid event subscription on the storage account",
-  "Object replication"
+  "A private endpoint on the account",
+  "A lifecycle policy that triggers the action",
+  "An Event Grid event subscription",
+  "Object replication to a processing account"
  ],
  "ans": 2,
  "expl": "<p>Blob storage publishes events (<code>BlobCreated</code>, <code>BlobDeleted</code>…) to <b>Azure Event Grid</b>. An event subscription, filtered on the container, can trigger a function, a logic app, or a webhook.</p><p>The other options notify nothing.</p>",
@@ -2180,7 +2180,7 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to get a weekly CSV file listing all blobs in storage54 with their size, tier, and modification date.</p><p>Which feature should you use?</p>",
  "opts": [
-  "Diagnostic logs",
+  "The blob service's diagnostic logs",
   "Change feed",
   "Lifecycle management",
   "Blob inventory"
@@ -2220,10 +2220,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to record every blob read and delete in storage55, with the caller's identity, and analyze these records with KQL.</p><p>What should you configure?</p>",
  "opts": [
-  "A diagnostic setting for the blob service, StorageRead and StorageDelete categories, to a Log Analytics workspace",
+  "A blob diagnostic setting (StorageRead, StorageDelete)",
   "Last access time tracking",
-  "The account's activity log",
-  "A metric alert on transactions"
+  "The storage account's activity log, exported to a workspace",
+  "A metric alert on blob transactions"
  ],
  "ans": 0,
  "expl": "<p>Storage <b>resource logs</b> (StorageRead, StorageWrite, StorageDelete) record operations on data. You enable them with a <b>diagnostic setting</b> on the blob service and send them to Log Analytics to query with KQL.</p><p>The activity log only records the control plane. Last access tracking doesn't give the caller. A metric doesn't contain the detail of each request.</p>",
@@ -2257,8 +2257,8 @@ AZ.questions.push(
  "stem": "<p>You need to give an application access to Data Lake Storage Gen2 files at the level of a specific <b>subfolder</b>, not the whole container.</p><p>What should you use?</p>",
  "opts": [
   "An RBAC role on the subfolder",
-  "POSIX access control lists (ACLs) on the folder",
-  "A stored access policy",
+  "POSIX ACLs on the folder",
+  "A stored access policy on the container",
   "The Container access level"
  ],
  "ans": 1,
@@ -2288,10 +2288,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>An application reads data in the secondary region of an RA-GZRS account. The data read is sometimes slightly behind the primary region.</p><p>Why?</p>",
  "opts": [
-  "Secondary read uses the Archive tier",
+  "Secondary read goes through the Archive tier",
   "The secondary region is write-only",
-  "Replication to the secondary region is asynchronous",
-  "RA-GZRS replicates only at night"
+  "Replication to the secondary is asynchronous",
+  "RA-GZRS only replicates at night, off-peak"
  ],
  "ans": 2,
  "expl": "<p>Geo-replication is <b>asynchronous</b>: the secondary region can be a few minutes behind (the recovery point objective is usually under 15 minutes, with no guarantee). The application must tolerate this eventual consistency.</p>",
@@ -2323,10 +2323,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to let an application write blobs to storage56 for 1 year, securely and without managing a secret. The application runs on an Azure VM.</p><p>Which solution is recommended?</p>",
  "opts": [
-  "Store key1 in the code",
-  "An account SAS valid for 1 year",
+  "Store key1 in the application code",
+  "An account SAS valid for 1 year, renewed by hand",
   "A user delegation SAS valid for 1 year",
-  "Enable a managed identity on the VM and assign it Storage Blob Data Contributor"
+  "A managed identity with Blob Data Contributor"
  ],
  "ans": 3,
  "expl": "<p>A <b>managed identity</b> avoids any secret: Azure provides tokens to the VM, and the data role grants the right to write. It's the recommended method for applications running in Azure.</p><p>A 1-year SAS is a long-lived secret that's hard to revoke. A key in the code is the worst option. A user delegation SAS can't exceed 7 days.</p>",
@@ -2359,10 +2359,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You change the tier of the file share share13 from <b>Hot</b> to <b>Cool</b>.</p><p>What is the impact?</p>",
  "opts": [
-  "The share stays accessible; storage cost goes down and transaction cost goes up",
-  "Files must be rehydrated before reading",
+  "The share stays accessible; cheaper storage, costlier transactions",
+  "Files must be rehydrated from the cool tier before they can be read",
   "The share becomes Premium",
-  "The share is offline during the conversion"
+  "The share is offline during the tier conversion"
  ],
  "ans": 0,
  "expl": "<p>Changing the tier of a Standard share happens <b>online</b>. The Cool tier has cheaper storage and more expensive transactions. A tier change generates transaction fees to move the data.</p><p>Azure Files has no offline tier like Archive. You can't switch a Standard share to Premium: you need another account.</p>",
@@ -2391,9 +2391,9 @@ AZ.questions.push(
  "stem": "<p>An application must be able to create user delegation SAS for storage57.</p><p>Which permission does the application's identity need at a minimum, in addition to data rights?</p>",
  "opts": [
   "Owner on the subscription",
-  "The generateUserDelegationKey action, included for example in Storage Blob Delegator",
-  "Listing the account keys",
-  "Global Administrator"
+  "The generateUserDelegationKey action",
+  "The right to list the account keys (listKeys)",
+  "Global Administrator of the tenant"
  ],
  "ans": 1,
  "expl": "<p>To get a user delegation key, the identity must be able to call <code>Microsoft.Storage/storageAccounts/blobServices/generateUserDelegationKey/action</code>, included in the <b>Storage Blob Delegator</b> role (and in the Storage Blob Data Contributor, Owner, and Reader roles). The SAS then can't grant more rights than the identity has on the data.</p><p>No access to the account keys is needed: that's the whole point of this SAS type.</p>",
