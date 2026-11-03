@@ -307,8 +307,8 @@ AZ.cases.push(
    "stem": "<p>You need to meet the backup requirement for VM-ERP.</p><p>What should you do in Vault-Tailwind?</p>",
    "opts": [
     "Switch the vault to LRS, then protect VM-ERP",
-    "Enable Cross Region Restore, then protect VM-ERP with a 30-day daily policy",
-    "Configure Azure Site Recovery only",
+    "Cross Region Restore, then a 30-day policy",
+    "Configure only Azure Site Recovery for VM-ERP",
     "Create a Backup vault in West Europe"
    ],
    "ans": 1,
@@ -339,10 +339,10 @@ AZ.cases.push(
    "type": "single",
    "stem": "<p>You need to meet the recovery requirement for VM-ERP in a regional outage.</p><p>What should you configure?</p>",
    "opts": [
-    "Only the daily backup with cross-region restore",
-    "An availability zone for VM-ERP",
-    "Azure Site Recovery to another region, with a Recovery Services vault in the target region",
-    "An availability set"
+    "Only the backup with Cross Region Restore",
+    "An availability zone for VM-ERP, with a ZRS disk",
+    "Site Recovery to another region (target vault)",
+    "An availability set for VM-ERP"
    ],
    "ans": 2,
    "expl": "<p>A 15-minute RPO and a one-hour RTO require <b>continuous replication</b>: <b>Azure Site Recovery</b>, with a vault in the target region. A daily backup has a 24-hour RPO. Zones and availability sets don't protect against losing the region.</p>",

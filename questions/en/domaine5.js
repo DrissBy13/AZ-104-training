@@ -174,10 +174,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>VM1 is in France Central. You want to back it up to a Recovery Services vault named Vault1, located in North Europe, but Vault1 doesn't appear in the list.</p><p>What should you do?</p>",
  "opts": [
-  "Switch Vault1 to locally redundant storage",
+  "Switch Vault1 to locally redundant storage (LRS)",
   "Install the Azure Monitor agent on VM1",
   "Enable cross-region restore on Vault1",
-  "Create a Recovery Services vault in France Central"
+  "Create a vault in France Central"
  ],
  "ans": 3,
  "expl": "<p>For <b>Azure Backup</b>, the Recovery Services vault must be in the <b>same region</b> as the VM to protect: Vault1 (North Europe) is therefore not offered for VM1 (France Central). You must create a vault in France Central.</p><p>The vault's redundancy (LRS, GRS) and cross-region restore don't change this rule. For <b>Site Recovery</b>, it's the reverse: the vault is in the <b>target</b> region.</p>",

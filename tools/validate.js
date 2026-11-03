@@ -174,7 +174,7 @@ for (const l of LANGS.slice(1)) {
  *   ne doit pas dépasser SHARE_MAX (le hasard donne 25 % avec 4 réponses).
  * Les domaines de BIAS_PENDING ne sont pas encore corrigés : simple avertissement. */
 const RATIO_MAX = 1.25, RATIO_MIN = 0.5, SHARE_MAX = 0.35, MIN_LEN = 20;
-const BIAS_PENDING = new Set([1, 2, 3, 5]);
+const BIAS_PENDING = new Set([1, 2, 3]);
 const plainLen = s => String(s).replace(/<[^>]+>/g, "").replace(/&[a-z]+;/g, "x").replace(/\s+/g, " ").trim().length;
 const warnings = [];
 const biasStats = {};

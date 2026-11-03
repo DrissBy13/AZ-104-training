@@ -43,7 +43,7 @@ AZ.questions.push(
  "stem": "<p>You configure Azure Site Recovery for VM9 from France Central to West Europe.</p><p>Where is the Recovery Services vault?</p>",
  "opts": [
   "Necessarily in the source region",
-  "In the target region (West Europe), or at least not in the source region",
+  "In the target region (West Europe)",
   "In any region, including the source",
   "In VM9's resource group"
  ],
@@ -128,10 +128,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to check that the recovery plan works, with no impact on production or on ongoing replication.</p><p>Which Site Recovery operation should you run?</p>",
  "opts": [
-  "A planned failover",
-  "A reprotection",
-  "A test failover to an isolated virtual network",
-  "An unplanned failover"
+  "A planned failover during off-hours",
+  "A reprotection back to the source region",
+  "A test failover (isolated network)",
+  "An unplanned failover with failback"
  ],
  "ans": 2,
  "expl": "<p>A <b>test failover</b> creates test VMs in the target region, in a chosen virtual network (preferably <b>isolated</b>), without stopping the source VMs or interrupting replication. You then clean up the test.</p>",
@@ -208,10 +208,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>During a failover, a three-tier application must start in order: database, then application server, then web servers, with a script between steps.</p><p>What should you create in Site Recovery?</p>",
  "opts": [
-  "Three vaults",
-  "A proximity placement group",
-  "A replication policy per VM",
-  "A recovery plan with groups and scripts or manual actions"
+  "Three vaults, one per application tier",
+  "A proximity placement group per tier",
+  "A replication policy per VM, ordered by tier",
+  "A recovery plan with groups and scripts"
  ],
  "ans": 3,
  "expl": "<p>A <b>recovery plan</b> groups VMs into <b>groups</b> that start in order, and lets you add <b>scripts</b> (Azure Automation runbooks) and <b>manual actions</b> between groups.</p>",
@@ -249,7 +249,7 @@ AZ.questions.push(
  "stem": "<p>You want Site Recovery app-consistent recovery points to be created every 2 hours, and points to be kept for 24 hours.</p><p>Where do you set these parameters?</p>",
  "opts": [
   "In the replication policy",
-  "In the recovery plan",
+  "In the application's recovery plan",
   "In the backup policy",
   "In the diagnostic setting"
  ],
@@ -281,10 +281,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A major regional outage hits France Central. The source VMs are unavailable. You need to start the VMs in West Europe.</p><p>Which type of failover should you run?</p>",
  "opts": [
-  "A planned failover with source VMs shut down",
-  "An (unplanned) failover, choosing the recovery point (latest or latest app-consistent)",
-  "A test failover",
-  "A reprotection"
+  "A planned failover, source VMs shut down",
+  "A failover, choosing the recovery point",
+  "A test failover to the target network",
+  "A reprotection to West Europe"
  ],
  "ans": 1,
  "expl": "<p>In a disaster, you run an unplanned <b>failover</b>, choosing the recovery point: latest (minimal RPO), latest processed (minimal RTO), or latest app-consistent. A <b>planned</b> failover cleanly shuts down the source VMs with no data loss, when the source is still available.</p>",
@@ -311,8 +311,8 @@ AZ.questions.push(
  "stem": "<p>A critical application is in zone 1 of France Central. You want to replicate it to zone 2 of the same region, for failover in case of a zone outage.</p><p>What should you use?</p>",
  "opts": [
   "ACR geo-replication",
-  "Azure Backup with LRS",
-  "Zone-to-zone Azure Site Recovery",
+  "Azure Backup with ZRS",
+  "Zone-to-zone Site Recovery",
   "Virtual network peering"
  ],
  "ans": 2,
@@ -339,10 +339,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to protect on-premises VMware servers with Azure Site Recovery, with failover to Azure.</p><p>Which component should you deploy on-premises?</p>",
  "opts": [
-  "A NAT gateway",
-  "The MARS agent only",
-  "Azure File Sync",
-  "An Azure Site Recovery replication appliance (with the Mobility service on the machines)"
+  "A NAT gateway in the on-premises network",
+  "The MARS agent alone, on each server",
+  "Azure File Sync with a server endpoint",
+  "A Site Recovery replication appliance"
  ],
  "ans": 3,
  "expl": "<p>For VMware and physical servers, Site Recovery uses an on-premises <b>replication appliance</b> and the <b>Mobility service</b> installed on each protected machine. For Hyper-V, you install the Site Recovery provider and the Recovery Services agent on the hosts.</p>",
@@ -375,10 +375,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>After a Site Recovery failover, the VMs start in West Europe in the wrong virtual network.</p><p>Where do you define the target network used during failover?</p>",
  "opts": [
-  "In the replication settings (target network and network mapping) of each item or the vault",
-  "In the diagnostic setting",
-  "In the backup policy",
-  "In Azure Advisor"
+  "In the network mapping (replication settings)",
+  "In the Recovery Services vault's diagnostic setting",
+  "In the VMs' backup policy",
+  "In Azure Advisor, Reliability tab"
  ],
  "ans": 0,
  "expl": "<p>The <b>target network</b> (and the subnet, IP address) is configured in the replicated item's <b>compute and network settings</b>, and <b>network mapping</b> associates a source network with a target network. Test failover uses a separate network, chosen at test time.</p>",
@@ -506,10 +506,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to be alerted by email if a VM backup job fails, across all your vaults.</p><p>What does Microsoft recommend?</p>",
  "opts": [
-  "A budget alert",
-  "Azure Monitor built-in alerts for Azure Backup, with an alert processing rule and an action group",
-  "A metric alert on CPU",
-  "Only each vault's classic email notifications"
+  "A budget alert on each vault",
+  "Built-in alerts, a processing rule and an action group",
+  "A metric alert on the VMs' CPU",
+  "Only the classic email notifications of each vault"
  ],
  "ans": 1,
  "expl": "<p>Azure Backup generates <b>built-in alerts in Azure Monitor</b> (backup failures, restore failures, data deletion…). You route them with an <b>alert processing rule</b> to an <b>action group</b>. It's the recommended approach, which replaces the vault's classic alerts.</p>",
@@ -538,10 +538,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A virtual network has no flow log, and you want to know which IP address was blocked to a VM yesterday.</p><p>What can you do?</p>",
  "opts": [
-  "Check the activity log",
-  "Check the NSG's metrics",
-  "Nothing for yesterday: you must enable flow logs for next time",
-  "Check Azure Advisor"
+  "Check the NSG's activity log",
+  "Check yesterday's NSG metrics (denied packets)",
+  "Nothing for yesterday: enable flow logs",
+  "Check Azure Advisor, Security tab"
  ],
  "ans": 2,
  "expl": "<p>Network flows are only recorded if <b>flow logs</b> are enabled. Without them, there's no record of yesterday's denied connections. The activity log only records management operations, not traffic.</p>",
@@ -567,8 +567,8 @@ AZ.questions.push(
  "stem": "<p>Diagnostic logs from several services arrive in tables such as AzureDiagnostics or dedicated tables (for example AppServiceHTTPLogs).</p><p>Which diagnostic setting mode creates tables specific to each resource type, easier to query?</p>",
  "opts": [
   "Azure diagnostics mode (AzureDiagnostics)",
-  "Archive mode",
-  "Event Hubs mode",
+  "Archive mode to a storage account",
+  "Event Hubs mode with a consumer",
   "Resource-specific mode"
  ],
  "ans": 3,
@@ -598,10 +598,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to monitor VMs from several subscriptions with a single Log Analytics workspace.</p><p>Which statement is true?</p>",
  "opts": [
-  "A workspace can receive data from resources in several subscriptions and regions",
-  "A workspace only receives data from its own subscription",
-  "You must have one workspace per region",
-  "You need one workspace per VM"
+  "A workspace can take several subscriptions and regions",
+  "A workspace only receives its own subscription",
+  "You must have one workspace per region and subscription",
+  "You need one workspace per monitored VM"
  ],
  "ans": 0,
  "expl": "<p>A Log Analytics workspace can collect data from resources in <b>several subscriptions and regions</b>, even several tenants. Microsoft recommends limiting the number of workspaces, unless sovereignty, billing, or access constraints apply.</p>",
@@ -630,9 +630,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Your Log Analytics workspace ingests about 200 GB per day. You want to reduce ingestion cost.</p><p>Which pricing option should you consider?</p>",
  "opts": [
-  "Increase retention",
-  "A commitment tier, for example 200 GB per day",
-  "A second workspace",
+  "Increase interactive retention",
+  "A commitment tier (200 GB/day)",
+  "A second regional workspace",
   "Pay-as-you-go only"
  ],
  "ans": 1,
@@ -663,9 +663,9 @@ AZ.questions.push(
  "stem": "<p>A very large debug log table is only consulted during incidents, with simple queries.</p><p>Which table plan greatly reduces ingestion cost?</p>",
  "opts": [
   "A higher commitment tier",
-  "The Analytics plan",
-  "The table's Basic (or Auxiliary) plan",
-  "A 2-year retention"
+  "The table's Analytics plan",
+  "The Basic (or Auxiliary) plan",
+  "A 2-year retention on the table"
  ],
  "ans": 2,
  "expl": "<p>The <b>Basic</b> and <b>Auxiliary</b> table plans cost much less to ingest than the <b>Analytics</b> plan, in exchange for limited query features and a per-query cost. They suit large, rarely queried logs.</p>",
@@ -692,10 +692,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to prevent a configuration error from blowing up the bill of workspace WS3 in a single day.</p><p>What can you configure?</p>",
  "opts": [
-  "A lock on the workspace",
-  "A shorter retention only",
+  "A Delete lock on WS3",
+  "A shorter retention, with nothing else",
   "A proximity placement group",
-  "A daily cap on the workspace, with an alert"
+  "A daily cap, with an alert"
  ],
  "ans": 3,
  "expl": "<p>The <b>daily cap</b> stops collection (for most data types) when the day's volume reaches the limit, until the next day. Caution: data beyond it is lost. You pair it with an alert to be notified.</p>",
@@ -722,7 +722,7 @@ AZ.questions.push(
  "stem": "<p>You need to list, in Log Analytics, all deletion operations performed in the subscription last week, with the caller.</p><p>Which table should you query?</p>",
  "opts": [
   "AzureActivity",
-  "Event",
+  "AzureDiagnostics",
   "Heartbeat",
   "Perf"
  ],
@@ -1262,10 +1262,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>You need to collect the Syslog of 30 Linux VMs to workspace WS4.</p><p>Which <b>two</b> actions should you perform?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
-  "Create a diagnostic setting on the workspace",
-  "Install the Azure Monitor agent on the VMs (often automatically through the DCR association)",
-  "Create a data collection rule with the Syslog source and the WS4 destination",
-  "Enable boot diagnostics"
+  "Create a diagnostic setting on the WS4 workspace",
+  "Install the Azure Monitor agent on the VMs",
+  "Create a DCR (Syslog source, WS4 destination)",
+  "Enable boot diagnostics on the Linux VMs"
  ],
  "ans": [
   1,
@@ -1303,10 +1303,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>You need to protect VM backups against a malicious administrator who would want to delete them.</p><p>Which <b>two</b> vault features should you use?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
-  "Always-on (enhanced) soft delete",
+  "Always-on soft delete",
   "Vault immutability (locked)",
-  "A metric alert on CPU",
-  "LRS redundancy"
+  "A metric alert on the VMs' CPU",
+  "LRS redundancy to limit copies"
  ],
  "ans": [
   0,
@@ -1341,8 +1341,8 @@ AZ.questions.push(
  "opts": [
   "A Recovery Services vault in West Europe",
   "A VPN gateway between the two regions",
-  "A Backup vault in France Central",
-  "A target virtual network in West Europe (created automatically or chosen)"
+  "A Backup vault in France Central, next to the VMs",
+  "A target virtual network in West Europe"
  ],
  "ans": [
   0,
@@ -1375,9 +1375,9 @@ AZ.questions.push(
  "stem": "<p>You want metric alerts to be created automatically for common problems on your VMs (CPU, memory, disk, availability), without writing them one by one.</p><p>What can you use?</p>",
  "opts": [
   "An alert processing rule",
-  "A workbook",
-  "The VM's recommended alert rules",
-  "The activity log"
+  "A VM Insights workbook",
+  "The recommended alert rules",
+  "The VM's activity log"
  ],
  "ans": 2,
  "expl": "<p>Azure offers <b>recommended alert rules</b> for VMs (and other resources): you enable them in a few clicks from the resource's Alerts page, with editable default thresholds. Azure Monitor Baseline Alerts (AMBA) does it at scale with Azure Policy.</p>",
@@ -1403,10 +1403,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A log search alert must run every 5 minutes and fire if the query returns at least one row.</p><p>Which settings match?</p>",
  "opts": [
-  "Dynamic threshold on CPU",
-  "One-hour granularity",
-  "Activity log alert",
-  "Measure: number of rows, operator Greater than 0, evaluation frequency 5 minutes"
+  "Dynamic threshold on CPU, every 5 minutes",
+  "One-hour granularity, at least one row",
+  "Activity log alert every 5 minutes",
+  "Number of rows > 0, frequency 5 minutes"
  ],
  "ans": 3,
  "expl": "<p>A <b>log search alert</b> runs a KQL query at a frequency, over a period. The condition is on the <b>number of rows</b> or a computed measure (for example an average), compared to a threshold.</p>",
@@ -1435,10 +1435,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>The application team wants to receive a phone call (voice call) when a critical alert fires.</p><p>Where should you configure this?</p>",
  "opts": [
-  "In an action group, with a Voice notification",
-  "In Service Health only",
+  "In an action group (Voice notification)",
+  "In Service Health, with a phone contact",
   "In the data collection rule",
-  "In the diagnostic setting"
+  "In the VM's diagnostic setting"
  ],
  "ans": 0,
  "expl": "<p><b>Action groups</b> offer <b>email</b>, <b>SMS</b>, <b>push notification</b> (Azure mobile app), and <b>voice call</b> notifications, with rate limits per number.</p>",
@@ -1463,10 +1463,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>When an alert fires, a script must automatically restart a service on a VM.</p><p>Which action group action should you use?</p>",
  "opts": [
-  "An SMS",
-  "An Azure Automation runbook (or an Azure function)",
-  "A push notification",
-  "An email notification"
+  "An SMS to the VM owner",
+  "An Azure Automation runbook",
+  "A push notification to the app",
+  "An email notification to on-call"
  ],
  "ans": 1,
  "expl": "<p>An action group can trigger an <b>Automation runbook</b>, an <b>Azure function</b>, a <b>logic app</b>, or a <b>webhook</b>: that's the basis of automatic remediation.</p>",
@@ -1491,10 +1491,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A public web service must be monitored from the internet: if it stops responding with HTTP 200 from at least 2 locations, an alert must fire.</p><p>What should you configure?</p>",
  "opts": [
-  "A diagnostic setting",
-  "A Resource Health alert",
-  "A standard availability test in Application Insights, with an alert",
-  "An activity log alert"
+  "A diagnostic setting on the app to Log Analytics",
+  "A Resource Health alert on the app",
+  "A standard availability test, with an alert",
+  "An activity log alert on the app"
  ],
  "ans": 2,
  "expl": "<p>Application Insights <b>availability tests</b> (standard test or URL ping) query the URL from several Azure locations. The alert fires when a minimum number of locations fail.</p>",
@@ -1522,8 +1522,8 @@ AZ.questions.push(
  "opts": [
   "Application Insights",
   "Container Insights",
-  "VM Insights",
-  "Azure Monitor Network Insights"
+  "VM Insights, Map tab",
+  "Network Insights"
  ],
  "ans": 3,
  "expl": "<p><b>Network Insights</b> (Azure Monitor > Networks) shows the health and metrics of all network resources, with topology and access to Network Watcher tools.</p>",
@@ -1576,10 +1576,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to export a resource's platform metrics to Log Analytics to correlate them with logs in a KQL query.</p><p>What should you configure?</p>",
  "opts": [
-  "The daily cap",
-  "A diagnostic setting with the AllMetrics category to the workspace",
+  "The workspace's daily cap",
+  "A diagnostic setting (AllMetrics)",
   "An alert processing rule",
-  "A metric alert"
+  "A metric alert with an export to the workspace"
  ],
  "ans": 1,
  "expl": "<p>A <b>diagnostic setting</b> can send <b>metrics</b> (AllMetrics) in addition to logs. They arrive in the <b>AzureMetrics</b> table in Log Analytics, queryable with KQL.</p>",
@@ -2061,10 +2061,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to monitor CPU and memory usage of container groups and Container Apps applications, with centralized console logs.</p><p>Where are Azure Container Apps console logs sent?</p>",
  "opts": [
-  "To the Recovery Services vault",
-  "To an App Service plan",
-  "To the Log Analytics workspace configured on the Container Apps environment",
-  "To the container registry"
+  "To the region's Recovery Services vault",
+  "To the associated App Service plan",
+  "To the environment's Log Analytics workspace",
+  "To the container registry that hosts the image"
  ],
  "ans": 2,
  "expl": "<p>A Container Apps environment is associated with a log destination, usually a <b>Log Analytics</b> workspace: console (stdout/stderr) and system logs arrive there in dedicated tables. Metrics (CPU, memory, requests) are available in Azure Monitor.</p>",

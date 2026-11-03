@@ -174,10 +174,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>VM1 se trouve en France Central. Vous voulez la sauvegarder dans un coffre Recovery Services nommé Vault1, situé en Europe Nord, mais Vault1 n'apparaît pas dans la liste.</p><p>Que devez-vous faire ?</p>",
  "opts": [
-  "Passer Vault1 en stockage localement redondant",
+  "Passer Vault1 en stockage localement redondant (LRS)",
   "Installer l'agent Azure Monitor sur VM1",
   "Activer la restauration interrégion sur Vault1",
-  "Créer un coffre Recovery Services en France Central"
+  "Créer un coffre en France Central"
  ],
  "ans": 3,
  "expl": "<p>Pour <b>Azure Backup</b>, le coffre Recovery Services doit être dans la <b>même région</b> que la VM à protéger : Vault1 (Europe Nord) n'est donc pas proposé pour VM1 (France Central). Il faut créer un coffre en France Central.</p><p>La redondance du coffre (LRS, GRS) et la restauration interrégion ne changent pas cette règle. Pour <b>Site Recovery</b>, c'est l'inverse : le coffre est dans la région <b>cible</b>.</p>",

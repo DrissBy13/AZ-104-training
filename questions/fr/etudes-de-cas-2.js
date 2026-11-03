@@ -307,8 +307,8 @@ AZ.cases.push(
    "stem": "<p>Vous devez répondre à l'exigence de sauvegarde de VM-ERP.</p><p>Que devez-vous faire dans Vault-Tailwind ?</p>",
    "opts": [
     "Passer le coffre en LRS, puis protéger VM-ERP",
-    "Activer la restauration interrégion, puis protéger VM-ERP avec une stratégie quotidienne de 30 jours",
-    "Configurer Azure Site Recovery uniquement",
+    "Restauration interrégion, puis stratégie de 30 jours",
+    "Configurer uniquement Azure Site Recovery pour VM-ERP",
     "Créer un coffre de sauvegarde (Backup vault) en West Europe"
    ],
    "ans": 1,
@@ -339,10 +339,10 @@ AZ.cases.push(
    "type": "single",
    "stem": "<p>Vous devez répondre à l'exigence de reprise de VM-ERP en cas de panne régionale.</p><p>Que devez-vous configurer ?</p>",
    "opts": [
-    "Uniquement la sauvegarde quotidienne avec restauration interrégion",
-    "Une zone de disponibilité pour VM-ERP",
-    "Azure Site Recovery vers une autre région, avec un coffre Recovery Services dans la région cible",
-    "Un groupe à haute disponibilité"
+    "Uniquement la sauvegarde avec restauration interrégion",
+    "Une zone de disponibilité pour VM-ERP, avec un disque ZRS",
+    "Site Recovery vers une autre région (coffre cible)",
+    "Un groupe à haute disponibilité pour VM-ERP"
    ],
    "ans": 2,
    "expl": "<p>Un RPO de 15 minutes et un RTO d'une heure exigent une <b>réplication continue</b> : <b>Azure Site Recovery</b>, avec un coffre dans la région cible. La sauvegarde quotidienne a un RPO de 24 heures. Les zones et groupes à haute disponibilité ne protègent pas contre la perte de la région.</p>",

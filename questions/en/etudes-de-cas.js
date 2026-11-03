@@ -215,9 +215,9 @@ AZ.cases.push(
    "stem": "<p>You configured daily backup of VM-SQL1 to a Recovery Services vault.</p><p>You need to meet the backup failure notification requirement. What should you do?</p>",
    "opts": [
     "Create a vault diagnostic setting to Event Hubs",
-    "Enable soft delete on the vault",
-    "Create an alert processing rule that sends Azure Backup alerts to an action group",
-    "Create an alert rule on VM-SQL1's activity log"
+    "Enable enhanced soft delete on the vault",
+    "An alert processing rule to an action group",
+    "Create an alert on VM-SQL1's activity log (backup operations)"
    ],
    "ans": 2,
    "expl": "<p>Azure Backup <b>automatically</b> creates Azure Monitor alerts when a backup fails, but notifies no one by default. An <b>alert processing rule</b> that adds an <b>action group</b> (email) to these alerts meets the need, with no effort.</p><p>Event Hubs streams to a third-party tool; soft delete protects data; the VM's activity log doesn't record backup job failures.</p>",

@@ -43,8 +43,8 @@ AZ.questions.push(
  "stem": "<p>Vous configurez Azure Site Recovery pour VM9 de France Central vers West Europe.</p><p>Où se trouve le coffre Recovery Services ?</p>",
  "opts": [
   "Obligatoirement dans la région source",
-  "Dans la région cible (West Europe), ou en tout cas pas dans la région source",
-  "Dans n'importe quelle région, y compris la source",
+  "Dans la région cible (West Europe)",
+  "Dans n'importe quelle région, source comprise",
   "Dans le groupe de ressources de VM9"
  ],
  "ans": 1,
@@ -128,10 +128,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous voulez vérifier que le plan de reprise fonctionne, sans aucun impact sur la production ni sur la réplication en cours.</p><p>Quelle opération Site Recovery devez-vous lancer ?</p>",
  "opts": [
-  "Un basculement planifié",
-  "Une reprotection",
-  "Un test de basculement vers un réseau virtuel isolé",
-  "Un basculement non planifié"
+  "Un basculement planifié en heures creuses",
+  "Une reprotection vers la région source",
+  "Un test de basculement (réseau isolé)",
+  "Un basculement non planifié avec retour"
  ],
  "ans": 2,
  "expl": "<p>Le <b>test de basculement</b> crée des VM de test dans la région cible, dans un réseau virtuel choisi (de préférence <b>isolé</b>), sans arrêter les VM sources ni interrompre la réplication. On nettoie ensuite le test.</p>",
@@ -208,10 +208,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Lors d'un basculement, une application à trois niveaux doit démarrer dans l'ordre : base de données, puis serveur d'applications, puis serveurs web, avec un script entre les étapes.</p><p>Que devez-vous créer dans Site Recovery ?</p>",
  "opts": [
-  "Trois coffres",
-  "Un groupe de placement de proximité",
-  "Une stratégie de réplication par VM",
-  "Un plan de récupération avec des groupes et des scripts ou actions manuelles"
+  "Trois coffres, un par niveau de l'application",
+  "Un groupe de placement de proximité par niveau",
+  "Une stratégie de réplication par VM, ordonnée par niveau",
+  "Un plan de récupération avec groupes et scripts"
  ],
  "ans": 3,
  "expl": "<p>Un <b>plan de récupération</b> regroupe des VM en <b>groupes</b> qui démarrent dans l'ordre, et permet d'ajouter des <b>scripts</b> (runbooks Azure Automation) et des <b>actions manuelles</b> entre les groupes.</p>",
@@ -249,7 +249,7 @@ AZ.questions.push(
  "stem": "<p>Vous voulez que les points de récupération Site Recovery cohérents avec les applications soient créés toutes les 2 heures, et que les points soient conservés 24 heures.</p><p>Où réglez-vous ces paramètres ?</p>",
  "opts": [
   "Dans la stratégie de réplication",
-  "Dans le plan de récupération",
+  "Dans le plan de récupération de l'application",
   "Dans la stratégie de sauvegarde",
   "Dans le paramètre de diagnostic"
  ],
@@ -281,10 +281,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une panne régionale majeure touche France Central. Les VM sources sont indisponibles. Vous devez démarrer les VM en West Europe.</p><p>Quel type de basculement devez-vous lancer ?</p>",
  "opts": [
-  "Un basculement planifié avec arrêt des VM sources",
-  "Un basculement (non planifié), en choisissant le point de récupération (le plus récent ou le dernier cohérent avec les applications)",
-  "Un test de basculement",
-  "Une reprotection"
+  "Un basculement planifié, VM sources arrêtées",
+  "Un basculement, en choisissant le point",
+  "Un test de basculement vers le réseau cible",
+  "Une reprotection vers West Europe"
  ],
  "ans": 1,
  "expl": "<p>En cas de sinistre, on lance un <b>basculement</b> non planifié, en choisissant le point de récupération : le plus récent (RPO minimal), le dernier traité (RTO minimal) ou le dernier cohérent avec les applications. Le basculement <b>planifié</b>, lui, arrête proprement les VM sources sans perte de données, quand la source est encore disponible.</p>",
@@ -311,8 +311,8 @@ AZ.questions.push(
  "stem": "<p>Une application critique est dans la zone 1 de France Central. Vous voulez la répliquer vers la zone 2 de la même région, pour un basculement en cas de panne de zone.</p><p>Que devez-vous utiliser ?</p>",
  "opts": [
   "La géoréplication d'ACR",
-  "Azure Backup en LRS",
-  "Azure Site Recovery de zone à zone",
+  "Azure Backup en ZRS",
+  "Site Recovery de zone à zone",
   "Un appairage de réseaux virtuels"
  ],
  "ans": 2,
@@ -339,10 +339,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous voulez protéger des serveurs VMware locaux avec Azure Site Recovery, avec un basculement vers Azure.</p><p>Quel composant devez-vous déployer sur le site local ?</p>",
  "opts": [
-  "Une passerelle NAT",
-  "L'agent MARS uniquement",
-  "Azure File Sync",
-  "Une appliance de réplication Azure Site Recovery (avec le service Mobility sur les machines)"
+  "Une passerelle NAT dans le réseau local",
+  "L'agent MARS seul, sur chaque serveur",
+  "Azure File Sync avec un point de terminaison",
+  "Une appliance de réplication Site Recovery"
  ],
  "ans": 3,
  "expl": "<p>Pour VMware et les serveurs physiques, Site Recovery utilise une <b>appliance de réplication</b> locale et le <b>service Mobility</b> installé sur chaque machine protégée. Pour Hyper-V, on installe le fournisseur Site Recovery et l'agent Recovery Services sur les hôtes.</p>",
@@ -375,10 +375,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Après un basculement Site Recovery, les VM démarrent en West Europe dans le mauvais réseau virtuel.</p><p>Où définissez-vous le réseau cible utilisé lors du basculement ?</p>",
  "opts": [
-  "Dans les paramètres de réplication (réseau cible et mappage réseau) de chaque élément ou du coffre",
-  "Dans le paramètre de diagnostic",
-  "Dans la stratégie de sauvegarde",
-  "Dans Azure Advisor"
+  "Dans le mappage réseau (paramètres de réplication)",
+  "Dans le paramètre de diagnostic du coffre Recovery Services",
+  "Dans la stratégie de sauvegarde des VM",
+  "Dans Azure Advisor, onglet Fiabilité"
  ],
  "ans": 0,
  "expl": "<p>Le <b>réseau cible</b> (et le sous-réseau, l'adresse IP) se configure dans les <b>paramètres de calcul et de réseau</b> de l'élément répliqué, et le <b>mappage réseau</b> associe un réseau source à un réseau cible. Le test de basculement utilise un réseau séparé, choisi au moment du test.</p>",
@@ -506,10 +506,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous voulez être alerté par e-mail si un travail de sauvegarde de VM échoue, dans tous vos coffres.</p><p>Que Microsoft recommande-t-il ?</p>",
  "opts": [
-  "Une alerte de budget",
-  "Les alertes intégrées d'Azure Monitor pour Azure Backup, avec une règle de traitement des alertes et un groupe d'actions",
-  "Une alerte de métrique sur le CPU",
-  "Les notifications par e-mail classiques de chaque coffre uniquement"
+  "Une alerte de budget sur chaque coffre",
+  "Alertes intégrées, règle de traitement et groupe d'actions",
+  "Une alerte de métrique sur le CPU des VM",
+  "Les seules notifications par e-mail classiques de chaque coffre"
  ],
  "ans": 1,
  "expl": "<p>Azure Backup génère des <b>alertes intégrées dans Azure Monitor</b> (échecs de sauvegarde, de restauration, suppression de données…). On les achemine avec une <b>règle de traitement des alertes</b> vers un <b>groupe d'actions</b>. C'est l'approche recommandée, qui remplace les alertes classiques du coffre.</p>",
@@ -538,10 +538,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Un réseau virtuel n'a pas de journal de flux, et vous voulez savoir quelle adresse IP a été bloquée vers une VM hier.</p><p>Que pouvez-vous faire ?</p>",
  "opts": [
-  "Consulter le journal d'activité",
-  "Consulter les métriques du NSG",
-  "Rien pour hier : il faut activer les journaux de flux pour les prochaines fois",
-  "Consulter Azure Advisor"
+  "Consulter le journal d'activité du NSG",
+  "Consulter les métriques du NSG d'hier (paquets refusés)",
+  "Rien pour hier : activer les journaux de flux",
+  "Consulter Azure Advisor, onglet Sécurité"
  ],
  "ans": 2,
  "expl": "<p>Les flux réseau ne sont enregistrés que si les <b>journaux de flux</b> sont activés. Sans eux, il n'existe aucune trace des connexions refusées hier. Le journal d'activité ne trace que les opérations de gestion, pas le trafic.</p>",
@@ -567,9 +567,9 @@ AZ.questions.push(
  "stem": "<p>Les journaux de diagnostic de plusieurs services arrivent dans des tables comme AzureDiagnostics ou des tables propres (par exemple AppServiceHTTPLogs).</p><p>Quel mode de paramètre de diagnostic crée des tables spécifiques à chaque type de ressource, plus faciles à interroger ?</p>",
  "opts": [
   "Le mode Diagnostics Azure (AzureDiagnostics)",
-  "Le mode Archive",
-  "Le mode Event Hubs",
-  "Le mode Spécifique à la ressource (resource-specific)"
+  "Le mode Archive vers un compte de stockage",
+  "Le mode Event Hubs avec un consommateur",
+  "Le mode Spécifique à la ressource"
  ],
  "ans": 3,
  "expl": "<p>Le mode <b>spécifique à la ressource</b> écrit dans des tables dédiées par catégorie, avec un schéma clair. Le mode <b>Diagnostics Azure</b> mélange beaucoup de services dans une seule table, ce qui est moins performant et plus difficile à interroger. Microsoft recommande le mode spécifique à la ressource quand il est disponible.</p>",
@@ -598,10 +598,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez superviser les VM de plusieurs abonnements avec un seul espace de travail Log Analytics.</p><p>Quelle affirmation est vraie ?</p>",
  "opts": [
-  "Un espace de travail peut recevoir des données de ressources de plusieurs abonnements et régions",
-  "Un espace de travail ne reçoit que les données de son abonnement",
-  "Il faut un espace de travail par région obligatoirement",
-  "Il faut un espace de travail par VM"
+  "Un espace peut recevoir plusieurs abonnements et régions",
+  "Un espace de travail ne reçoit que son abonnement",
+  "Il faut obligatoirement un espace de travail par région et abonnement",
+  "Il faut un espace de travail par VM supervisée"
  ],
  "ans": 0,
  "expl": "<p>Un espace de travail Log Analytics peut collecter des données de ressources de <b>plusieurs abonnements et régions</b>, voire de plusieurs locataires. Microsoft recommande de limiter le nombre d'espaces de travail, sauf contrainte de souveraineté, de facturation ou d'accès.</p>",
@@ -630,9 +630,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Votre espace de travail Log Analytics ingère environ 200 Go par jour. Vous voulez réduire le coût d'ingestion.</p><p>Quelle option de tarification devez-vous envisager ?</p>",
  "opts": [
-  "Augmenter la rétention",
-  "Un niveau d'engagement (commitment tier), par exemple 200 Go par jour",
-  "Un second espace de travail",
+  "Augmenter la rétention interactive",
+  "Un niveau d'engagement (200 Go/jour)",
+  "Un second espace de travail en région",
   "Le paiement à l'utilisation uniquement"
  ],
  "ans": 1,
@@ -663,9 +663,9 @@ AZ.questions.push(
  "stem": "<p>Une table de journaux de débogage très volumineuse n'est consultée qu'en cas d'incident, avec des requêtes simples.</p><p>Quel plan de table permet de réduire fortement le coût d'ingestion ?</p>",
  "opts": [
   "Un niveau d'engagement plus élevé",
-  "Le plan Analytics",
-  "Le plan Basic (ou Auxiliary) de la table",
-  "Une rétention de 2 ans"
+  "Le plan Analytics de la table",
+  "Le plan Basic (ou Auxiliary)",
+  "Une rétention de 2 ans sur la table"
  ],
  "ans": 2,
  "expl": "<p>Les plans de table <b>Basic</b> et <b>Auxiliary</b> coûtent bien moins cher à l'ingestion que le plan <b>Analytics</b>, en échange de fonctionnalités de requête limitées et d'un coût par requête. Ils conviennent aux journaux volumineux peu interrogés.</p>",
@@ -692,10 +692,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous voulez éviter qu'une erreur de configuration fasse exploser la facture de l'espace de travail WS3 en une journée.</p><p>Que pouvez-vous configurer ?</p>",
  "opts": [
-  "Un verrou sur l'espace de travail",
-  "Une rétention plus courte uniquement",
+  "Un verrou Suppression impossible sur WS3",
+  "Une rétention plus courte, sans autre réglage",
   "Un groupe de placement de proximité",
-  "Un plafond quotidien (daily cap) sur l'espace de travail, avec une alerte"
+  "Un plafond quotidien, avec une alerte"
  ],
  "ans": 3,
  "expl": "<p>Le <b>plafond quotidien</b> arrête la collecte (pour la plupart des types de données) quand le volume du jour atteint la limite, jusqu'au lendemain. Attention : les données au-delà sont perdues. On l'associe à une alerte pour être prévenu.</p>",
@@ -722,7 +722,7 @@ AZ.questions.push(
  "stem": "<p>Vous devez lister, dans Log Analytics, toutes les opérations de suppression réalisées dans l'abonnement la semaine dernière, avec l'appelant.</p><p>Quelle table devez-vous interroger ?</p>",
  "opts": [
   "AzureActivity",
-  "Event",
+  "AzureDiagnostics",
   "Heartbeat",
   "Perf"
  ],
@@ -1262,10 +1262,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>Vous devez collecter le journal Syslog de 30 VM Linux vers l'espace de travail WS4.</p><p>Quelles <b>deux</b> actions devez-vous effectuer ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
  "opts": [
-  "Créer un paramètre de diagnostic sur l'espace de travail",
-  "Installer l'agent Azure Monitor sur les VM (souvent automatiquement par l'association de la DCR)",
-  "Créer une règle de collecte de données avec la source Syslog et la destination WS4",
-  "Activer les diagnostics de démarrage"
+  "Créer un paramètre de diagnostic sur l'espace de travail WS4",
+  "Installer l'agent Azure Monitor sur les VM",
+  "Créer une DCR (source Syslog, destination WS4)",
+  "Activer les diagnostics de démarrage des VM Linux"
  ],
  "ans": [
   1,
@@ -1303,10 +1303,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>Vous devez protéger les sauvegardes de VM contre un administrateur malveillant qui voudrait les supprimer.</p><p>Quelles <b>deux</b> fonctionnalités du coffre devez-vous utiliser ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
  "opts": [
-  "La suppression réversible toujours activée (améliorée)",
+  "La suppression réversible toujours activée",
   "L'immuabilité du coffre (verrouillée)",
-  "Une alerte de métrique sur le CPU",
-  "La redondance LRS"
+  "Une alerte de métrique sur le CPU des VM",
+  "La redondance LRS pour réduire les copies"
  ],
  "ans": [
   0,
@@ -1342,7 +1342,7 @@ AZ.questions.push(
   "Un coffre Recovery Services en West Europe",
   "Une passerelle VPN entre les deux régions",
   "Un coffre de sauvegarde (Backup vault) en France Central",
-  "Un réseau virtuel cible en West Europe (créé automatiquement ou choisi)"
+  "Un réseau virtuel cible en West Europe"
  ],
  "ans": [
   0,
@@ -1375,9 +1375,9 @@ AZ.questions.push(
  "stem": "<p>Vous voulez que les alertes de métrique soient créées automatiquement pour les problèmes courants de vos VM (CPU, mémoire, disque, disponibilité), sans les écrire une par une.</p><p>Que pouvez-vous utiliser ?</p>",
  "opts": [
   "Une règle de traitement des alertes",
-  "Un classeur",
-  "Les règles d'alerte recommandées (alertes recommandées) de la VM",
-  "Le journal d'activité"
+  "Un classeur de VM Insights",
+  "Les règles d'alerte recommandées",
+  "Le journal d'activité de la VM"
  ],
  "ans": 2,
  "expl": "<p>Azure propose des <b>règles d'alerte recommandées</b> pour les VM (et d'autres ressources) : on les active en quelques clics depuis la page Alertes de la ressource, avec des seuils par défaut modifiables. Azure Monitor Baseline Alerts (AMBA) permet de le faire à grande échelle avec Azure Policy.</p>",
@@ -1403,10 +1403,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Une alerte de recherche dans les journaux doit s'exécuter toutes les 5 minutes et se déclencher si la requête renvoie au moins une ligne.</p><p>Quels réglages correspondent ?</p>",
  "opts": [
-  "Seuil dynamique sur le CPU",
-  "Granularité d'une heure",
-  "Alerte de journal d'activité",
-  "Mesure : nombre de lignes, opérateur Supérieur à 0, fréquence d'évaluation 5 minutes"
+  "Seuil dynamique sur le CPU, toutes les 5 minutes",
+  "Granularité d'une heure, au moins une ligne",
+  "Alerte de journal d'activité toutes les 5 minutes",
+  "Nombre de lignes > 0, fréquence 5 minutes"
  ],
  "ans": 3,
  "expl": "<p>Une <b>alerte de recherche dans les journaux</b> exécute une requête KQL selon une fréquence, sur une période. La condition porte sur le <b>nombre de lignes</b> ou une mesure calculée (par exemple une moyenne), comparée à un seuil.</p>",
@@ -1435,10 +1435,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>L'équipe applicative veut être appelée sur son téléphone (appel vocal) quand une alerte critique se déclenche.</p><p>Où devez-vous configurer cela ?</p>",
  "opts": [
-  "Dans un groupe d'actions, avec une notification Voix",
-  "Dans Service Health uniquement",
+  "Dans un groupe d'actions (notification Voix)",
+  "Dans Service Health, avec un contact téléphonique",
   "Dans la règle de collecte de données",
-  "Dans le paramètre de diagnostic"
+  "Dans le paramètre de diagnostic de la VM"
  ],
  "ans": 0,
  "expl": "<p>Les <b>groupes d'actions</b> proposent les notifications <b>e-mail</b>, <b>SMS</b>, <b>notification push</b> (application mobile Azure) et <b>appel vocal</b>, avec des limites de fréquence par numéro.</p>",
@@ -1463,10 +1463,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Quand une alerte se déclenche, un script doit redémarrer automatiquement un service sur une VM.</p><p>Quelle action du groupe d'actions devez-vous utiliser ?</p>",
  "opts": [
-  "Un SMS",
-  "Un runbook Azure Automation (ou une fonction Azure)",
-  "Une notification push",
-  "Une notification e-mail"
+  "Un SMS au propriétaire de la VM",
+  "Un runbook Azure Automation",
+  "Une notification push à l'application",
+  "Une notification e-mail à l'astreinte"
  ],
  "ans": 1,
  "expl": "<p>Un groupe d'actions peut déclencher un <b>runbook Automation</b>, une <b>fonction Azure</b>, une <b>application logique</b> ou un <b>webhook</b> : c'est la base de la remédiation automatique.</p>",
@@ -1491,10 +1491,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Un service web public doit être surveillé depuis Internet : s'il ne répond plus en HTTP 200 depuis au moins 2 emplacements, une alerte doit partir.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Un paramètre de diagnostic",
-  "Une alerte Resource Health",
-  "Un test de disponibilité standard dans Application Insights, avec une alerte",
-  "Une alerte de journal d'activité"
+  "Un paramètre de diagnostic de l'application vers Log Analytics",
+  "Une alerte Resource Health sur l'application",
+  "Un test de disponibilité standard, avec alerte",
+  "Une alerte de journal d'activité sur l'application"
  ],
  "ans": 2,
  "expl": "<p>Les <b>tests de disponibilité</b> d'Application Insights (test standard ou ping d'URL) interrogent l'URL depuis plusieurs emplacements Azure. L'alerte se déclenche quand un nombre minimal d'emplacements échoue.</p>",
@@ -1522,8 +1522,8 @@ AZ.questions.push(
  "opts": [
   "Application Insights",
   "Container Insights",
-  "VM Insights",
-  "Azure Monitor Network Insights"
+  "VM Insights, onglet Carte",
+  "Network Insights"
  ],
  "ans": 3,
  "expl": "<p><b>Network Insights</b> (Azure Monitor > Réseaux) présente l'intégrité et les métriques de toutes les ressources réseau, avec la topologie et l'accès aux outils de Network Watcher.</p>",
@@ -1576,10 +1576,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous voulez exporter des métriques de plateforme d'une ressource vers Log Analytics pour les croiser avec des journaux dans une requête KQL.</p><p>Que devez-vous configurer ?</p>",
  "opts": [
-  "Le plafond quotidien",
-  "Un paramètre de diagnostic avec la catégorie AllMetrics vers l'espace de travail",
+  "Le plafond quotidien de l'espace de travail",
+  "Un paramètre de diagnostic (AllMetrics)",
   "Une règle de traitement des alertes",
-  "Une alerte de métrique"
+  "Une alerte de métrique avec un export vers l'espace"
  ],
  "ans": 1,
  "expl": "<p>Un <b>paramètre de diagnostic</b> peut envoyer les <b>métriques</b> (AllMetrics) en plus des journaux. Elles arrivent dans la table <b>AzureMetrics</b> de Log Analytics, interrogeable avec KQL.</p>",
@@ -2061,10 +2061,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Vous devez superviser l'utilisation CPU et mémoire de groupes de conteneurs et d'applications Container Apps, avec des journaux de console centralisés.</p><p>Où sont envoyés les journaux de console d'Azure Container Apps ?</p>",
  "opts": [
-  "Dans le coffre Recovery Services",
-  "Dans un plan App Service",
-  "Dans l'espace de travail Log Analytics configuré sur l'environnement Container Apps",
-  "Dans le registre de conteneurs"
+  "Dans le coffre Recovery Services de la région",
+  "Dans le plan App Service associé",
+  "Dans l'espace Log Analytics de l'environnement",
+  "Dans le registre de conteneurs qui héberge l'image"
  ],
  "ans": 2,
  "expl": "<p>Un environnement Container Apps est associé à une destination de journaux, en général un espace de travail <b>Log Analytics</b> : les journaux de console (stdout/stderr) et système y arrivent dans des tables dédiées. Les métriques (CPU, mémoire, requêtes) sont disponibles dans Azure Monitor.</p>",

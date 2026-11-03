@@ -67,10 +67,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to keep subscription Sub1's activity log for 2 years and query it with KQL together with other logs.</p><p>What should you configure?</p>",
  "opts": [
-  "An activity log diagnostic setting to a Log Analytics workspace, with suitable retention",
-  "Azure Advisor",
-  "An activity log alert",
-  "Nothing: the activity log is kept 2 years"
+  "A diagnostic setting to Log Analytics (2-year retention)",
+  "Azure Advisor, with recommendation history",
+  "An activity log alert on all write operations in Sub1",
+  "Nothing: the activity log is kept 2 years by default"
  ],
  "ans": 0,
  "expl": "<p>The activity log is only kept <b>90 days</b>. To go further, you create a subscription-level <b>diagnostic setting</b> that sends it to a <b>Log Analytics</b> workspace (AzureActivity table, queryable in KQL), a storage account (archiving), or Event Hubs.</p>",
@@ -100,10 +100,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A key vault's resource logs aren't collected anywhere.</p><p>What should you create to send them to Log Analytics?</p>",
  "opts": [
-  "A workbook",
+  "A workbook linked to the key vault",
   "A diagnostic setting on the key vault",
-  "A metric alert",
-  "A VM data collection rule"
+  "A metric alert on the key vault",
+  "A data collection rule for the vault's VMs"
  ],
  "ans": 1,
  "expl": "<p><b>Resource logs</b> aren't collected by default. You create a <b>diagnostic setting</b> on the resource, choose the categories (for example AuditEvent) and the destinations: Log Analytics, storage account, Event Hubs, or partner solution.</p><p>A resource can have up to 5 diagnostic settings.</p>",
@@ -194,10 +194,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to collect performance counters (available memory, disk space) and the System log from 50 Windows VMs, to workspace WS1.</p><p>What should you deploy?</p>",
  "opts": [
-  "The Log Analytics agent (MMA)",
-  "A diagnostic setting on each VM only",
-  "The Azure Monitor agent and a data collection rule (DCR) associated with the 50 VMs",
-  "Boot diagnostics"
+  "The Log Analytics agent (MMA) with a workspace configuration",
+  "A diagnostic setting on each VM, to WS1",
+  "The Azure Monitor agent and a DCR associated with the 50 VMs",
+  "Boot diagnostics to a storage account"
  ],
  "ans": 2,
  "expl": "<p>The <b>Azure Monitor agent</b> (AMA) collects guest data according to <b>data collection rules</b> (DCRs): which data (counters, events, Syslog, log files), and to which destination. The same DCR can be associated with many VMs.</p><p>The Log Analytics agent (MMA) was retired in August 2024. A VM's diagnostic setting only collects host metrics, not operating system data.</p>",
@@ -231,9 +231,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to see the network dependencies between your VMs' processes (which servers talk to which servers, on which ports) and preconfigured performance charts.</p><p>What should you enable?</p>",
  "opts": [
-  "Azure Advisor",
-  "Network Watcher Next hop",
-  "Boot diagnostics",
+  "Azure Advisor, Performance tab",
+  "Network Watcher: Next hop and topology view",
+  "The VMs' boot diagnostics",
   "VM Insights, with the Map feature"
  ],
  "ans": 3,
@@ -300,10 +300,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to be alerted when someone <b>deletes</b> a virtual machine in subscription Sub1.</p><p>Which type of alert should you create?</p>",
  "opts": [
-  "A resource health alert",
-  "An activity log alert on the Delete Virtual Machine operation",
-  "A metric alert",
-  "A budget alert"
+  "A resource health alert on each VM",
+  "An activity log alert (Delete Virtual Machine)",
+  "A metric alert on the number of running virtual machines",
+  "A budget alert on the Sub1 subscription"
  ],
  "ans": 1,
  "expl": "<p>A deletion is a control plane operation, recorded in the <b>activity log</b>. An <b>activity log alert</b> filtered on the operation <code>Microsoft.Compute/virtualMachines/delete</code> fires on each deletion.</p>",
@@ -333,10 +333,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to be notified when planned maintenance or an Azure platform incident affects the App Service services in France Central used by your subscription.</p><p>What should you configure?</p>",
  "opts": [
-  "A budget alert",
-  "A diagnostic setting",
+  "A budget alert on App Service",
+  "A diagnostic setting on the apps",
   "A Service Health alert",
-  "A metric alert on CPU"
+  "A metric alert on the plan's CPU"
  ],
  "ans": 2,
  "expl": "<p><b>Service Health</b> informs you of incidents, planned maintenance, health advisories, and security advisories that affect <b>the services and regions</b> you use. A <b>Service Health alert</b>, filtered on App Service and France Central, sends the notification.</p>",
@@ -370,9 +370,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>VM3 became unavailable for 10 minutes last night. You want to know whether the cause comes from the Azure platform (host issue) or your VM.</p><p>What should you look at?</p>",
  "opts": [
-  "Azure Advisor",
-  "The storage account metrics",
-  "Cost analysis",
+  "Azure Advisor, Reliability tab",
+  "VM3's disk metrics",
+  "Last night's cost analysis",
   "VM3's Resource Health"
  ],
  "ans": 3,
@@ -464,10 +464,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Three alerts must send an email to the on-call team, an SMS to the manager, and call a webhook to the ticketing tool.</p><p>How do you reduce configuration effort?</p>",
  "opts": [
-  "Create a single action group with these three actions and associate it with the three alerts",
-  "Create three workspaces",
-  "Create a workbook",
-  "Configure notifications in each alert separately"
+  "One action group, associated with the three alerts",
+  "Three workspaces, one per recipient",
+  "A workbook that groups the three alerts",
+  "Notifications configured separately in each alert"
  ],
  "ans": 0,
  "expl": "<p>An <b>action group</b> groups notifications (email, SMS, push notification, voice call) and actions (webhook, Automation runbook, function, logic app, ITSM, Event Hubs). It can be reused by as many alerts as needed.</p>",
@@ -497,10 +497,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>During a planned maintenance window every Saturday from 10 PM to 2 AM, alerts for VMs in RG-Prod must send no notifications, but must stay visible in the portal.</p><p>What should you configure?</p>",
  "opts": [
-  "A lock on RG-Prod",
-  "An alert processing rule that suppresses action groups on a schedule",
-  "Disable each alert rule on Saturday",
-  "Delete the action group"
+  "A ReadOnly lock on RG-Prod on weekends",
+  "A processing rule that suppresses notifications",
+  "Disable each alert rule on Saturday morning",
+  "Delete the action group on Friday and recreate it Monday"
  ],
  "ans": 1,
  "expl": "<p>An <b>alert processing rule</b> can, over a scope and schedule, <b>suppress notifications</b> (alerts keep being created) or <b>add action groups</b> to alerts.</p>",
@@ -759,9 +759,9 @@ AZ.questions.push(
  "stem": "<p>You need to count the number of HTTP requests per 5-minute slot over the last day.</p><p>Which function should you use in the summarize?</p>",
  "opts": [
   "bin(TimeGenerated, 5m)",
-  "ago(5m)",
-  "now(5m)",
-  "range(5m)"
+  "ago(TimeGenerated, 5m)",
+  "range(TimeGenerated, 5m)",
+  "now(TimeGenerated) - 5m"
  ],
  "ans": 0,
  "expl": "<p><code>bin()</code> rounds a value down to the chosen interval: <code>summarize count() by bin(TimeGenerated, 5m)</code> gives a count per 5-minute slot. <code>ago()</code> is used to filter a relative period.</p>",
@@ -789,7 +789,7 @@ AZ.questions.push(
   "A metric alert",
   "An Azure Monitor workbook",
   "A data collection rule",
-  "An action group"
+  "A shared action group"
  ],
  "ans": 1,
  "expl": "<p><b>Workbooks</b> combine text, log queries, metrics, and parameters in interactive, shareable reports. Azure <b>dashboards</b> pin views, with less interactivity.</p>",
@@ -818,10 +818,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Data in the SecurityEvent table must stay queryable for 1 year, then be kept at low cost for up to 7 years, without being exported.</p><p>What should you configure on the table?</p>",
  "opts": [
-  "A storage account",
-  "A second workspace",
-  "An interactive retention of 365 days and a total retention of 7 years (long-term retention)",
-  "An alert processing rule"
+  "A continuous data export to a storage account",
+  "A second workspace for the archive",
+  "Interactive retention 365 days, total 7 years",
+  "An alert processing rule on the table"
  ],
  "ans": 2,
  "expl": "<p>Each table in a workspace has an <b>interactive retention</b> (data queryable normally, up to 2 years) and a <b>total retention</b> (up to 12 years). In between, data is in <b>long-term retention</b> (archive), cheaper, accessible through search jobs or a restore.</p>",
@@ -853,9 +853,9 @@ AZ.questions.push(
  "stem": "<p>Members of the Web team must only see, in the shared workspace WS2, the logs of resources they have rights on.</p><p>Which workspace access control mode allows this?</p>",
  "opts": [
   "A shared workspace key",
-  "One workspace per user",
-  "Require workspace permissions only",
-  "Use resource or workspace permissions (resource-context)"
+  "A separate workspace for each user",
+  "Require workspace permissions",
+  "Resource or workspace permissions"
  ],
  "ans": 3,
  "expl": "<p>With the <b>“Use resource or workspace permissions”</b> mode, a user who opens logs from a resource (resource-context) sees data for resources they have read access to, without rights on the whole workspace. You can also define table-level RBAC.</p>",
@@ -883,7 +883,7 @@ AZ.questions.push(
   "Monitoring Contributor",
   "Log Analytics Contributor",
   "Monitoring Reader",
-  "Contributor"
+  "Contributor on the subscription"
  ],
  "ans": 0,
  "expl": "<p><b>Monitoring Contributor</b> reads all monitoring data and manages monitoring settings (alerts, action groups, diagnostic settings). <b>Monitoring Reader</b> only reads. <b>Contributor</b> gives access to the resources.</p>",
@@ -951,10 +951,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to monitor the availability and performance of a web application (response time, exceptions, dependencies), and test its URL from several regions of the world.</p><p>What should you use?</p>",
  "opts": [
-  "Azure Advisor",
+  "Azure Advisor, Performance tab",
   "Application Insights with availability tests",
-  "Network Watcher",
-  "VM Insights"
+  "Network Watcher and connection monitor",
+  "VM Insights and its server dependency map"
  ],
  "ans": 1,
  "expl": "<p><b>Application Insights</b> (an Azure Monitor feature, based on a Log Analytics workspace) collects application telemetry: requests, response times, exceptions, dependencies. <b>Availability tests</b> query the URL from several locations and alert on failure.</p>",
@@ -985,10 +985,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A network configuration changed yesterday and an application no longer works. You want to quickly see resource property changes over the last few days.</p><p>What should you use?</p>",
  "opts": [
-  "Boot diagnostics",
-  "Azure Backup",
-  "Change Analysis / resource change history",
-  "A budget alert"
+  "The boot diagnostics of each resource",
+  "Azure Backup and its restore points",
+  "Resource Change Analysis",
+  "A budget alert on the resource group"
  ],
  "ans": 2,
  "expl": "<p><b>Change Analysis</b> (or change history in the activity log and Resource Graph) shows resource configuration changes (before and after), whether they come from the portal, a template, or a script. It's often the fastest way to find the cause of a regression.</p>",
@@ -1043,9 +1043,9 @@ AZ.questions.push(
  "stem": "<p>You must be able to restore backed-up VMs in the paired region, even if the primary region is still available (for example for a drill).</p><p>What should you enable on the Recovery Services vault?</p>",
  "opts": [
   "GRS redundancy and Cross Region Restore",
-  "Soft delete",
-  "Immutable mode",
-  "LRS redundancy"
+  "Enhanced soft delete on the vault",
+  "Locked immutable mode on the vault",
+  "LRS redundancy with a manual copy to the other region"
  ],
  "ans": 0,
  "expl": "<p>With a <b>GRS</b> vault, backup data is replicated to the paired region. <b>Cross Region Restore</b> lets you restore from that secondary region at any time, not only after an outage declared by Microsoft.</p>",
@@ -1075,10 +1075,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You created a Recovery Services vault with the default redundancy and protected 10 VMs. You now want to switch the vault to LRS to reduce costs.</p><p>What happens?</p>",
  "opts": [
-  "You must change each VM's redundancy",
-  "It isn't possible once items are protected: you must stop protection and delete the data, or create a new vault",
-  "You can change the redundancy at any time",
-  "The vault switches to LRS at the next restart"
+  "You must change each protected VM's redundancy",
+  "Impossible with protected items: use a new vault",
+  "Redundancy can change at any time, with no impact",
+  "The vault switches to LRS at the next backup cycle"
  ],
  "ans": 1,
  "expl": "<p>A vault's <b>storage redundancy</b> (GRS by default, LRS, or ZRS) must be chosen <b>before</b> the first backup. Once items are registered, it can no longer be changed (except by stopping protection and deleting the data). You often create a new vault.</p>",
@@ -1154,9 +1154,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A Windows VM runs SQL Server. You want Azure Backup backups of the VM to be application-consistent.</p><p>Which mechanism does Azure Backup use on Windows?</p>",
  "opts": [
-  "A mandatory pre-post script",
-  "The temporary disk",
-  "The VSS (Volume Shadow Copy Service)",
+  "A mandatory pre-post script in the VM",
+  "The VM's temporary disk",
+  "VSS (Volume Shadow Copy)",
   "Boot diagnostics"
  ],
  "ans": 2,
@@ -1285,10 +1285,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to quickly restore a VM from yesterday's backup, with the shortest delay.</p><p>Where do the fastest restores come from?</p>",
  "opts": [
-  "From boot diagnostics",
-  "From the GRS vault tier only",
-  "From the vault storage account in Archive",
-  "From local snapshots kept for a few days (instant restore)"
+  "From the VM's boot diagnostics",
+  "From the GRS vault tier, in the paired region",
+  "From the vault's Archive tier, rehydrated",
+  "From local snapshots (instant restore)"
  ],
  "ans": 3,
  "expl": "<p>Azure Backup keeps disk <b>snapshots</b> for a few days (1 to 5 days with the standard policy, more with the enhanced policy): <b>instant restore</b> from these snapshots is much faster than from the vault.</p>",
@@ -1317,10 +1317,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A critical application must be backed up every 4 hours, with recovery points kept for 7 days.</p><p>Which type of VM backup policy should you use?</p>",
  "opts": [
-  "An Enhanced policy, with an hourly schedule",
-  "A daily standard policy",
-  "A lifecycle policy",
-  "An alert processing rule"
+  "An Enhanced policy, hourly",
+  "A standard daily policy, run twice",
+  "A lifecycle policy on the vault",
+  "An hourly alert processing rule"
  ],
  "ans": 0,
  "expl": "<p>The <b>Enhanced policy</b> allows several backups a day (every 4, 6, 8, or 12 hours), longer snapshot retention, and supports Trusted Launch VMs. The <b>Standard</b> policy does only one backup a day.</p>",
@@ -1409,10 +1409,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A malicious administrator stops protection of a VM and deletes its backup data.</p><p>Which feature lets you recover this data for a period of time?</p>",
  "opts": [
-  "A metric alert",
-  "Vault soft delete (14 days by default, more with enhanced soft delete)",
-  "Boot diagnostics",
-  "LRS redundancy"
+  "A metric alert on the vault",
+  "The vault's soft delete",
+  "The VM's boot diagnostics",
+  "The vault's LRS redundancy"
  ],
  "ans": 1,
  "expl": "<p>With <b>soft delete</b> (enabled by default), deleted backup data stays recoverable for <b>14 days</b> at no extra cost. <b>Enhanced</b> soft delete allows up to 180 days and can be made always-on (irreversible).</p>",
@@ -1466,10 +1466,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Critical vault operations (disabling soft delete, reducing retention) must require the approval of another team, owner of a guard resource in another subscription.</p><p>What should you configure?</p>",
  "opts": [
-  "A second vault",
+  "A second vault in the other subscription",
   "A ReadOnly lock on the vault",
-  "An activity log alert",
-  "Multi-user authorization (MUA) with a Resource Guard"
+  "An activity log alert on the vault's operations",
+  "Multi-user authorization (Resource Guard)"
  ],
  "ans": 3,
  "expl": "<p><b>Multi-user authorization</b> associates the vault with a <b>Resource Guard</b> managed by another team. Protected operations then require authorization on the Resource Guard (often through PIM), in addition to rights on the vault.</p>",
@@ -1495,10 +1495,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to back up folders of an <b>on-premises</b> file server (not an Azure VM) to Azure every day, with no intermediate backup server.</p><p>What should you install on the server?</p>",
  "opts": [
-  "The Microsoft Azure Recovery Services (MARS) agent",
-  "The Azure Monitor agent",
-  "The Dependency agent",
-  "Azure File Sync"
+  "The MARS (Recovery Services) agent",
+  "The Azure Monitor agent with a DCR",
+  "The VM Insights Dependency agent",
+  "Azure File Sync with a server endpoint"
  ],
  "ans": 0,
  "expl": "<p>The <b>MARS agent</b> backs up files, folders, and system state of a Windows server (on-premises or VM) directly to a Recovery Services vault, up to 3 times a day.</p><p>For full application workloads (SQL, Hyper-V…), you use <b>Microsoft Azure Backup Server</b> (MABS) or DPM.</p>",
@@ -1527,10 +1527,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You install the MARS agent on an on-premises server. The registration wizard asks you for a file.</p><p>Which file should you provide, and where do you get it?</p>",
  "opts": [
-  "An SSL certificate for the server",
-  "The vault credentials, downloaded from the Recovery Services vault",
-  "A storage account access key",
-  "An ARM parameters file"
+  "An SSL certificate for the server, from the internal CA",
+  "The vault credentials file",
+  "An access key of the vault's storage account",
+  "An ARM parameters file exported from the portal"
  ],
  "ans": 1,
  "expl": "<p>You download the <b>vault credentials</b> from the Recovery Services vault. They're only valid for a limited time: download them just before registration. The agent also asks for an encryption <b>passphrase</b>, to keep safe: without it, restore is impossible.</p>",
@@ -1560,10 +1560,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to back up the Azure Files share share1 every day, with 30-day retention and the ability to restore a single file.</p><p>What should you configure?</p>",
  "opts": [
-  "Object replication",
-  "The MARS agent on each client",
-  "Azure Backup for Azure Files, in a Recovery Services vault in the same region",
-  "Azure Site Recovery"
+  "Object replication to another account",
+  "The MARS agent on each client computer",
+  "Azure Backup for Azure Files (same region)",
+  "Azure Site Recovery for the storage account"
  ],
  "ans": 2,
  "expl": "<p>Azure Backup's <b>Azure Files</b> backup (Recovery Services vault) schedules <b>share snapshots</b> (or a vaulted backup), manages their retention, and lets you restore the whole share or individual files, to the original or another location.</p>",
@@ -1593,10 +1593,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You must be able to restore a storage account's blobs to any point in the last 14 days, without copying the data elsewhere.</p><p>Which type of blob backup should you configure in a Backup vault?</p>",
  "opts": [
-  "The MARS agent",
-  "Azure Site Recovery",
+  "The MARS agent on a VM that mounts the container",
+  "Azure Site Recovery for the account",
   "Vaulted backup only",
-  "Operational backup (based on point-in-time restore, versioning, and soft delete)"
+  "Operational backup for blobs"
  ],
  "ans": 3,
  "expl": "<p><b>Operational backup</b> for blobs is local: it relies on account features (point-in-time restore, versioning, soft delete, change feed) and allows continuous restore. <b>Vaulted backup</b> copies data into the vault, which also protects against losing the account.</p>",
@@ -1655,10 +1655,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to delete the Recovery Services vault Vault2. The deletion fails.</p><p>What is the most likely cause?</p>",
  "opts": [
-  "The vault is in a resource group with a ReadOnly lock only",
-  "The vault still contains protected items or soft-deleted data",
-  "The vault is GRS",
-  "The vault has no alert"
+  "The resource group has a ReadOnly lock",
+  "Protected or soft-deleted items remain",
+  "The vault is GRS and must first go back to LRS",
+  "The vault has no associated alert rule"
  ],
  "ans": 1,
  "expl": "<p>A vault can't be deleted while it contains <b>protected items</b>, <b>backup data</b> (including soft-deleted), registered servers, or Site Recovery replication items. You must stop and delete everything, then wait for soft delete to end or purge it.</p>",
@@ -1687,10 +1687,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to check in one place the backup status of 15 vaults spread across several subscriptions and regions, with failed jobs.</p><p>What should you use?</p>",
  "opts": [
-  "The activity log",
-  "Azure Advisor only",
-  "Azure Business Continuity Center (or Backup center)",
-  "Each vault separately"
+  "Each subscription's activity log",
+  "Azure Advisor, Reliability tab only",
+  "Azure Business Continuity Center",
+  "Each vault separately, one by one"
  ],
  "ans": 2,
  "expl": "<p><b>Business Continuity Center</b>, which replaces Backup center, offers a unified view of protection (Backup and Site Recovery) across several vaults, subscriptions, and regions: protected items, jobs, alerts, policies.</p>",
@@ -1718,10 +1718,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want reports on backup storage consumption, job trends, and protected items over the last 6 months.</p><p>What should you configure?</p>",
  "opts": [
-  "A metric alert",
-  "A lifecycle rule",
-  "Change feed",
-  "Backup reports, with the vaults' diagnostic settings sent to a Log Analytics workspace"
+  "A metric alert on each vault, with history kept",
+  "A lifecycle rule on storage",
+  "The vaults' change feed, exported monthly",
+  "Backup reports (diagnostics to Log Analytics)"
  ],
  "ans": 3,
  "expl": "<p><b>Backup reports</b> (workbook-based) rely on data sent by the vaults' <b>diagnostic settings</b> to <b>Log Analytics</b>. They cover consumption, jobs, policies, and optimization.</p>",
@@ -1746,10 +1746,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>VM6's backups fail with an error related to the VM agent.</p><p>What should you check first?</p>",
  "opts": [
-  "That the Azure VM agent is installed, up to date, and running, and that the VM can reach Azure services (including 168.63.129.16)",
-  "That the vault is LRS",
+  "The Azure VM agent: installed, running, and reaching Azure",
+  "That the vault is LRS, not GRS",
   "That the VM is in an availability set",
-  "That the VM has a public IP address"
+  "That the VM has a Standard public IP address to reach the vault"
  ],
  "ans": 0,
  "expl": "<p>Azure Backup uses an extension that depends on the <b>VM agent</b>. Failures often come from a stopped or outdated agent, or a network block (NSG, proxy, firewall) to Azure services and the address 168.63.129.16.</p>",
@@ -1778,10 +1778,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>VM7 is encrypted with Azure Disk Encryption (keys in Key Vault). Backup configuration fails.</p><p>What should you check?</p>",
  "opts": [
-  "That the key vault is public",
-  "That the Backup Management Service has access to the key vault's keys and secrets",
-  "That the Recovery Services vault is in another region",
-  "That VM7 has no data disk"
+  "That the key vault allows public access",
+  "That Backup Management Service can reach keys and secrets",
+  "That the Recovery Services vault is in another region than VM7",
+  "That VM7 has no encrypted data disk"
  ],
  "ans": 1,
  "expl": "<p>To back up an ADE-encrypted VM, Azure Backup must be able to read the <b>keys and secrets</b> in the key vault: you must grant access to the <b>Backup Management Service</b> (access policy or role). The portal offers it during enablement.</p>",
@@ -1850,9 +1850,9 @@ AZ.questions.push(
  "stem": "<p>You run an on-demand backup of VM8 before a risky update. Which expiry date can you choose for this recovery point?</p>",
  "opts": [
   "None: it's kept indefinitely",
-  "Always 30 days",
-  "A retention date chosen when the on-demand backup is run",
-  "Always the daily policy's"
+  "Always 30 days, whatever policy is applied",
+  "A date chosen when the backup is run",
+  "Always the daily policy's retention"
  ],
  "ans": 2,
  "expl": "<p>An <b>on-demand backup</b> (Backup now) lets you choose a <b>retention date</b> specific to this recovery point, independently of the policy.</p>",
@@ -1878,10 +1878,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Backups of 200 VMs must be enabled automatically as soon as they're created, for all VMs that carry the tag Backup=Yes.</p><p>What should you use?</p>",
  "opts": [
-  "An alert processing rule",
+  "An alert processing rule on the tag",
   "A script run manually every week",
-  "An activity log alert",
-  "A built-in DeployIfNotExists Azure Policy that configures backup for VMs with this tag"
+  "An activity log alert on VM creation",
+  "A built-in DeployIfNotExists policy"
  ],
  "ans": 3,
  "expl": "<p>Azure offers built-in <b>DeployIfNotExists</b> policies that configure VM backup (with or without a tag filter) to a given vault and policy. Existing VMs are fixed with a remediation task.</p>",

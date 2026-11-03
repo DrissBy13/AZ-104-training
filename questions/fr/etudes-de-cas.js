@@ -215,9 +215,9 @@ AZ.cases.push(
    "stem": "<p>Vous avez configuré la sauvegarde quotidienne de VM-SQL1 dans un coffre Recovery Services.</p><p>Vous devez répondre à l'exigence de notification des échecs de sauvegarde. Que devez-vous faire ?</p>",
    "opts": [
     "Créer un paramètre de diagnostic du coffre vers Event Hubs",
-    "Activer la suppression réversible sur le coffre",
-    "Créer une règle de traitement des alertes qui envoie les alertes Azure Backup vers un groupe d'actions",
-    "Créer une règle d'alerte sur le journal d'activité de VM-SQL1"
+    "Activer la suppression réversible améliorée sur le coffre",
+    "Une règle de traitement des alertes vers un groupe d'actions",
+    "Créer une alerte sur le journal d'activité de VM-SQL1 (sauvegardes)"
    ],
    "ans": 2,
    "expl": "<p>Azure Backup crée <b>automatiquement</b> des alertes Azure Monitor quand une sauvegarde échoue, mais ne notifie personne par défaut. Une <b>règle de traitement des alertes</b> qui ajoute un <b>groupe d'actions</b> (e-mail) à ces alertes répond au besoin, sans effort.</p><p>Event Hubs sert à diffuser vers un outil tiers ; la suppression réversible protège les données ; le journal d'activité de la VM ne trace pas les échecs de travaux de sauvegarde.</p>",

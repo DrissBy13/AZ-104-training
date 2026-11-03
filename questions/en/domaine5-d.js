@@ -61,10 +61,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You configure managed disk backup with a Backup vault. Configuration fails because of permissions.</p><p>Which roles must the vault's managed identity have?</p>",
  "opts": [
-  "Disk Backup Reader on the disk, and Disk Snapshot Contributor on the snapshot resource group",
-  "Virtual Machine Contributor on the VM",
-  "Reader on the vault",
-  "Subscription Owner"
+  "Disk Backup Reader and Disk Snapshot Contributor",
+  "Virtual Machine Contributor on the VM and Reader on the disk",
+  "Reader on the vault and Contributor on the resource group",
+  "Subscription Owner, for the lifetime of the backup"
  ],
  "ans": 0,
  "expl": "<p>Disk backup creates <b>incremental snapshots</b> in a chosen resource group. The vault's managed identity needs <b>Disk Backup Reader</b> on each disk and <b>Disk Snapshot Contributor</b> on the snapshot resource group. The portal offers to assign them.</p>",
@@ -94,10 +94,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A SQL Server database runs on VM16. You want daily full backups and log backups every 15 minutes, managed by Azure Backup.</p><p>Which solution should you configure?</p>",
  "opts": [
-  "The MARS agent",
-  "“SQL Server in Azure VM” backup in a Recovery Services vault",
-  "VM backup only",
-  "Azure Site Recovery"
+  "The MARS agent installed in the SQL VM",
+  "“SQL Server in Azure VM” backup",
+  "Whole-VM backup, every 15 minutes",
+  "Azure Site Recovery with continuous replication"
  ],
  "ans": 1,
  "expl": "<p><b>SQL Server in Azure VM</b> backup uses the SQL workload extension: it discovers databases, and allows full, differential, and <b>log</b> backups (up to every 15 minutes), with point-in-time restore.</p><p>VM backup alone doesn't capture transaction logs every 15 minutes.</p>",
@@ -126,10 +126,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to back up on-premises workloads (Hyper-V servers, SQL Server, Exchange) with an on-premises backup server, then send copies to Azure.</p><p>What should you deploy?</p>",
  "opts": [
-  "Azure File Sync",
+  "Azure File Sync with a local server",
   "Azure Site Recovery only",
-  "Microsoft Azure Backup Server (MABS)",
-  "The MARS agent alone"
+  "Azure Backup Server (MABS)",
+  "The MARS agent alone, on each server"
  ],
  "ans": 2,
  "expl": "<p><b>MABS</b> (or System Center DPM) backs up on-premises application workloads to disk, then sends copies to a Recovery Services vault. The MARS agent alone only backs up files, folders, and system state.</p>",
@@ -158,10 +158,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Using file restore, you restored the Payroll folder of share2 to another share, share-restore, in another storage account.</p><p>What is this type of restore called?</p>",
  "opts": [
-  "Reprotection",
-  "Failover",
-  "Original location restore",
-  "Alternate location restore"
+  "A reprotection",
+  "A share failover",
+  "An original location restore",
+  "An alternate location restore"
  ],
  "ans": 3,
  "expl": "<p>Azure Files backup lets you restore a whole share or files to the <b>original location</b> (overwriting or keeping conflicting files) or to an <b>alternate location</b> (another share, possibly in another account in the same region).</p>",
@@ -188,10 +188,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A Linux VM hosts a MySQL database. You want the Azure backup of the VM to be application-consistent.</p><p>What should you configure?</p>",
  "opts": [
-  "Pre and post scripts (pre/post backup script framework) that freeze then thaw the database",
-  "A metric alert",
-  "The VSS service",
-  "The serial console"
+  "Pre and post scripts that freeze the database",
+  "A metric alert on the MySQL process",
+  "The VSS service, installed in the Linux VM",
+  "The serial console during backup"
  ],
  "ans": 0,
  "expl": "<p>Linux has no VSS. Azure Backup provides a <b>pre/post script framework</b>: the pre script freezes the application (flush and lock), the snapshot is taken, then the post script thaws the application. Without scripts, the backup is <b>file-system</b> consistent.</p>",
@@ -220,10 +220,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to restore a VM in the paired region from a GRS vault, but the Secondary Region option doesn't appear.</p><p>What should you check?</p>",
  "opts": [
-  "That the policy is daily",
-  "That Cross Region Restore is enabled on the vault",
-  "That the vault is LRS",
-  "That the VM is stopped"
+  "That the VM's policy is daily",
+  "That Cross Region Restore is enabled",
+  "That the vault was switched to LRS",
+  "That the source VM is stopped and deallocated before restore"
  ],
  "ans": 1,
  "expl": "<p><b>Cross Region Restore</b> must be enabled in the vault's properties (which must be GRS). Then replicated recovery points appear under the Secondary Region option, with a slight replication delay.</p>",
@@ -254,8 +254,8 @@ AZ.questions.push(
  "stem": "<p>You want to know how many days remain before a VM's soft-deleted backup data is permanently deleted.</p><p>Where should you look?</p>",
  "opts": [
   "In Network Watcher",
-  "In Azure Advisor",
-  "In the vault's backup item (Soft deleted state)",
+  "In Azure Advisor, Cost tab",
+  "In the vault's backup item",
   "In the VM's activity log"
  ],
  "ans": 2,
@@ -282,10 +282,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>VM17 was deleted by mistake yesterday. It was protected by Azure Backup, and its backup data still exists.</p><p>What should you do?</p>",
  "opts": [
-  "Use Azure Site Recovery",
+  "Use Azure Site Recovery to recreate it",
   "Recreate the VM and wait for the next backup",
-  "Nothing is possible, since the VM no longer exists",
-  "Restore from the backup item with the Create new virtual machine option"
+  "Nothing: the VM is gone, and so are its points",
+  "Restore with the Create new virtual machine option"
  ],
  "ans": 3,
  "expl": "<p>Recovery points stay in the vault even if the VM is deleted. You open the backup item and <b>create a new VM</b> (or restore the disks) from the latest point.</p>",
@@ -315,10 +315,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>VM18's backup worked, but you want to run file recovery from a machine running another operating system.</p><p>Which condition must be met?</p>",
  "opts": [
-  "The machine that runs the script must have an OS compatible with the backed-up disk's file systems",
-  "You must stop VM18",
-  "The vault must be LRS",
-  "The machine must be in the same resource group"
+  "An OS compatible with the disk's file systems",
+  "You must stop VM18 during the recovery",
+  "The vault must be LRS to mount the disks",
+  "The machine must be in the same resource group as VM18"
  ],
  "ans": 0,
  "expl": "<p>The file recovery script mounts the volumes: the machine running it must be able to read their <b>file systems</b> (for example a recent Windows Server for NTFS, a compatible Linux distribution for ext4 or LVM). It must also be able to reach the recovery service over the network.</p>",
@@ -401,10 +401,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>VMs in an isolated network (no internet access) must send their data to Log Analytics through private addresses.</p><p>What should you configure?</p>",
  "opts": [
-  "A NAT gateway",
-  "An Azure Monitor Private Link Scope (AMPLS) with a private endpoint",
+  "A NAT gateway with an allowed fixed IP",
+  "An Azure Monitor Private Link Scope (AMPLS)",
   "A Microsoft.Storage service endpoint",
-  "A public load balancer"
+  "A public load balancer with an outbound rule"
  ],
  "ans": 1,
  "expl": "<p>An <b>Azure Monitor Private Link Scope</b> groups Azure Monitor resources (workspaces, data collection endpoints, Application Insights) and exposes them through a <b>private endpoint</b> in your virtual network. The agent then sends its data without going over the internet.</p>",
@@ -435,9 +435,9 @@ AZ.questions.push(
  "stem": "<p>A data collection rule collects many useless Windows events, and ingestion is expensive.</p><p>How do you reduce the volume as early as possible?</p>",
  "opts": [
   "Disable the agent only on weekends",
-  "Increase retention",
-  "Filter events in the DCR (XPath query or KQL transformation)",
-  "Add a second workspace"
+  "Increase retention to smooth the cost",
+  "Filter in the DCR (XPath or transformation)",
+  "Add a second, cheaper workspace"
  ],
  "ans": 2,
  "expl": "<p>A <b>data collection rule</b> can filter events with <b>XPath queries</b>, and apply a <b>KQL transformation</b> to remove rows or columns before ingestion. You only pay for what's ingested.</p>",
@@ -463,10 +463,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to display a Windows VM's available memory in Metrics Explorer, alongside the VM's other metrics.</p><p>What should you do?</p>",
  "opts": [
-  "Nothing: available memory is a platform metric of all VMs, always available with the same detail",
-  "Create an activity log alert",
-  "Enable boot diagnostics",
-  "Collect guest counters with the Azure Monitor agent and a DCR that sends to Azure Monitor Metrics"
+  "Nothing: available memory is a platform metric",
+  "Create an activity log alert on the VM's memory",
+  "Enable the VM's boot diagnostics",
+  "Collect guest counters (agent and DCR to Metrics)"
  ],
  "ans": 3,
  "expl": "<p>Guest counters (memory, disk space per volume…) are collected by the <b>Azure Monitor agent</b>. A DCR can send them to <b>Azure Monitor Metrics</b> (guest metrics namespace) or to Log Analytics. The platform now provides an “Available Memory Bytes” metric for many VMs, but guest detail goes through the agent.</p>",
@@ -521,10 +521,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>An Advisor alert must notify the team as soon as a new high-impact cost recommendation appears.</p><p>What should you configure?</p>",
  "opts": [
-  "A backup policy",
-  "An Advisor alert (based on the activity log) with an action group",
-  "A metric alert",
-  "A data collection rule"
+  "A backup policy with a report",
+  "An Advisor alert with an action group",
+  "A metric alert on cost",
+  "An Advisor data collection rule"
  ],
  "ans": 1,
  "expl": "<p><b>Advisor alerts</b> fire when a new recommendation is created, filtered by category and impact. They rely on the activity log's <b>Recommendation</b> category and use action groups.</p>",
@@ -583,10 +583,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to query two workspaces, WS-Paris and WS-Lyon, in a single KQL query.</p><p>Which function should you use?</p>",
  "opts": [
-  "join kind=workspace",
-  "ago(\"WS-Lyon\")",
-  "bin(\"WS-Lyon\")",
-  "workspace(\"WS-Lyon\").Event, combined with union"
+  "join kind=workspace (\"WS-Lyon\")",
+  "ago(\"WS-Lyon\") in a where",
+  "bin(\"WS-Lyon\") in a summarize",
+  "union with workspace(\"WS-Lyon\")"
  ],
  "ans": 3,
  "expl": "<p>The <b>workspace()</b> function references a table in another workspace: <code>union Event, workspace(\"WS-Lyon\").Event</code>. You need read access to both workspaces.</p>",
@@ -613,9 +613,9 @@ AZ.questions.push(
  "stem": "<p>A KQL query must show, for each computer, the number of events and the last event received.</p><p>Which line matches?</p>",
  "opts": [
   "| summarize Count = count(), Last = max(TimeGenerated) by Computer",
-  "| project Count = count() by Computer",
-  "| where count() by Computer",
-  "| extend Count = count() by Computer"
+  "| project Count = count(), Last = max(TimeGenerated), Computer",
+  "| where Count = count(), Last = max(TimeGenerated) by Computer",
+  "| extend Count = count(), Last = max(TimeGenerated) by Computer"
  ],
  "ans": 0,
  "expl": "<p><b>summarize</b> accepts several aggregations at once, separated by commas, grouped by one or more columns. <code>project</code>, <code>extend</code>, and <code>where</code> don't group.</p>",
@@ -1080,10 +1080,10 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>You need to reduce the cost of a Log Analytics workspace that ingests a lot of useless performance data.</p><p>Which <b>two</b> actions are suitable?</p><p>Each correct answer presents a complete solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
-  "Reduce the sampling frequency and number of counters in the data collection rule",
-  "Increase interactive retention",
-  "Use a KQL transformation in the DCR to drop unneeded data",
-  "Create a second workspace as a copy"
+  "Reduce the frequency and number of counters in the DCR",
+  "Increase the table's interactive retention to amortize cost",
+  "Drop unneeded data with a transformation",
+  "Create a second workspace as a copy of WS1"
  ],
  "ans": [
   0,
@@ -1116,9 +1116,9 @@ AZ.questions.push(
  "pick": 2,
  "stem": "<p>You need to limit the restore time of a critical VM after a human error, while keeping points over 1 year.</p><p>Which <b>two</b> actions are suitable?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
  "opts": [
-  "Disable soft delete",
-  "Switch the vault to LRS",
-  "Use an Enhanced policy with several backups a day and snapshots kept for several days",
+  "Disable soft delete to reduce cost",
+  "Switch the vault to LRS to keep more points",
+  "An Enhanced policy, several backups a day",
   "Configure a 12-month monthly retention"
  ],
  "ans": [
@@ -1344,10 +1344,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>There are too many alerts: the same problems generate dozens of notifications per hour.</p><p>Which best practice should you apply first?</p>",
  "opts": [
-  "Disable Azure Monitor",
-  "Delete all action groups",
-  "Tune thresholds and use stateful alerts (or dynamic thresholds)",
-  "Increase log retention"
+  "Disable Azure Monitor on the noisiest resources",
+  "Delete all existing action groups",
+  "Tune thresholds, use stateful or dynamic alerts",
+  "Increase the alert logs' retention"
  ],
  "ans": 2,
  "expl": "<p><b>Stateful</b> alerts don't send another notification until the alert is resolved. <b>Dynamic</b> or better-calibrated thresholds reduce false positives. A processing rule can also suppress notifications during maintenance.</p>",
@@ -1376,10 +1376,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to know why the scale set VMSS12 added instances yesterday at 2 PM.</p><p>Where do you find this information?</p>",
  "opts": [
-  "In the Recovery Services vault",
-  "In boot diagnostics",
-  "In Azure Advisor",
-  "In the autoscale run history and in the activity log (Autoscale category)"
+  "In the scale set's Recovery Services vault",
+  "In the instances' boot diagnostics",
+  "In Azure Advisor, Performance tab",
+  "In the autoscale run history"
  ],
  "ans": 3,
  "expl": "<p>Autoscale operations are recorded in the <b>activity log</b> (Autoscale category) and in the scaling configuration's <b>run history</b>, with the triggered rule and the metric value. You can also enable autoscale resource logs.</p>",
@@ -1404,10 +1404,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>An organization requires monitoring data to stay in the European Union.</p><p>Which choice determines where logs collected in Log Analytics are stored?</p>",
  "opts": [
-  "The Log Analytics workspace's region",
+  "The workspace's region",
   "The action group's region",
-  "The monitored VMs' region",
-  "The Microsoft Entra tenant's region"
+  "The region of the VMs monitored by the agent",
+  "The Entra tenant's region"
  ],
  "ans": 0,
  "expl": "<p>A workspace's data is stored in the <b>workspace's region</b>. For sovereignty, you create the workspace in an EU region, even if monitored resources are elsewhere.</p>",
@@ -1433,10 +1433,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to restore a blob container to its state from 3 days ago, using the operational blob backup configured in Backup vault Vault6.</p><p>What happens to blobs created after that date?</p>",
  "opts": [
-  "They're kept in addition to the old ones",
-  "They're deleted: the container returns exactly to the chosen state",
+  "They're kept in addition to the old blobs",
+  "They're deleted: back to the chosen state",
   "They're moved to another container",
-  "They're archived"
+  "They're archived in the Archive tier"
  ],
  "ans": 1,
  "expl": "<p>Operational restore uses <b>point-in-time restore</b>: the content of the restored containers returns to the exact state of the chosen date. Blobs created afterward are deleted, and modified blobs get their old content back.</p>",
@@ -1465,10 +1465,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to be alerted if more than 20% of requests to a storage account fail with an authorization error.</p><p>Which approach is the simplest?</p>",
  "opts": [
-  "A Resource Health alert",
-  "A Service Health alert",
-  "A metric alert on Transactions, filtered (ResponseType dimension) on authorization errors",
-  "A budget alert"
+  "A Resource Health alert on the account",
+  "A Service Health alert on storage",
+  "A Transactions metric alert (ResponseType)",
+  "A budget alert on the storage account"
  ],
  "ans": 2,
  "expl": "<p>A storage account's <b>Transactions</b> metric has <b>dimensions</b> (ResponseType, ApiName, Authentication…). A metric alert can filter by dimension, for example AuthorizationError responses.</p>",
@@ -1526,9 +1526,9 @@ AZ.questions.push(
  "stem": "<p>A VM protected by Site Recovery was resized in the source region. You want the failover VM to also use the new size.</p><p>Where should you check the target size?</p>",
  "opts": [
   "In the replicated item's compute settings",
-  "In the App Service plan",
-  "In the backup policy",
-  "In the activity log"
+  "In the App Service plan of the failover target region",
+  "In the source VM's backup policy",
+  "In the source VM's activity log"
  ],
  "ans": 0,
  "expl": "<p>A replicated item's <b>compute and network settings</b> define the size, resource group, network, and availability of the target VM. You should check them after changes on the source.</p>",
@@ -1554,9 +1554,9 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to include in a Site Recovery recovery plan a step that automatically updates a DNS record after the web VMs fail over.</p><p>What should you add to the plan?</p>",
  "opts": [
-  "A snapshot",
-  "A script (Azure Automation runbook) after the web VM group",
-  "A metric alert",
+  "A snapshot of the web VMs",
+  "A runbook after the web group",
+  "A metric alert on DNS",
   "A data collection rule"
  ],
  "ans": 1,
@@ -1586,10 +1586,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to test every quarter the disaster recovery of an application protected by Site Recovery, with a report for the audit.</p><p>Which operation should you schedule?</p>",
  "opts": [
-  "An Azure Backup restore",
-  "Disabling replication",
-  "A test failover of the recovery plan in an isolated network, then cleaning up the test",
-  "A real unplanned failover"
+  "An Azure Backup restore in the target region",
+  "Disabling then resuming replication",
+  "A test failover of the plan, then cleanup",
+  "A real unplanned failover, with failback"
  ],
  "ans": 2,
  "expl": "<p>A <b>test failover</b> of a <b>recovery plan</b> validates the whole sequence (order, scripts, network) with no impact on production. After checking, you run <b>Cleanup test failover</b>, recording the notes, which serve as evidence for the audit.</p>",
@@ -1618,10 +1618,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You want to monitor on-premises and other-cloud servers with Azure Monitor, Azure Policy, and Update Manager, like Azure resources.</p><p>What should you install on these servers?</p>",
  "opts": [
-  "The MARS agent",
-  "The Mobility service",
-  "Azure File Sync",
-  "The Azure Connected Machine agent (Azure Arc)"
+  "The MARS agent with a vault",
+  "The Site Recovery Mobility service",
+  "Azure File Sync on each server",
+  "The Connected Machine agent (Arc)"
  ],
  "ans": 3,
  "expl": "<p>With <b>Azure Arc</b>, the <b>Connected Machine</b> agent projects the server as an Azure resource: you can then deploy the Azure Monitor agent to it, apply Azure Policy (machine configuration), and manage updates with Update Manager.</p>",
@@ -1647,10 +1647,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>An administrator accidentally deletes the metric alert CPU-Prod.</p><p>How do you find out who deleted it?</p>",
  "opts": [
-  "Check the activity log (Delete Metric Alert operation)",
-  "Check Network Watcher",
+  "Check the activity log",
+  "Check the Network Watcher topology",
   "Check the Recovery Services vault",
-  "Check Resource Health"
+  "Check the alert's Resource Health"
  ],
  "ans": 0,
  "expl": "<p>Alert rules are Azure resources: their deletion is recorded in the <b>activity log</b> (<code>Microsoft.Insights/metricAlerts/delete</code>) with the caller.</p>",
@@ -1680,9 +1680,9 @@ AZ.questions.push(
  "stem": "<p>You want alerts to be created automatically according to Microsoft best practices for all your resources (VMs, storage, network) in a landing zone, with Azure Policy.</p><p>Which Microsoft initiative is available?</p>",
  "opts": [
   "Microsoft Sentinel",
-  "Azure Monitor Baseline Alerts (AMBA)",
-  "The daily cap",
-  "Azure Advisor score"
+  "Azure Monitor Baseline Alerts",
+  "The daily cap of each workspace",
+  "The Azure Advisor score per subscription"
  ],
  "ans": 1,
  "expl": "<p><b>Azure Monitor Baseline Alerts</b> provides Azure Policy definitions and initiatives that automatically deploy recommended alerts (metrics, activity logs, Service Health) and action groups, at organization scale.</p>",
@@ -1708,10 +1708,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>A VM restore with the Replace existing option fails.</p><p>Which condition should you check?</p>",
  "opts": [
-  "That the VM is in another region",
-  "That the VM was never backed up",
-  "That the VM still exists (it wasn't deleted) and the staging location (storage account) is available",
-  "That the vault is LRS"
+  "That the VM is in a different region from the vault",
+  "That the VM was never backed up before in this vault",
+  "That the VM still exists, with the staging location",
+  "That the vault is LRS rather than GRS"
  ],
  "ans": 2,
  "expl": "<p><b>Replace existing</b> replaces the disks of a VM that <b>still exists</b>. It takes a snapshot of the current disks (kept in the vault) then replaces them. If the VM was deleted, you must create a new VM or restore the disks.</p>",
@@ -1740,10 +1740,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Azure Files backups of share3 use snapshots. An administrator deletes the storage account that contains share3.</p><p>What happens to the backup?</p>",
  "opts": [
-  "Backup continues normally",
-  "Points are still kept in the vault",
-  "Points are copied to the paired region",
-  "With snapshot-only backup, points are lost with the account; a vaulted backup would protect against this risk"
+  "Backup continues normally on the share",
+  "The points are still kept in the vault",
+  "The points are copied to the paired region",
+  "Snapshots only: the points are lost"
  ],
  "ans": 3,
  "expl": "<p><b>Snapshot</b>-based Azure Files backup stores points in the storage account itself. If the account is deleted, the snapshots are too. <b>Vaulted backup</b> copies data into the vault and protects against this risk. A <b>lock</b> on the account is also recommended (Azure Backup adds one automatically).</p>",
@@ -1768,10 +1768,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>You need to temporarily disable a metric alert rule during a migration, without deleting it.</p><p>What should you do?</p>",
  "opts": [
-  "Disable the alert rule (Disabled state), then re-enable it afterward",
+  "Disable the rule, then re-enable it",
   "Delete the monitored resource",
-  "Delete the action group",
-  "Raise the threshold to 1,000"
+  "Delete the rule's action group",
+  "Raise the rule's threshold to 1,000"
  ],
  "ans": 0,
  "expl": "<p>An alert rule can be <b>disabled</b> then <b>re-enabled</b>. For several rules or a scheduled window, an <b>alert processing rule</b> is more convenient.</p>",
@@ -1798,9 +1798,9 @@ AZ.questions.push(
  "stem": "<p>A VM's metrics are needed over 6 months for a capacity study, but the metrics database only keeps 93 days.</p><p>What should you do?</p>",
  "opts": [
   "Nothing: metrics are kept 2 years",
-  "Send the metrics to Log Analytics (diagnostic setting or DCR) with suitable retention",
-  "Enable boot diagnostics",
-  "Create a metric alert"
+  "Send them to Log Analytics (suitable retention)",
+  "Enable the VM's boot diagnostics",
+  "Create a metric alert that archives them"
  ],
  "ans": 1,
  "expl": "<p>To keep metrics longer than <b>93 days</b>, you send them to <b>Log Analytics</b> (AzureMetrics or InsightsMetrics/Perf table), where retention is configurable, or to a storage account.</p>",
@@ -1825,10 +1825,10 @@ AZ.questions.push(
  "type": "single",
  "stem": "<p>Your continuity plan requires: 24-hour RPO and 30-day retention for 50 non-critical VMs, and an RPO of a few minutes with recovery in another region for 5 critical VMs.</p><p>Which combination is the most suitable?</p>",
  "opts": [
-  "Availability sets for all VMs",
-  "Azure Site Recovery for all 55 VMs",
-  "Daily Azure Backup for the 50 VMs; Azure Site Recovery (plus Azure Backup) for the 5 critical VMs",
-  "Manual snapshots for all VMs"
+  "Availability sets for all VMs, with no backup at all",
+  "Site Recovery for all 55 VMs, with no backup",
+  "Backup for the 50 VMs; Site Recovery for the 5",
+  "Daily manual snapshots for all VMs"
  ],
  "ans": 2,
  "expl": "<p>For non-critical VMs, daily <b>Azure Backup</b> is enough (24 h RPO, 30-day retention), at lower cost. For critical VMs, <b>Site Recovery</b> offers an RPO of a few minutes and recovery in another region; Azure Backup remains useful for restoring old data.</p><p>Site Recovery for everything would cost more for no need. Availability sets don't protect against data loss.</p>",
