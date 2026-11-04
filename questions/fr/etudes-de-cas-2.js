@@ -67,16 +67,31 @@ AZ.cases.push(
   {
    "id": "C002-2",
    "dom": 2,
-   "type": "single",
-   "stem": "<p>Vous devez répondre à l'exigence d'accès de GRP-Etudes au conteneur rapports.</p><p>Que devez-vous faire ?</p>",
-   "opts": [
-    "Lecteur à GRP-Etudes sur stlitwaredata",
-    "Lecteur des données blob sur le conteneur rapports",
-    "Contributeur aux données blob sur stlitwaredata",
-    "Une SAS de compte en lecture pour GRP-Etudes"
+   "type": "hot",
+   "stem": "<p>Vous devez répondre aux exigences suivantes. Que devez-vous configurer pour chacune ?</p><p>Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
+   "rows": [
+    {
+     "l": "Accès de GRP-Etudes au conteneur rapports :",
+     "o": [
+      "Lecteur à GRP-Etudes sur stlitwaredata",
+      "Lecteur des données blob sur le conteneur rapports",
+      "Contributeur aux données blob sur stlitwaredata",
+      "Une SAS de compte en lecture pour GRP-Etudes"
+     ],
+     "a": 1
+    },
+    {
+     "l": "Résilience de stlitwaredata, au coût le plus bas :",
+     "o": [
+      "ZRS",
+      "RA-GZRS",
+      "GRS",
+      "LRS"
+     ],
+     "a": 0
+    }
    ],
-   "ans": 1,
-   "expl": "<p><b>Lecteur des données blob du stockage</b> donne la lecture des données avec l'identité Entra ; l'étendue <b>conteneur</b> limite l'accès à rapports. Lecteur ne donne pas accès aux données ; Contributeur aux données permet d'écrire ; une SAS n'utilise pas le compte Entra.</p>",
+   "expl": "<p><b>1. Accès de GRP-Etudes au conteneur rapports :</b></p><p><b>Lecteur des données blob du stockage</b> donne la lecture des données avec l'identité Entra ; l'étendue <b>conteneur</b> limite l'accès à rapports. Lecteur ne donne pas accès aux données ; Contributeur aux données permet d'écrire ; une SAS n'utilise pas le compte Entra.</p><p><b>2. Résilience de stlitwaredata, au coût le plus bas :</b></p><p><b>ZRS</b> réplique les données dans trois zones de disponibilité de la région : il survit à la panne d'un centre de données. GRS ne protège pas contre la perte d'un centre de données dans la région primaire (LRS dans un seul centre), et RA-GZRS coûte plus cher que nécessaire.</p>",
    "portal": {
     "path": [
      "Comptes de stockage",
@@ -100,21 +115,36 @@ AZ.cases.push(
     ],
     "btn": "Vérifier + attribuer"
    },
-   "keep": "Lire des blobs avec Entra = Lecteur des données blob, à l'étendue du conteneur."
+   "keep": "Lire des blobs avec Entra = Lecteur des données blob, à l'étendue du conteneur. Survivre à un centre de données, au moindre coût = ZRS."
   },
   {
    "id": "C002-3",
    "dom": 1,
-   "type": "single",
-   "stem": "<p>Vous devez répondre à l'exigence concernant les consultants externes.</p><p>Que devez-vous configurer ?</p>",
-   "opts": [
-    "Une unité administrative contoso.com",
-    "Les restrictions d'accès des utilisateurs invités",
-    "Collaboration limitée à contoso.com",
-    "Un domaine personnalisé contoso.com"
+   "type": "hot",
+   "stem": "<p>Vous devez répondre aux exigences suivantes. Que devez-vous configurer pour chacune ?</p><p>Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
+   "rows": [
+    {
+     "l": "Consultants externes :",
+     "o": [
+      "Une unité administrative contoso.com",
+      "Les restrictions d'accès des utilisateurs invités",
+      "Collaboration limitée à contoso.com",
+      "Un domaine personnalisé contoso.com"
+     ],
+     "a": 2
+    },
+    {
+     "l": "Accès réseau à stlitwaredata :",
+     "o": [
+      "Un NSG sur Subnet-Web qui bloque l'étiquette Storage en sortie",
+      "Une passerelle NAT sur Subnet-Data, autorisée dans le pare-feu du compte",
+      "Un point de terminaison privé dans Subnet-Data et l'accès public désactivé",
+      "Un point de terminaison de service sur Subnet-Data et une règle de VNet"
+     ],
+     "a": 3
+    }
    ],
-   "ans": 2,
-   "expl": "<p>Les <b>restrictions de collaboration</b> des paramètres de collaboration externe permettent de n'autoriser les invitations que vers une liste de domaines. Les restrictions d'accès des invités définissent ce que voient les invités. contoso.com appartient à un autre organisme : on ne peut pas l'ajouter comme domaine personnalisé.</p>",
+   "expl": "<p><b>1. Consultants externes :</b></p><p>Les <b>restrictions de collaboration</b> des paramètres de collaboration externe permettent de n'autoriser les invitations que vers une liste de domaines. Les restrictions d'accès des invités définissent ce que voient les invités. contoso.com appartient à un autre organisme : on ne peut pas l'ajouter comme domaine personnalisé.</p><p><b>2. Accès réseau à stlitwaredata :</b></p><p>L'exigence demande de <b>garder l'adresse publique</b> : le <b>point de terminaison de service</b> avec une règle de réseau virtuel répond au besoin, gratuitement. Un point de terminaison privé fonctionnerait techniquement, mais il implique de désactiver l'accès public dans cette option et coûte plus cher.</p>",
    "portal": {
     "path": [
      "Microsoft Entra ID",
@@ -133,23 +163,30 @@ AZ.cases.push(
     ],
     "btn": "Enregistrer"
    },
-   "keep": "Limiter les domaines invités = restrictions de collaboration."
+   "keep": "Limiter les domaines invités = restrictions de collaboration. Limiter à un sous-réseau en gardant l'IP publique = point de terminaison de service + règle de réseau virtuel."
   },
   {
    "id": "C002-4",
    "dom": 3,
-   "type": "multi",
-   "pick": 2,
-   "stem": "<p>Vous devez répondre à l'exigence de test de WebApp-Portail.</p><p>Quelles <b>deux</b> actions devez-vous effectuer ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
-   "opts": [
-    "Créer une seconde application dans un plan De base",
-    "Passer le plan App Service en Standard",
-    "Créer un emplacement de déploiement test",
-    "Activer la mise à l'échelle automatique du plan"
-   ],
-   "ans": [
-    1,
-    2
+   "type": "yngrid",
+   "stem": "<p>Vous devez répondre à l'exigence de test de WebApp-Portail.</p><p>Pour chacune des actions suivantes, sélectionnez Oui si elle fait partie de la solution. Sinon, sélectionnez Non.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
+   "rows": [
+    {
+     "l": "Créer une seconde application dans un plan De base",
+     "a": 1
+    },
+    {
+     "l": "Passer le plan App Service en Standard",
+     "a": 0
+    },
+    {
+     "l": "Créer un emplacement de déploiement test",
+     "a": 0
+    },
+    {
+     "l": "Activer la mise à l'échelle automatique du plan",
+     "a": 1
+    }
    ],
    "expl": "<p>Les <b>emplacements de déploiement</b> exigent le niveau <b>Standard</b> ou plus. L'emplacement test a sa propre URL, et une permutation met la version testée en production. Une seconde application fonctionnerait mais sans permutation, et la mise à l'échelle n'a pas de rapport.</p>",
    "portal": {
@@ -171,68 +208,6 @@ AZ.cases.push(
     "btn": "+ Ajouter un emplacement"
    },
    "keep": "Tester avant prod = emplacement de déploiement (Standard+) puis permutation."
-  },
-  {
-   "id": "C002-5",
-   "dom": 4,
-   "type": "single",
-   "stem": "<p>Vous devez répondre à l'exigence d'accès réseau à stlitwaredata.</p><p>Que devez-vous configurer ?</p>",
-   "opts": [
-    "Un NSG sur Subnet-Web qui bloque l'étiquette Storage en sortie",
-    "Une passerelle NAT sur Subnet-Data, autorisée dans le pare-feu du compte",
-    "Un point de terminaison privé dans Subnet-Data et l'accès public désactivé",
-    "Un point de terminaison de service sur Subnet-Data et une règle de VNet"
-   ],
-   "ans": 3,
-   "expl": "<p>L'exigence demande de <b>garder l'adresse publique</b> : le <b>point de terminaison de service</b> avec une règle de réseau virtuel répond au besoin, gratuitement. Un point de terminaison privé fonctionnerait techniquement, mais il implique de désactiver l'accès public dans cette option et coûte plus cher.</p>",
-   "portal": {
-    "path": [
-     "Comptes de stockage",
-     "stlitwaredata"
-    ],
-    "title": "Mise en réseau",
-    "rows": [
-     [
-      "*Réseaux virtuels",
-      "VNet-Litware / Subnet-Data"
-     ],
-     [
-      "Adresse publique",
-      "Conservée"
-     ]
-    ],
-    "btn": "Enregistrer"
-   },
-   "keep": "Limiter à un sous-réseau en gardant l'IP publique = point de terminaison de service + règle de réseau virtuel."
-  },
-  {
-   "id": "C002-6",
-   "dom": 2,
-   "type": "single",
-   "stem": "<p>Vous devez répondre à l'exigence de résilience de stlitwaredata, au coût le plus bas.</p><p>Quelle redondance devez-vous configurer ?</p>",
-   "opts": [
-    "ZRS",
-    "RA-GZRS",
-    "GRS",
-    "LRS"
-   ],
-   "ans": 0,
-   "expl": "<p><b>ZRS</b> réplique les données dans trois zones de disponibilité de la région : il survit à la panne d'un centre de données. GRS ne protège pas contre la perte d'un centre de données dans la région primaire (LRS dans un seul centre), et RA-GZRS coûte plus cher que nécessaire.</p>",
-   "portal": {
-    "path": [
-     "Comptes de stockage",
-     "stlitwaredata"
-    ],
-    "title": "Redondance",
-    "rows": [
-     [
-      "*Redondance",
-      "Stockage redondant interzone (ZRS)"
-     ]
-    ],
-    "btn": "Enregistrer"
-   },
-   "keep": "Survivre à un centre de données, au moindre coût = ZRS."
   }
  ]
 },
@@ -303,16 +278,31 @@ AZ.cases.push(
   {
    "id": "C003-2",
    "dom": 5,
-   "type": "single",
-   "stem": "<p>Vous devez répondre à l'exigence de sauvegarde de VM-ERP.</p><p>Que devez-vous faire dans Vault-Tailwind ?</p>",
-   "opts": [
-    "Passer le coffre en LRS, puis protéger VM-ERP",
-    "Restauration interrégion, puis stratégie de 30 jours",
-    "Configurer uniquement Azure Site Recovery pour VM-ERP",
-    "Créer un coffre de sauvegarde (Backup vault) en West Europe"
+   "type": "hot",
+   "stem": "<p>Vous devez répondre aux exigences suivantes. Que devez-vous configurer pour chacune ?</p><p>Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
+   "rows": [
+    {
+     "l": "Sauvegarde de VM-ERP, dans Vault-Tailwind :",
+     "o": [
+      "Passer le coffre en LRS, puis protéger VM-ERP",
+      "Restauration interrégion, puis stratégie de 30 jours",
+      "Configurer uniquement Azure Site Recovery pour VM-ERP",
+      "Créer un coffre de sauvegarde (Backup vault) en West Europe"
+     ],
+     "a": 1
+    },
+    {
+     "l": "Reprise de VM-ERP en cas de panne régionale :",
+     "o": [
+      "Uniquement la sauvegarde avec restauration interrégion",
+      "Une zone de disponibilité pour VM-ERP, avec un disque ZRS",
+      "Site Recovery vers une autre région (coffre cible)",
+      "Un groupe à haute disponibilité pour VM-ERP"
+     ],
+     "a": 2
+    }
    ],
-   "ans": 1,
-   "expl": "<p>Le coffre est déjà en <b>GRS</b> et dans la même région que VM-ERP. Il suffit d'activer la <b>restauration interrégion</b> (pour restaurer dans la région jumelée) et de protéger la VM avec une stratégie quotidienne de 30 jours. Passer en LRS empêcherait la restauration interrégion.</p>",
+   "expl": "<p><b>1. Sauvegarde de VM-ERP, dans Vault-Tailwind :</b></p><p>Le coffre est déjà en <b>GRS</b> et dans la même région que VM-ERP. Il suffit d'activer la <b>restauration interrégion</b> (pour restaurer dans la région jumelée) et de protéger la VM avec une stratégie quotidienne de 30 jours. Passer en LRS empêcherait la restauration interrégion.</p><p><b>2. Reprise de VM-ERP en cas de panne régionale :</b></p><p>Un RPO de 15 minutes et un RTO d'une heure exigent une <b>réplication continue</b> : <b>Azure Site Recovery</b>, avec un coffre dans la région cible. La sauvegarde quotidienne a un RPO de 24 heures. Les zones et groupes à haute disponibilité ne protègent pas contre la perte de la région.</p>",
    "portal": {
     "path": [
      "Coffres Recovery Services",
@@ -331,40 +321,7 @@ AZ.cases.push(
     ],
     "btn": "Enregistrer"
    },
-   "keep": "Restaurer dans la région jumelée = GRS + restauration interrégion."
-  },
-  {
-   "id": "C003-3",
-   "dom": 5,
-   "type": "single",
-   "stem": "<p>Vous devez répondre à l'exigence de reprise de VM-ERP en cas de panne régionale.</p><p>Que devez-vous configurer ?</p>",
-   "opts": [
-    "Uniquement la sauvegarde avec restauration interrégion",
-    "Une zone de disponibilité pour VM-ERP, avec un disque ZRS",
-    "Site Recovery vers une autre région (coffre cible)",
-    "Un groupe à haute disponibilité pour VM-ERP"
-   ],
-   "ans": 2,
-   "expl": "<p>Un RPO de 15 minutes et un RTO d'une heure exigent une <b>réplication continue</b> : <b>Azure Site Recovery</b>, avec un coffre dans la région cible. La sauvegarde quotidienne a un RPO de 24 heures. Les zones et groupes à haute disponibilité ne protègent pas contre la perte de la région.</p>",
-   "portal": {
-    "path": [
-     "Machines virtuelles",
-     "VM-ERP"
-    ],
-    "title": "Récupération d'urgence",
-    "rows": [
-     [
-      "*Région cible",
-      "West Europe"
-     ],
-     [
-      "Coffre",
-      "Dans la région cible"
-     ]
-    ],
-    "btn": "Vérifier + démarrer la réplication"
-   },
-   "keep": "RPO de minutes + autre région = Site Recovery."
+   "keep": "Restaurer dans la région jumelée = GRS + restauration interrégion. RPO de minutes + autre région = Site Recovery."
   },
   {
    "id": "C003-4",
@@ -544,16 +501,31 @@ AZ.cases.push(
   {
    "id": "C004-2",
    "dom": 4,
-   "type": "single",
-   "stem": "<p>Vous devez répondre à l'exigence de passage par FW1 entre VNet-App et VNet-Data.</p><p>Que devez-vous configurer dans VNet-App ?</p>",
-   "opts": [
-    "Une table de routage 10.2.0.0/16 → 10.0.1.4 sur les sous-réseaux",
-    "Un appairage direct entre VNet-App et VNet-Data, sans le hub",
-    "Une passerelle NAT dans VNet-App, devant le pare-feu FW1",
-    "Un NSG qui n'autorise 10.2.0.0/16 qu'à travers FW1"
+   "type": "hot",
+   "stem": "<p>Vous devez répondre aux exigences suivantes. Que devez-vous configurer pour chacune ?</p><p>Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
+   "rows": [
+    {
+     "l": "Passage par FW1 entre VNet-App et VNet-Data, dans VNet-App :",
+     "o": [
+      "Une table de routage 10.2.0.0/16 → 10.0.1.4 sur les sous-réseaux",
+      "Un appairage direct entre VNet-App et VNet-Data, sans le hub",
+      "Une passerelle NAT dans VNet-App, devant le pare-feu FW1",
+      "Un NSG qui n'autorise 10.2.0.0/16 qu'à travers FW1"
+     ],
+     "a": 0
+    },
+    {
+     "l": "Résolution de noms :",
+     "o": [
+      "Un fichier hosts tenu à jour sur chaque VM des deux réseaux",
+      "Une zone DNS publique northwind.internal, avec délégation",
+      "Une zone privée northwind.internal liée aux deux VNets (auto)",
+      "Un enregistrement CNAME par VM dans une zone Azure DNS publique"
+     ],
+     "a": 2
+    }
    ],
-   "ans": 0,
-   "expl": "<p>Un <b>itinéraire défini par l'utilisateur</b> envoie le trafic destiné à VNet-Data vers FW1 (même chose dans VNet-Data vers 10.1.0.0/16), avec les règles correspondantes dans FW1. Un appairage direct contournerait le pare-feu.</p>",
+   "expl": "<p><b>1. Passage par FW1 entre VNet-App et VNet-Data, dans VNet-App :</b></p><p>Un <b>itinéraire défini par l'utilisateur</b> envoie le trafic destiné à VNet-Data vers FW1 (même chose dans VNet-Data vers 10.1.0.0/16), avec les règles correspondantes dans FW1. Un appairage direct contournerait le pare-feu.</p><p><b>2. Résolution de noms :</b></p><p>Une <b>zone DNS privée</b> liée aux réseaux, avec l'<b>inscription automatique</b>, crée et tient à jour les enregistrements des VM. Une zone privée est mondiale : elle peut être liée à des réseaux de France Central et de West Europe.</p>",
    "portal": {
     "path": [
      "Tables de routage",
@@ -567,23 +539,30 @@ AZ.cases.push(
      ]
     ]
    },
-   "keep": "Forcer le passage par le pare-feu = UDR vers son IP privée."
+   "keep": "Forcer le passage par le pare-feu = UDR vers son IP privée. Noms internes entre VNets = zone privée liée avec inscription automatique."
   },
   {
    "id": "C004-3",
    "dom": 4,
-   "type": "multi",
-   "pick": 2,
-   "stem": "<p>Vous devez répondre à l'exigence d'administration des VM.</p><p>Quelles <b>deux</b> actions devez-vous effectuer ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
-   "opts": [
-    "Créer une passerelle NAT dans VNet-Hub",
-    "Déployer Azure Bastion dans VNet-Hub",
-    "Supprimer les adresses IP publiques des VM",
-    "Ouvrir le port 3389 depuis Internet dans les NSG"
-   ],
-   "ans": [
-    1,
-    2
+   "type": "yngrid",
+   "stem": "<p>Vous devez répondre à l'exigence d'administration des VM.</p><p>Pour chacune des actions suivantes, sélectionnez Oui si elle fait partie de la solution. Sinon, sélectionnez Non.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
+   "rows": [
+    {
+     "l": "Créer une passerelle NAT dans VNet-Hub",
+     "a": 1
+    },
+    {
+     "l": "Déployer Azure Bastion dans VNet-Hub",
+     "a": 0
+    },
+    {
+     "l": "Supprimer les adresses IP publiques des VM",
+     "a": 0
+    },
+    {
+     "l": "Ouvrir le port 3389 depuis Internet dans les NSG",
+     "a": 1
+    }
    ],
    "expl": "<p><b>Bastion</b> dans le hub sert aussi les réseaux appairés. On <b>supprime les adresses publiques</b> des VM, inutiles avec Bastion. Ouvrir 3389 sur Internet est l'inverse du besoin.</p>",
    "portal": {
@@ -642,38 +621,6 @@ AZ.cases.push(
     "btn": "Vérifier + créer"
    },
    "keep": "HTTPS + WAF régional = Application Gateway WAF v2."
-  },
-  {
-   "id": "C004-5",
-   "dom": 4,
-   "type": "single",
-   "stem": "<p>Vous devez répondre à l'exigence de résolution de noms.</p><p>Que devez-vous configurer ?</p>",
-   "opts": [
-    "Un fichier hosts tenu à jour sur chaque VM des deux réseaux",
-    "Une zone DNS publique northwind.internal, avec délégation",
-    "Une zone privée northwind.internal liée aux deux VNets (auto)",
-    "Un enregistrement CNAME par VM dans une zone Azure DNS publique"
-   ],
-   "ans": 2,
-   "expl": "<p>Une <b>zone DNS privée</b> liée aux réseaux, avec l'<b>inscription automatique</b>, crée et tient à jour les enregistrements des VM. Une zone privée est mondiale : elle peut être liée à des réseaux de France Central et de West Europe.</p>",
-   "portal": {
-    "path": [
-     "Zones DNS privées",
-     "northwind.internal"
-    ],
-    "title": "Liens de réseau virtuel",
-    "rows": [
-     [
-      "*VNet-App",
-      "Inscription automatique"
-     ],
-     [
-      "*VNet-Data",
-      "Inscription automatique"
-     ]
-    ]
-   },
-   "keep": "Noms internes entre VNets = zone privée liée avec inscription automatique."
   },
   {
    "id": "C004-6",

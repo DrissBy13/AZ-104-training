@@ -72,16 +72,31 @@ AZ.cases.push(
   {
    "id": "C001-2",
    "dom": 1,
-   "type": "single",
-   "stem": "<p>You need to meet the requirement for allowed regions in Sub-Dev.</p><p>What should you configure?</p>",
-   "opts": [
-    "A read-only lock on Sub-Dev",
-    "Allowed locations (Deny), assigned to Sub-Dev",
-    "The Reader role for Dev-Team on the other regions",
-    "A budget with an alert on Sub-Dev"
+   "type": "hot",
+   "stem": "<p>You need to meet the following requirements. What should you configure for each one?</p><p>To answer, select the appropriate options in the answer area.</p><p>NOTE: Each correct selection is worth one point.</p>",
+   "rows": [
+    {
+     "l": "Allowed regions for Sub-Dev:",
+     "o": [
+      "A read-only lock on Sub-Dev",
+      "Allowed locations (Deny), assigned to Sub-Dev",
+      "The Reader role for Dev-Team on the other regions",
+      "A budget with an alert on Sub-Dev"
+     ],
+     "a": 1
+    },
+    {
+     "l": "Unmodified stfabdocs documents:",
+     "o": [
+      "A lifecycle rule to Archive after 90 days",
+      "A 90-day time-based immutability policy",
+      "The account's default access tier set to Archive",
+      "Object replication to a second Archive account"
+     ],
+     "a": 0
+    }
    ],
-   "ans": 1,
-   "expl": "<p>The built-in <b>Allowed locations</b> policy, Deny effect, assigned to <b>Sub-Dev</b>, blocks any creation outside France Central, whatever the user's role.</p><p>A ReadOnly lock would block all changes. Azure RBAC isn't configured by region. A budget alerts on costs but blocks nothing.</p>",
+   "expl": "<p><b>1. Allowed regions for Sub-Dev:</b></p><p>The built-in <b>Allowed locations</b> policy, Deny effect, assigned to <b>Sub-Dev</b>, blocks any creation outside France Central, whatever the user's role.</p><p>A ReadOnly lock would block all changes. Azure RBAC isn't configured by region. A budget alerts on costs but blocks nothing.</p><p><b>2. Unmodified stfabdocs documents:</b></p><p>A <b>lifecycle management</b> rule automatically moves blobs to <b>Archive</b> when their last modification is more than 90 days old.</p><p>Immutability prevents modification but doesn't change the tier. Archive can't be an account's default tier (only Hot or Cool). Object replication copies, it doesn't change tiers.</p>",
    "portal": {
     "path": [
      "Policy",
@@ -100,21 +115,36 @@ AZ.cases.push(
     ],
     "btn": "Review + create"
    },
-   "keep": "Restricting regions = Azure Policy Allowed locations."
+   "keep": "Restricting regions = Azure Policy Allowed locations. Changing tier based on age = lifecycle management."
   },
   {
    "id": "C001-3",
    "dom": 3,
-   "type": "single",
-   "stem": "<p>You need to meet the availability requirement for the application hosted on VM-APP1 and VM-APP2.</p><p>What should you do?</p>",
-   "opts": [
-    "Place VM-APP1 and VM-APP2 in an availability set",
-    "Convert both VMs' disks to Premium SSD",
-    "Redeploy both VMs in two different zones",
-    "Protect VM-APP1 and VM-APP2 with Azure Backup"
+   "type": "hot",
+   "stem": "<p>You need to meet the following requirements. What should you configure for each one?</p><p>To answer, select the appropriate options in the answer area.</p><p>NOTE: Each correct selection is worth one point.</p>",
+   "rows": [
+    {
+     "l": "VM-APP1 and VM-APP2 availability:",
+     "o": [
+      "Place VM-APP1 and VM-APP2 in an availability set",
+      "Convert both VMs' disks to Premium SSD",
+      "Redeploy both VMs in two different zones",
+      "Protect VM-APP1 and VM-APP2 with Azure Backup"
+     ],
+     "a": 2
+    },
+    {
+     "l": "Access to stfabdocs from the Lyon site:",
+     "o": [
+      "A Microsoft.Storage service endpoint on Subnet-App",
+      "A stfabdocs firewall rule with the Lyon site's address",
+      "A peering between VNet-Prod and VNet-Dev, with gateway transit",
+      "A private endpoint in VNet-Prod and a private DNS zone"
+     ],
+     "a": 3
+    }
    ],
-   "ans": 2,
-   "expl": "<p>The <b>99.99%</b> SLA requires at least two VMs in different <b>availability zones</b>. An availability set offers 99.95%, Premium disks alone give 99.9% for a single VM, and Azure Backup doesn't change availability.</p><p>A VM's zone is chosen at creation: the existing VMs, deployed without zones, must be <b>redeployed</b>.</p>",
+   "expl": "<p><b>1. VM-APP1 and VM-APP2 availability:</b></p><p>The <b>99.99%</b> SLA requires at least two VMs in different <b>availability zones</b>. An availability set offers 99.95%, Premium disks alone give 99.9% for a single VM, and Azure Backup doesn't change availability.</p><p>A VM's zone is chosen at creation: the existing VMs, deployed without zones, must be <b>redeployed</b>.</p><p><b>2. Access to stfabdocs from the Lyon site:</b></p><p>The Lyon site is connected to VNet-Prod by VPN. A <b>private endpoint</b> for stfabdocs in VNet-Prod gives it a private address reachable through the tunnel. The <b>private DNS zone</b> privatelink.blob.core.windows.net (and on-premises resolution) points the name to that address. You can then disable public access.</p><p>A service endpoint doesn't serve on-premises traffic; an IP rule would go over the internet.</p>",
    "portal": {
     "path": [
      "Virtual machines",
@@ -136,77 +166,7 @@ AZ.cases.push(
      ]
     ]
    },
-   "keep": "99.99% = VMs in at least two zones."
-  },
-  {
-   "id": "C001-4",
-   "dom": 4,
-   "type": "single",
-   "stem": "<p>You need to meet the requirement for access to stfabdocs from the Lyon site.</p><p>What should you configure?</p>",
-   "opts": [
-    "A Microsoft.Storage service endpoint on Subnet-App",
-    "A stfabdocs firewall rule with the Lyon site's address",
-    "A peering between VNet-Prod and VNet-Dev, with gateway transit",
-    "A private endpoint in VNet-Prod and a private DNS zone"
-   ],
-   "ans": 3,
-   "expl": "<p>The Lyon site is connected to VNet-Prod by VPN. A <b>private endpoint</b> for stfabdocs in VNet-Prod gives it a private address reachable through the tunnel. The <b>private DNS zone</b> privatelink.blob.core.windows.net (and on-premises resolution) points the name to that address. You can then disable public access.</p><p>A service endpoint doesn't serve on-premises traffic; an IP rule would go over the internet.</p>",
-   "portal": {
-    "path": [
-     "Storage accounts",
-     "stfabdocs"
-    ],
-    "title": "Create a private endpoint",
-    "rows": [
-     [
-      "Target sub-resource",
-      "blob"
-     ],
-     [
-      "*Virtual network",
-      "VNet-Prod"
-     ],
-     [
-      "DNS",
-      "privatelink.blob.core.windows.net"
-     ]
-    ],
-    "btn": "Review + create"
-   },
-   "keep": "Private access from a VPN-connected site = private endpoint + DNS."
-  },
-  {
-   "id": "C001-5",
-   "dom": 2,
-   "type": "single",
-   "stem": "<p>You need to meet the requirement for unmodified documents in stfabdocs.</p><p>What should you configure?</p>",
-   "opts": [
-    "A lifecycle rule to Archive after 90 days",
-    "A 90-day time-based immutability policy",
-    "The account's default access tier set to Archive",
-    "Object replication to a second Archive account"
-   ],
-   "ans": 0,
-   "expl": "<p>A <b>lifecycle management</b> rule automatically moves blobs to <b>Archive</b> when their last modification is more than 90 days old.</p><p>Immutability prevents modification but doesn't change the tier. Archive can't be an account's default tier (only Hot or Cool). Object replication copies, it doesn't change tiers.</p>",
-   "portal": {
-    "path": [
-     "Storage accounts",
-     "stfabdocs"
-    ],
-    "title": "Lifecycle management › Add a rule",
-    "rows": [
-     [
-      "If",
-      "Last modified > 90 days"
-     ],
-     [
-      "*Then",
-      "Move to archive storage"
-     ]
-    ],
-    "btn": "Add"
-   },
-   "keep": "Changing tier based on age = lifecycle management."
+   "keep": "99.99% = VMs in at least two zones. Private access from a VPN-connected site = private endpoint + DNS."
   },
   {
    "id": "C001-6",

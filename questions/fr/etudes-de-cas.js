@@ -72,16 +72,31 @@ AZ.cases.push(
   {
    "id": "C001-2",
    "dom": 1,
-   "type": "single",
-   "stem": "<p>Vous devez répondre à l'exigence concernant les régions autorisées pour Sub-Dev.</p><p>Que devez-vous configurer ?</p>",
-   "opts": [
-    "Un verrou en lecture seule sur Sub-Dev",
-    "Emplacements autorisés (Deny), attribuée à Sub-Dev",
-    "Le rôle Lecteur pour Dev-Team sur les autres régions",
-    "Un budget avec une alerte sur Sub-Dev"
+   "type": "hot",
+   "stem": "<p>Vous devez répondre aux exigences suivantes. Que devez-vous configurer pour chacune ?</p><p>Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
+   "rows": [
+    {
+     "l": "Régions autorisées pour Sub-Dev :",
+     "o": [
+      "Un verrou en lecture seule sur Sub-Dev",
+      "Emplacements autorisés (Deny), attribuée à Sub-Dev",
+      "Le rôle Lecteur pour Dev-Team sur les autres régions",
+      "Un budget avec une alerte sur Sub-Dev"
+     ],
+     "a": 1
+    },
+    {
+     "l": "Documents non modifiés de stfabdocs :",
+     "o": [
+      "Une règle de cycle de vie vers Archive après 90 jours",
+      "Une stratégie d'immuabilité temporelle de 90 jours",
+      "Le niveau d'accès par défaut du compte sur Archive",
+      "La réplication d'objets vers un second compte Archive"
+     ],
+     "a": 0
+    }
    ],
-   "ans": 1,
-   "expl": "<p>La stratégie intégrée <b>Emplacements autorisés</b>, effet Deny, attribuée à <b>Sub-Dev</b>, bloque toute création hors de France Central, quel que soit le rôle de l'utilisateur.</p><p>Un verrou Lecture seule bloquerait toutes les modifications. Azure RBAC ne se configure pas par région. Un budget alerte sur les coûts mais ne bloque rien.</p>",
+   "expl": "<p><b>1. Régions autorisées pour Sub-Dev :</b></p><p>La stratégie intégrée <b>Emplacements autorisés</b>, effet Deny, attribuée à <b>Sub-Dev</b>, bloque toute création hors de France Central, quel que soit le rôle de l'utilisateur.</p><p>Un verrou Lecture seule bloquerait toutes les modifications. Azure RBAC ne se configure pas par région. Un budget alerte sur les coûts mais ne bloque rien.</p><p><b>2. Documents non modifiés de stfabdocs :</b></p><p>Une règle de <b>gestion du cycle de vie</b> déplace automatiquement les blobs vers <b>Archive</b> quand leur dernière modification date de plus de 90 jours.</p><p>L'immuabilité empêche la modification mais ne change pas le niveau. Archive ne peut pas être le niveau par défaut d'un compte (seulement Chaud ou Froid). La réplication d'objets copie, elle ne déplace pas de niveau.</p>",
    "portal": {
     "path": [
      "Stratégie",
@@ -100,21 +115,36 @@ AZ.cases.push(
     ],
     "btn": "Vérifier + créer"
    },
-   "keep": "Restreindre les régions = Azure Policy Emplacements autorisés."
+   "keep": "Restreindre les régions = Azure Policy Emplacements autorisés. Changer de niveau selon l'âge = gestion du cycle de vie."
   },
   {
    "id": "C001-3",
    "dom": 3,
-   "type": "single",
-   "stem": "<p>Vous devez répondre à l'exigence de disponibilité de l'application hébergée sur VM-APP1 et VM-APP2.</p><p>Que devez-vous faire ?</p>",
-   "opts": [
-    "Placer VM-APP1 et VM-APP2 dans un groupe à haute disponibilité",
-    "Convertir les disques des deux VM en SSD Premium",
-    "Redéployer les deux VM dans deux zones différentes",
-    "Protéger VM-APP1 et VM-APP2 avec Azure Backup"
+   "type": "hot",
+   "stem": "<p>Vous devez répondre aux exigences suivantes. Que devez-vous configurer pour chacune ?</p><p>Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
+   "rows": [
+    {
+     "l": "Disponibilité de VM-APP1 et VM-APP2 :",
+     "o": [
+      "Placer VM-APP1 et VM-APP2 dans un groupe à haute disponibilité",
+      "Convertir les disques des deux VM en SSD Premium",
+      "Redéployer les deux VM dans deux zones différentes",
+      "Protéger VM-APP1 et VM-APP2 avec Azure Backup"
+     ],
+     "a": 2
+    },
+    {
+     "l": "Accès à stfabdocs depuis le site de Lyon :",
+     "o": [
+      "Un point de terminaison de service Microsoft.Storage sur Subnet-App",
+      "Une règle de pare-feu de stfabdocs avec l'adresse du site de Lyon",
+      "Un peering entre VNet-Prod et VNet-Dev, avec le transit de passerelle",
+      "Un point de terminaison privé dans VNet-Prod et une zone DNS privée"
+     ],
+     "a": 3
+    }
    ],
-   "ans": 2,
-   "expl": "<p>Le SLA de <b>99,99 %</b> exige au moins deux VM dans des <b>zones de disponibilité</b> différentes. Un groupe à haute disponibilité offre 99,95 %, des disques Premium seuls donnent 99,9 % pour une VM unique, et Azure Backup ne change pas la disponibilité.</p><p>La zone d'une VM se choisit à la création : les VM existantes, déployées sans zone, doivent être <b>redéployées</b>.</p>",
+   "expl": "<p><b>1. Disponibilité de VM-APP1 et VM-APP2 :</b></p><p>Le SLA de <b>99,99 %</b> exige au moins deux VM dans des <b>zones de disponibilité</b> différentes. Un groupe à haute disponibilité offre 99,95 %, des disques Premium seuls donnent 99,9 % pour une VM unique, et Azure Backup ne change pas la disponibilité.</p><p>La zone d'une VM se choisit à la création : les VM existantes, déployées sans zone, doivent être <b>redéployées</b>.</p><p><b>2. Accès à stfabdocs depuis le site de Lyon :</b></p><p>Le site de Lyon est relié à VNet-Prod par le VPN. Un <b>point de terminaison privé</b> pour stfabdocs dans VNet-Prod lui donne une adresse privée joignable par le tunnel. La <b>zone DNS privée</b> privatelink.blob.core.windows.net (et la résolution côté site) fait pointer le nom vers cette adresse. On peut alors désactiver l'accès public.</p><p>Un point de terminaison de service ne sert pas au trafic du site local ; une règle IP passerait par Internet.</p>",
    "portal": {
     "path": [
      "Machines virtuelles",
@@ -136,77 +166,7 @@ AZ.cases.push(
      ]
     ]
    },
-   "keep": "99,99 % = VM dans au moins deux zones."
-  },
-  {
-   "id": "C001-4",
-   "dom": 4,
-   "type": "single",
-   "stem": "<p>Vous devez répondre à l'exigence d'accès à stfabdocs depuis le site de Lyon.</p><p>Que devez-vous configurer ?</p>",
-   "opts": [
-    "Un point de terminaison de service Microsoft.Storage sur Subnet-App",
-    "Une règle de pare-feu de stfabdocs avec l'adresse du site de Lyon",
-    "Un peering entre VNet-Prod et VNet-Dev, avec le transit de passerelle",
-    "Un point de terminaison privé dans VNet-Prod et une zone DNS privée"
-   ],
-   "ans": 3,
-   "expl": "<p>Le site de Lyon est relié à VNet-Prod par le VPN. Un <b>point de terminaison privé</b> pour stfabdocs dans VNet-Prod lui donne une adresse privée joignable par le tunnel. La <b>zone DNS privée</b> privatelink.blob.core.windows.net (et la résolution côté site) fait pointer le nom vers cette adresse. On peut alors désactiver l'accès public.</p><p>Un point de terminaison de service ne sert pas au trafic du site local ; une règle IP passerait par Internet.</p>",
-   "portal": {
-    "path": [
-     "Comptes de stockage",
-     "stfabdocs"
-    ],
-    "title": "Créer un point de terminaison privé",
-    "rows": [
-     [
-      "Sous-ressource cible",
-      "blob"
-     ],
-     [
-      "*Réseau virtuel",
-      "VNet-Prod"
-     ],
-     [
-      "DNS",
-      "privatelink.blob.core.windows.net"
-     ]
-    ],
-    "btn": "Vérifier + créer"
-   },
-   "keep": "Accès privé depuis un site relié par VPN = point de terminaison privé + DNS."
-  },
-  {
-   "id": "C001-5",
-   "dom": 2,
-   "type": "single",
-   "stem": "<p>Vous devez répondre à l'exigence concernant les documents non modifiés de stfabdocs.</p><p>Que devez-vous configurer ?</p>",
-   "opts": [
-    "Une règle de cycle de vie vers Archive après 90 jours",
-    "Une stratégie d'immuabilité temporelle de 90 jours",
-    "Le niveau d'accès par défaut du compte sur Archive",
-    "La réplication d'objets vers un second compte Archive"
-   ],
-   "ans": 0,
-   "expl": "<p>Une règle de <b>gestion du cycle de vie</b> déplace automatiquement les blobs vers <b>Archive</b> quand leur dernière modification date de plus de 90 jours.</p><p>L'immuabilité empêche la modification mais ne change pas le niveau. Archive ne peut pas être le niveau par défaut d'un compte (seulement Chaud ou Froid). La réplication d'objets copie, elle ne déplace pas de niveau.</p>",
-   "portal": {
-    "path": [
-     "Comptes de stockage",
-     "stfabdocs"
-    ],
-    "title": "Gestion du cycle de vie › Ajouter une règle",
-    "rows": [
-     [
-      "Si",
-      "Dernière modification > 90 jours"
-     ],
-     [
-      "*Alors",
-      "Déplacer vers le stockage archive"
-     ]
-    ],
-    "btn": "Ajouter"
-   },
-   "keep": "Changer de niveau selon l'âge = gestion du cycle de vie."
+   "keep": "99,99 % = VM dans au moins deux zones. Accès privé depuis un site relié par VPN = point de terminaison privé + DNS."
   },
   {
    "id": "C001-6",

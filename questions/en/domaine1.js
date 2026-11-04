@@ -1,63 +1,16 @@
 /* Domaine 1 : Identités et gouvernance */
 AZ.questions.push(
 {
- "id": "D1-001",
- "dom": 1,
- "type": "single",
- "stem": "<p>You have an Azure subscription that contains a resource group named RG1. RG1 contains virtual machines, virtual networks, and storage accounts.</p><p>User1 must be able to create, start, stop, and delete the virtual machines in RG1. User1 must not be able to manage the virtual networks or the storage accounts.</p><p>The solution must follow the principle of least privilege.</p><p>Which role should you assign to User1, and at which scope?</p>",
- "opts": [
-  "Contributor on RG1",
-  "Virtual Machine Contributor on RG1",
-  "Owner on RG1",
-  "Virtual Machine Contributor on the subscription"
- ],
- "ans": 1,
- "expl": "<p>The built-in <b>Virtual Machine Contributor</b> role lets you create, start, stop, resize, and delete VMs. It grants <b>no</b> right to modify virtual networks or storage accounts (it can only “join” a network interface to an existing subnet), and it does not let you manage access.</p><p>Assigned on <b>RG1</b>, it applies to that resource group only: that is least privilege.</p><ul><li><b>Contributor on RG1</b>: manages <i>all</i> resources in RG1, including networks and storage. Too broad.</li><li><b>Owner on RG1</b>: like Contributor, plus access management. Even broader.</li><li><b>Virtual Machine Contributor on the subscription</b>: right role, wrong scope (every VM in the subscription).</li></ul>",
- "portal": {
-  "path": [
-   "Resource groups",
-   "RG1"
-  ],
-  "title": "RG1 | Access control (IAM)",
-  "menu": [
-   "Overview",
-   "Activity log",
-   "*Access control (IAM)",
-   "Tags"
-  ],
-  "rows": [
-   [
-    "#Add role assignment",
-    ""
-   ],
-   [
-    "*Role",
-    "Virtual Machine Contributor"
-   ],
-   [
-    "Assign access to",
-    "User, group, or service principal"
-   ],
-   [
-    "Members",
-    "User1"
-   ]
-  ],
-  "btn": "Review + assign"
- },
- "keep": "Least privilege = the most specific role (here Virtual Machine Contributor) at the smallest scope that covers the need (here RG1)."
-},
-{
  "id": "D1-002",
  "dom": 1,
  "type": "yngrid",
+ "stem": "<p>You have the Azure environment shown in the Hierarchy exhibit (click the <b>Hierarchy</b> tab).</p><p>For each of the following statements, select Yes if the statement is true. Otherwise, select No.</p><p><b>NOTE:</b> Each correct selection is worth one point.</p>",
  "docs": [
   {
    "t": "Hierarchy",
    "h": "<p>Your Azure environment is organized as follows:</p><div class=\"tw\"><table class=\"tbl\"><tr><th>Object</th><th>Type</th><th>Parent</th></tr><tr><td>MG1</td><td>Management group</td><td>Tenant root group</td></tr><tr><td>Sub1</td><td>Subscription</td><td>MG1</td></tr><tr><td>Sub2</td><td>Subscription</td><td>MG1</td></tr><tr><td>RG1</td><td>Resource group</td><td>Sub1</td></tr><tr><td>RG2</td><td>Resource group</td><td>Sub1</td></tr></table></div><p>Role assignments:</p><div class=\"tw\"><table class=\"tbl\"><tr><th>User</th><th>Role</th><th>Scope</th></tr><tr><td>User1</td><td>Reader</td><td>MG1</td></tr><tr><td>User1</td><td>Contributor</td><td>RG1</td></tr></table></div>"
   }
  ],
- "stem": "<p>You have the Azure environment shown in the Hierarchy exhibit (click the <b>Hierarchy</b> tab).</p><p>For each of the following statements, select Yes if the statement is true. Otherwise, select No.</p><p><b>NOTE:</b> Each correct selection is worth one point.</p>",
  "rows": [
   {
    "l": "User1 can create a storage account in RG1.",
@@ -175,13 +128,13 @@ AZ.questions.push(
  "id": "D1-004",
  "dom": 1,
  "type": "single",
+ "stem": "<p>You have an Azure subscription named Sub1 that contains a resource group named RG1.</p><p>You create a custom role named Role1 as shown in the Role1 exhibit (click the <b>Role1</b> tab). You assign Role1 to User1 on RG1.</p><p>Which operations can User1 perform?</p>",
  "docs": [
   {
    "t": "Role1",
    "h": "<p>Definition of the custom role Role1:</p><pre class=\"code\">{\n  \"Name\": \"Role1\",\n  \"IsCustom\": true,\n  \"Actions\": [\n    \"Microsoft.Compute/virtualMachines/read\",\n    \"Microsoft.Compute/virtualMachines/start/action\",\n    \"Microsoft.Compute/virtualMachines/restart/action\"\n  ],\n  \"NotActions\": [],\n  \"DataActions\": [],\n  \"AssignableScopes\": [ \"/subscriptions/Sub1\" ]\n}</pre>"
   }
  ],
- "stem": "<p>You have an Azure subscription named Sub1 that contains a resource group named RG1.</p><p>You create a custom role named Role1 as shown in the Role1 exhibit (click the <b>Role1</b> tab). You assign Role1 to User1 on RG1.</p><p>Which operations can User1 perform?</p>",
  "opts": [
   "Start and restart the VMs in RG1, but not stop them",
   "Start, restart, and stop (deallocate) the VMs in RG1",
@@ -226,29 +179,6 @@ AZ.questions.push(
  "dom": 1,
  "type": "screen",
  "stem": "<p>You have a Microsoft Entra tenant named contoso.com. Currently, all users can invite external users.</p><p>You need to ensure that only users who have the Guest Inviter, User Administrator, or Global Administrator role can invite guest users.</p><p>How should you configure the settings? To answer, select the appropriate option in the answer area.</p>",
- "win": {
-  "title": "External collaboration settings",
-  "sub": "Microsoft Entra ID | External Identities",
-  "rows": [
-   {
-    "k": "head",
-    "t": "Guest invite restrictions"
-   },
-   {
-    "k": "radio",
-    "l": "",
-    "opts": [
-     "Anyone in the organization can invite guest users including guests and non-admins (most inclusive)",
-     "Member users and users assigned to specific admin roles can invite guest users including guests with member permissions",
-     "Only users assigned to specific admin roles can invite guest users",
-     "No one in the organization can invite guest users including admins (most restrictive)"
-    ],
-    "d": 0,
-    "a": 2,
-    "name": "Guest invite restrictions"
-   }
-  ]
- },
  "expl": "<p>The setting is in <b>Microsoft Entra ID → External Identities → External collaboration settings</b>, under <b>Guest invite restrictions</b>.</p><ul><li>Option 1 (current value): everyone can invite, even guests.</li><li>Option 2: all <b>members</b> can still invite. Does not meet the requirement.</li><li><b>Option 3: only specific admin roles</b> (Guest Inviter, User Administrator, Global Administrator…) can invite. This is the right one.</li><li>Option 4: no one, not even admins. Too restrictive.</li></ul>",
  "portal": {
   "path": [
@@ -274,66 +204,53 @@ AZ.questions.push(
   ],
   "btn": "Save"
  },
- "keep": "Who can invite: Guest invite restrictions. Which domains: Collaboration restrictions. What guests can see: Guest user access restrictions."
-},
-{
- "id": "D1-006",
- "dom": 1,
- "type": "single",
- "stem": "<p>You try to assign a Microsoft 365 license to a new user named User5. The assignment fails.</p><p>Which property of User5 should you set?</p>",
- "opts": [
-  "Department",
-  "Job title",
-  "Usage location",
-  "Line manager"
- ],
- "ans": 2,
- "expl": "<p>Microsoft 365 needs to know <b>in which country</b> the license will be used, because some services are not available everywhere. Without a <b>usage location</b> (usageLocation), the license assignment fails.</p><p>Department, job title, and manager are descriptive attributes: they do not block the assignment.</p><p>Tip: with group-based licensing, a user without a usage location inherits the tenant's location, but the error is still a classic on the exam.</p>",
- "portal": {
-  "path": [
-   "Microsoft Entra ID",
-   "Users",
-   "User5"
-  ],
-  "title": "User5 | Properties",
-  "menu": [
-   "Overview",
-   "*Properties",
-   "Licenses",
-   "Groups"
-  ],
+ "keep": "Who can invite: Guest invite restrictions. Which domains: Collaboration restrictions. What guests can see: Guest user access restrictions.",
+ "win": {
+  "title": "External collaboration settings",
+  "sub": "Microsoft Entra ID | External Identities",
   "rows": [
-   [
-    "#Settings",
-    ""
-   ],
-   [
-    "Account enabled",
-    "Yes"
-   ],
-   [
-    "*Usage location",
-    "France"
-   ]
+   {
+    "k": "head",
+    "t": "Guest invite restrictions"
+   },
+   {
+    "k": "radio",
+    "l": "",
+    "opts": [
+     "Anyone in the organization can invite guest users including guests and non-admins (most inclusive)",
+     "Member users and users assigned to specific admin roles can invite guest users including guests with member permissions",
+     "Only users assigned to specific admin roles can invite guest users",
+     "No one in the organization can invite guest users including admins (most restrictive)"
+    ],
+    "d": 0,
+    "a": 2,
+    "name": "Guest invite restrictions"
+   }
   ]
- },
- "keep": "Can't assign a license? Check the user's usage location first."
+ }
 },
 {
  "id": "D1-007",
  "dom": 1,
- "type": "multi",
- "pick": 2,
- "stem": "<p>You need to prevent the accidental deletion of resources by using resource locks.</p><p>At which two scopes can you apply a lock? Each correct answer presents a complete solution.</p><p><b>NOTE:</b> Each correct selection is worth one point.</p>",
- "opts": [
-  "A subscription",
-  "A management group",
-  "A resource group",
-  "The Microsoft Entra tenant"
- ],
- "ans": [
-  0,
-  2
+ "type": "yngrid",
+ "stem": "<p>You need to prevent the accidental deletion of resources by using resource locks.</p><p>At which two scopes can you apply a lock? Each correct answer presents a complete solution.</p><p>For each of the following scopes, select Yes if you can apply a lock to it. Otherwise, select No.</p><p>NOTE: Each correct selection is worth one point.</p>",
+ "rows": [
+  {
+   "l": "A subscription",
+   "a": 0
+  },
+  {
+   "l": "A management group",
+   "a": 1
+  },
+  {
+   "l": "A resource group",
+   "a": 0
+  },
+  {
+   "l": "The Microsoft Entra tenant",
+   "a": 1
+  }
  ],
  "expl": "<p>A resource lock can be applied to a <b>subscription</b>, a <b>resource group</b>, or a <b>resource</b>. It is inherited by everything below.</p><ul><li><b>Management group: no.</b> There are no locks at this level; to protect a hierarchy, use Azure Policy or deny assignments (deployment stacks).</li><li><b>Microsoft Entra tenant: no.</b> Locks apply to Azure resources, not to the directory.</li></ul>",
  "portal": {
@@ -433,104 +350,5 @@ AZ.questions.push(
   "btn": "Review + create"
  },
  "keep": "Deny blocks new creations and updates, never existing resources. An exclusion removes a scope from evaluation."
-},
-{
- "id": "D1-009",
- "dom": 1,
- "type": "single",
- "stem": "<p>Admin1 is a Global Administrator of the Microsoft Entra tenant. Admin1 cannot see any Azure subscription in the portal.</p><p>Admin1 must be able to assign Azure roles in every subscription of the tenant.</p><p>What should you do?</p>",
- "opts": [
-  "Assign the User Administrator role to Admin1",
-  "Enable Access management for Azure resources",
-  "Create a management group and add Admin1 to it",
-  "Assign a Microsoft Entra ID P2 license to Admin1"
- ],
- "ans": 1,
- "expl": "<p><b>Microsoft Entra roles</b> (such as Global Administrator) manage the directory. <b>Azure roles</b> manage resources. By default, a Global Administrator has <b>no</b> Azure role, so he sees no subscription.</p><p>By enabling <b>Access management for Azure resources</b> in the Entra ID properties, he <b>elevates</b> his access: he receives the <b>User Access Administrator</b> role at the root scope <code>/</code>, and can then assign roles in every subscription and management group.</p><ul><li>User Administrator: an Entra role, with no effect on Azure.</li><li>You don't “add” a user to a management group.</li><li>A P2 license grants no rights on resources.</li></ul>",
- "portal": {
-  "path": [
-   "Microsoft Entra ID"
-  ],
-  "title": "Microsoft Entra ID | Properties",
-  "menu": [
-   "Overview",
-   "Users",
-   "Groups",
-   "#Manage",
-   "*Properties"
-  ],
-  "rows": [
-   [
-    "Name",
-    "Contoso"
-   ],
-   [
-    "Tenant ID",
-    "00000000-…"
-   ],
-   [
-    "*Access management for Azure resources",
-    "Yes"
-   ]
-  ],
-  "btn": "Save"
- },
- "keep": "Global Administrator ≠ Azure access. To manage every subscription, he must elevate access (User Access Administrator at the root), then turn it off afterwards."
-},
-{
- "id": "D1-010",
- "dom": 1,
- "type": "single",
- "stem": "<p>You need to be notified by email when the <b>forecasted</b> cost of the resource group RG1 for the current month exceeds 80% of €1,000.</p><p>What should you configure?</p>",
- "opts": [
-  "An Azure Advisor cost recommendation",
-  "An Azure Policy with the Audit effect",
-  "A budget on RG1 with a forecasted-cost alert",
-  "A metric alert on the RG1 resource group"
- ],
- "ans": 2,
- "expl": "<p>A Cost Management <b>budget</b> sets an amount (here €1,000 per month) and <b>alert conditions</b> as a percentage, on <b>Actual</b> cost (already spent) or <b>Forecasted</b> cost (end-of-period projection). Here: type Forecasted, threshold 80%, with an email or an action group.</p><ul><li><b>Advisor</b> recommends savings, but does not alert on a threshold.</li><li><b>Azure Policy</b> controls resource configuration, not costs.</li><li><b>A metric alert</b> monitors technical values (CPU, requests…), not spending.</li></ul>",
- "portal": {
-  "path": [
-   "Resource groups",
-   "RG1"
-  ],
-  "title": "RG1 | Budgets › Create budget",
-  "menu": [
-   "Overview",
-   "#Cost Management",
-   "Cost analysis",
-   "Cost alerts",
-   "*Budgets"
-  ],
-  "rows": [
-   [
-    "Amount",
-    "€1,000"
-   ],
-   [
-    "Reset period",
-    "Monthly"
-   ],
-   [
-    "#Alert conditions",
-    ""
-   ],
-   [
-    "*Type",
-    "Forecasted"
-   ],
-   [
-    "*% of budget",
-    "80"
-   ],
-   [
-    "Alert recipients",
-    "finance@contoso.com"
-   ]
-  ],
-  "btn": "Create"
- },
- "keep": "Budget = alerts on actual or forecasted cost, at a percentage of the amount. It warns, it never blocks."
 }
 );

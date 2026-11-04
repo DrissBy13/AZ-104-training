@@ -67,16 +67,31 @@ AZ.cases.push(
   {
    "id": "C002-2",
    "dom": 2,
-   "type": "single",
-   "stem": "<p>You need to meet the GRP-Etudes access requirement for the reports container.</p><p>What should you do?</p>",
-   "opts": [
-    "Reader to GRP-Etudes on stlitwaredata",
-    "Storage Blob Data Reader on the reports container",
-    "Storage Blob Data Contributor on stlitwaredata",
-    "A read account SAS for GRP-Etudes"
+   "type": "hot",
+   "stem": "<p>You need to meet the following requirements. What should you configure for each one?</p><p>To answer, select the appropriate options in the answer area.</p><p>NOTE: Each correct selection is worth one point.</p>",
+   "rows": [
+    {
+     "l": "GRP-Etudes access to the rapports container:",
+     "o": [
+      "Reader to GRP-Etudes on stlitwaredata",
+      "Storage Blob Data Reader on the reports container",
+      "Storage Blob Data Contributor on stlitwaredata",
+      "A read account SAS for GRP-Etudes"
+     ],
+     "a": 1
+    },
+    {
+     "l": "stlitwaredata resilience, at the lowest cost:",
+     "o": [
+      "ZRS",
+      "RA-GZRS",
+      "GRS",
+      "LRS"
+     ],
+     "a": 0
+    }
    ],
-   "ans": 1,
-   "expl": "<p><b>Storage Blob Data Reader</b> grants read access to data with the Entra identity; the <b>container</b> scope limits access to reports. Reader doesn't give access to data; Data Contributor allows writing; a SAS doesn't use the Entra account.</p>",
+   "expl": "<p><b>1. GRP-Etudes access to the rapports container:</b></p><p><b>Storage Blob Data Reader</b> grants read access to data with the Entra identity; the <b>container</b> scope limits access to reports. Reader doesn't give access to data; Data Contributor allows writing; a SAS doesn't use the Entra account.</p><p><b>2. stlitwaredata resilience, at the lowest cost:</b></p><p><b>ZRS</b> replicates data across three availability zones in the region: it survives a datacenter failure. GRS doesn't protect against losing a datacenter in the primary region (LRS within a single datacenter), and RA-GZRS costs more than needed.</p>",
    "portal": {
     "path": [
      "Storage accounts",
@@ -100,21 +115,36 @@ AZ.cases.push(
     ],
     "btn": "Review + assign"
    },
-   "keep": "Reading blobs with Entra = Storage Blob Data Reader, at container scope."
+   "keep": "Reading blobs with Entra = Storage Blob Data Reader, at container scope. Survive a datacenter, at lowest cost = ZRS."
   },
   {
    "id": "C002-3",
    "dom": 1,
-   "type": "single",
-   "stem": "<p>You need to meet the requirement for external consultants.</p><p>What should you configure?</p>",
-   "opts": [
-    "A contoso.com administrative unit",
-    "Guest user access restrictions",
-    "Collaboration limited to contoso.com",
-    "A contoso.com custom domain"
+   "type": "hot",
+   "stem": "<p>You need to meet the following requirements. What should you configure for each one?</p><p>To answer, select the appropriate options in the answer area.</p><p>NOTE: Each correct selection is worth one point.</p>",
+   "rows": [
+    {
+     "l": "External consultants:",
+     "o": [
+      "A contoso.com administrative unit",
+      "Guest user access restrictions",
+      "Collaboration limited to contoso.com",
+      "A contoso.com custom domain"
+     ],
+     "a": 2
+    },
+    {
+     "l": "Network access to stlitwaredata:",
+     "o": [
+      "An NSG on Subnet-Web that blocks the Storage tag outbound",
+      "A NAT gateway on Subnet-Data, allowed in the account firewall",
+      "A private endpoint in Subnet-Data and public access disabled",
+      "A service endpoint on Subnet-Data and a virtual network rule"
+     ],
+     "a": 3
+    }
    ],
-   "ans": 2,
-   "expl": "<p><b>Collaboration restrictions</b> in external collaboration settings let you allow invitations only to a list of domains. Guest user access restrictions define what guests can see. contoso.com belongs to another organization: you can't add it as a custom domain.</p>",
+   "expl": "<p><b>1. External consultants:</b></p><p><b>Collaboration restrictions</b> in external collaboration settings let you allow invitations only to a list of domains. Guest user access restrictions define what guests can see. contoso.com belongs to another organization: you can't add it as a custom domain.</p><p><b>2. Network access to stlitwaredata:</b></p><p>The requirement asks to <b>keep the public address</b>: a <b>service endpoint</b> with a virtual network rule meets the need, at no cost. A private endpoint would technically work, but this option includes disabling public access, and it costs more.</p>",
    "portal": {
     "path": [
      "Microsoft Entra ID",
@@ -133,23 +163,30 @@ AZ.cases.push(
     ],
     "btn": "Save"
    },
-   "keep": "Limiting invited domains = collaboration restrictions."
+   "keep": "Limiting invited domains = collaboration restrictions. Limit to one subnet while keeping the public IP = service endpoint + virtual network rule."
   },
   {
    "id": "C002-4",
    "dom": 3,
-   "type": "multi",
-   "pick": 2,
-   "stem": "<p>You need to meet the testing requirement for WebApp-Portail.</p><p>Which <b>two</b> actions should you perform?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
-   "opts": [
-    "Create a second app in a Basic plan",
-    "Move the App Service plan to Standard",
-    "Create a deployment slot named test",
-    "Enable autoscale on the plan"
-   ],
-   "ans": [
-    1,
-    2
+   "type": "yngrid",
+   "stem": "<p>You need to meet the testing requirement for WebApp-Portail.</p><p>For each of the following actions, select Yes if it's part of the solution. Otherwise, select No.</p><p>NOTE: Each correct selection is worth one point.</p>",
+   "rows": [
+    {
+     "l": "Create a second app in a Basic plan",
+     "a": 1
+    },
+    {
+     "l": "Move the App Service plan to Standard",
+     "a": 0
+    },
+    {
+     "l": "Create a deployment slot named test",
+     "a": 0
+    },
+    {
+     "l": "Enable autoscale on the plan",
+     "a": 1
+    }
    ],
    "expl": "<p><b>Deployment slots</b> require the <b>Standard</b> tier or higher. The test slot has its own URL, and a swap puts the tested version into production. A second app would work but with no swap, and scaling is unrelated.</p>",
    "portal": {
@@ -171,68 +208,6 @@ AZ.cases.push(
     "btn": "+ Add Slot"
    },
    "keep": "Test before production = deployment slot (Standard+) then swap."
-  },
-  {
-   "id": "C002-5",
-   "dom": 4,
-   "type": "single",
-   "stem": "<p>You need to meet the network access requirement for stlitwaredata.</p><p>What should you configure?</p>",
-   "opts": [
-    "An NSG on Subnet-Web that blocks the Storage tag outbound",
-    "A NAT gateway on Subnet-Data, allowed in the account firewall",
-    "A private endpoint in Subnet-Data and public access disabled",
-    "A service endpoint on Subnet-Data and a virtual network rule"
-   ],
-   "ans": 3,
-   "expl": "<p>The requirement asks to <b>keep the public address</b>: a <b>service endpoint</b> with a virtual network rule meets the need, at no cost. A private endpoint would technically work, but this option includes disabling public access, and it costs more.</p>",
-   "portal": {
-    "path": [
-     "Storage accounts",
-     "stlitwaredata"
-    ],
-    "title": "Networking",
-    "rows": [
-     [
-      "*Virtual networks",
-      "VNet-Litware / Subnet-Data"
-     ],
-     [
-      "Public address",
-      "Kept"
-     ]
-    ],
-    "btn": "Save"
-   },
-   "keep": "Limit to one subnet while keeping the public IP = service endpoint + virtual network rule."
-  },
-  {
-   "id": "C002-6",
-   "dom": 2,
-   "type": "single",
-   "stem": "<p>You need to meet the resilience requirement for stlitwaredata, at the lowest cost.</p><p>Which redundancy should you configure?</p>",
-   "opts": [
-    "ZRS",
-    "RA-GZRS",
-    "GRS",
-    "LRS"
-   ],
-   "ans": 0,
-   "expl": "<p><b>ZRS</b> replicates data across three availability zones in the region: it survives a datacenter failure. GRS doesn't protect against losing a datacenter in the primary region (LRS within a single datacenter), and RA-GZRS costs more than needed.</p>",
-   "portal": {
-    "path": [
-     "Storage accounts",
-     "stlitwaredata"
-    ],
-    "title": "Redundancy",
-    "rows": [
-     [
-      "*Redundancy",
-      "Zone-redundant storage (ZRS)"
-     ]
-    ],
-    "btn": "Save"
-   },
-   "keep": "Survive a datacenter, at lowest cost = ZRS."
   }
  ]
 },
@@ -303,16 +278,31 @@ AZ.cases.push(
   {
    "id": "C003-2",
    "dom": 5,
-   "type": "single",
-   "stem": "<p>You need to meet the backup requirement for VM-ERP.</p><p>What should you do in Vault-Tailwind?</p>",
-   "opts": [
-    "Switch the vault to LRS, then protect VM-ERP",
-    "Cross Region Restore, then a 30-day policy",
-    "Configure only Azure Site Recovery for VM-ERP",
-    "Create a Backup vault in West Europe"
+   "type": "hot",
+   "stem": "<p>You need to meet the following requirements. What should you configure for each one?</p><p>To answer, select the appropriate options in the answer area.</p><p>NOTE: Each correct selection is worth one point.</p>",
+   "rows": [
+    {
+     "l": "VM-ERP backup, in Vault-Tailwind:",
+     "o": [
+      "Switch the vault to LRS, then protect VM-ERP",
+      "Cross Region Restore, then a 30-day policy",
+      "Configure only Azure Site Recovery for VM-ERP",
+      "Create a Backup vault in West Europe"
+     ],
+     "a": 1
+    },
+    {
+     "l": "VM-ERP recovery after a regional outage:",
+     "o": [
+      "Only the backup with Cross Region Restore",
+      "An availability zone for VM-ERP, with a ZRS disk",
+      "Site Recovery to another region (target vault)",
+      "An availability set for VM-ERP"
+     ],
+     "a": 2
+    }
    ],
-   "ans": 1,
-   "expl": "<p>The vault is already <b>GRS</b> and in the same region as VM-ERP. You only need to enable <b>Cross Region Restore</b> (to restore in the paired region) and protect the VM with a 30-day daily policy. Switching to LRS would prevent cross-region restore.</p>",
+   "expl": "<p><b>1. VM-ERP backup, in Vault-Tailwind:</b></p><p>The vault is already <b>GRS</b> and in the same region as VM-ERP. You only need to enable <b>Cross Region Restore</b> (to restore in the paired region) and protect the VM with a 30-day daily policy. Switching to LRS would prevent cross-region restore.</p><p><b>2. VM-ERP recovery after a regional outage:</b></p><p>A 15-minute RPO and a one-hour RTO require <b>continuous replication</b>: <b>Azure Site Recovery</b>, with a vault in the target region. A daily backup has a 24-hour RPO. Zones and availability sets don't protect against losing the region.</p>",
    "portal": {
     "path": [
      "Recovery Services vaults",
@@ -331,40 +321,7 @@ AZ.cases.push(
     ],
     "btn": "Save"
    },
-   "keep": "Restore in the paired region = GRS + Cross Region Restore."
-  },
-  {
-   "id": "C003-3",
-   "dom": 5,
-   "type": "single",
-   "stem": "<p>You need to meet the recovery requirement for VM-ERP in a regional outage.</p><p>What should you configure?</p>",
-   "opts": [
-    "Only the backup with Cross Region Restore",
-    "An availability zone for VM-ERP, with a ZRS disk",
-    "Site Recovery to another region (target vault)",
-    "An availability set for VM-ERP"
-   ],
-   "ans": 2,
-   "expl": "<p>A 15-minute RPO and a one-hour RTO require <b>continuous replication</b>: <b>Azure Site Recovery</b>, with a vault in the target region. A daily backup has a 24-hour RPO. Zones and availability sets don't protect against losing the region.</p>",
-   "portal": {
-    "path": [
-     "Virtual machines",
-     "VM-ERP"
-    ],
-    "title": "Disaster recovery",
-    "rows": [
-     [
-      "*Target region",
-      "West Europe"
-     ],
-     [
-      "Vault",
-      "In the target region"
-     ]
-    ],
-    "btn": "Review + Start replication"
-   },
-   "keep": "RPO of minutes + another region = Site Recovery."
+   "keep": "Restore in the paired region = GRS + Cross Region Restore. RPO of minutes + another region = Site Recovery."
   },
   {
    "id": "C003-4",
@@ -544,16 +501,31 @@ AZ.cases.push(
   {
    "id": "C004-2",
    "dom": 4,
-   "type": "single",
-   "stem": "<p>You need to meet the requirement that traffic between VNet-App and VNet-Data go through FW1.</p><p>What should you configure in VNet-App?</p>",
-   "opts": [
-    "A 10.2.0.0/16 → 10.0.1.4 route table on the subnets",
-    "A direct peering between VNet-App and VNet-Data, without the hub",
-    "A NAT gateway in VNet-App, in front of the FW1 firewall",
-    "An NSG that only allows 10.2.0.0/16 through FW1"
+   "type": "hot",
+   "stem": "<p>You need to meet the following requirements. What should you configure for each one?</p><p>To answer, select the appropriate options in the answer area.</p><p>NOTE: Each correct selection is worth one point.</p>",
+   "rows": [
+    {
+     "l": "Traffic through FW1 between VNet-App and VNet-Data, in VNet-App:",
+     "o": [
+      "A 10.2.0.0/16 → 10.0.1.4 route table on the subnets",
+      "A direct peering between VNet-App and VNet-Data, without the hub",
+      "A NAT gateway in VNet-App, in front of the FW1 firewall",
+      "An NSG that only allows 10.2.0.0/16 through FW1"
+     ],
+     "a": 0
+    },
+    {
+     "l": "Name resolution:",
+     "o": [
+      "A hosts file kept up to date on each VM in both networks",
+      "A northwind.internal public DNS zone, with delegation",
+      "A northwind.internal private zone linked to both VNets (auto)",
+      "A CNAME record per VM in a public Azure DNS zone"
+     ],
+     "a": 2
+    }
    ],
-   "ans": 0,
-   "expl": "<p>A <b>user-defined route</b> sends traffic bound for VNet-Data to FW1 (same in VNet-Data toward 10.1.0.0/16), with the matching rules in FW1. A direct peering would bypass the firewall.</p>",
+   "expl": "<p><b>1. Traffic through FW1 between VNet-App and VNet-Data, in VNet-App:</b></p><p>A <b>user-defined route</b> sends traffic bound for VNet-Data to FW1 (same in VNet-Data toward 10.1.0.0/16), with the matching rules in FW1. A direct peering would bypass the firewall.</p><p><b>2. Name resolution:</b></p><p>A <b>private DNS zone</b> linked to the networks, with <b>autoregistration</b>, creates and maintains the VMs' records. A private zone is global: it can be linked to networks in France Central and West Europe.</p>",
    "portal": {
     "path": [
      "Route tables",
@@ -567,23 +539,30 @@ AZ.cases.push(
      ]
     ]
    },
-   "keep": "Forcing traffic through the firewall = UDR to its private IP."
+   "keep": "Forcing traffic through the firewall = UDR to its private IP. Internal names across VNets = linked private zone with autoregistration."
   },
   {
    "id": "C004-3",
    "dom": 4,
-   "type": "multi",
-   "pick": 2,
-   "stem": "<p>You need to meet the VM administration requirement.</p><p>Which <b>two</b> actions should you perform?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
-   "opts": [
-    "Create a NAT gateway in VNet-Hub",
-    "Deploy Azure Bastion in VNet-Hub",
-    "Remove the VMs' public IP addresses",
-    "Open port 3389 from the internet in the NSGs"
-   ],
-   "ans": [
-    1,
-    2
+   "type": "yngrid",
+   "stem": "<p>You need to meet the VM administration requirement.</p><p>For each of the following actions, select Yes if it's part of the solution. Otherwise, select No.</p><p>NOTE: Each correct selection is worth one point.</p>",
+   "rows": [
+    {
+     "l": "Create a NAT gateway in VNet-Hub",
+     "a": 1
+    },
+    {
+     "l": "Deploy Azure Bastion in VNet-Hub",
+     "a": 0
+    },
+    {
+     "l": "Remove the VMs' public IP addresses",
+     "a": 0
+    },
+    {
+     "l": "Open port 3389 from the internet in the NSGs",
+     "a": 1
+    }
    ],
    "expl": "<p><b>Bastion</b> in the hub also serves peered networks. You <b>remove the public addresses</b> from the VMs, which are unnecessary with Bastion. Opening 3389 to the internet is the opposite of the need.</p>",
    "portal": {
@@ -642,38 +621,6 @@ AZ.cases.push(
     "btn": "Review + create"
    },
    "keep": "HTTPS + regional WAF = Application Gateway WAF v2."
-  },
-  {
-   "id": "C004-5",
-   "dom": 4,
-   "type": "single",
-   "stem": "<p>You need to meet the name resolution requirement.</p><p>What should you configure?</p>",
-   "opts": [
-    "A hosts file kept up to date on each VM in both networks",
-    "A northwind.internal public DNS zone, with delegation",
-    "A northwind.internal private zone linked to both VNets (auto)",
-    "A CNAME record per VM in a public Azure DNS zone"
-   ],
-   "ans": 2,
-   "expl": "<p>A <b>private DNS zone</b> linked to the networks, with <b>autoregistration</b>, creates and maintains the VMs' records. A private zone is global: it can be linked to networks in France Central and West Europe.</p>",
-   "portal": {
-    "path": [
-     "Private DNS zones",
-     "northwind.internal"
-    ],
-    "title": "Virtual Network Links",
-    "rows": [
-     [
-      "*VNet-App",
-      "Auto registration"
-     ],
-     [
-      "*VNet-Data",
-      "Auto registration"
-     ]
-    ]
-   },
-   "keep": "Internal names across VNets = linked private zone with autoregistration."
   },
   {
    "id": "C004-6",

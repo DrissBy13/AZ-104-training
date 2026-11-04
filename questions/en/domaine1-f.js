@@ -182,8 +182,8 @@ AZ.questions.push(
   }
  ],
  "opts": [
-  "Turn on “Access management for Azure resources” for User6",
-  "Assign User6 the Privileged Role Administrator role",
+  "Enable “Access management for Azure resources” for User6",
+  "Assign User6 the Privileged Role Administrator role in Microsoft Entra",
   "Add User6 to group G1, Contributor on RG-Net",
   "Assign User6 the Reader role on the MG-Corp group"
  ],
@@ -490,9 +490,9 @@ AZ.questions.push(
  ],
  "opts": [
   "Delete the lock, resize VM2, then recreate the lock",
-  "Assign Admin1 Virtual Machine Contributor on VM2",
+  "Assign Admin1 Virtual Machine Contributor on VM2 for the change",
   "Replace the lock with a lock on VM2 only",
-  "Add an exclusion for VM2 in RG-Data's lock"
+  "Add an exclusion for VM2 to the lock on RG-Data"
  ],
  "ans": 0,
  "expl": "<p>No role bypasses a lock. Admin1, an Owner, has the Microsoft.Authorization/locks/delete action: they remove the lock, make the change, then recreate it.</p><ul><li>An extra role doesn't change the lock.</li><li>A lock on VM2 would also block it.</li><li>Locks have no exclusions.</li></ul>",
@@ -802,7 +802,7 @@ AZ.questions.push(
  ],
  "opts": [
   "Tag resources by project, then group cost analysis by tag",
-  "Create one budget per project on Sub-Prod1, same amount",
+  "Create one budget per project on Sub-Prod1, with the same amount",
   "Create a management group per project for Sub-Prod1",
   "Add one lock per project on Sub-Prod1's resources"
  ],
