@@ -5,7 +5,6 @@ AZ.questions.push(
  "dom": 2,
  "type": "cmd",
  "stem": "<p>Vous devez créer un compte de stockage nommé storage1 qui répond aux exigences suivantes :</p><ul><li>Prendre en charge les objets blob, les partages de fichiers, les files d'attente et les tables.</li><li>Rester disponible en cas de perte d'une zone de disponibilité ou de toute la région.</li><li>Permettre la lecture des données dans la région secondaire à tout moment.</li></ul><p>Comment devez-vous compléter la commande ? Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p>",
- "tpl": "az storage account create --name storage1 --resource-group RG1 --location francecentral --sku {0} --kind {1}",
  "rows": [
   {
    "o": [
@@ -62,56 +61,41 @@ AZ.questions.push(
   ],
   "btn": "Vérifier + créer"
  },
- "keep": "LRS = 1 centre, ZRS = 3 zones, GRS = + région secondaire, GZRS = zones + région. Préfixe RA = lecture de la secondaire."
-},
-{
- "id": "D2-002",
- "dom": 2,
- "type": "single",
- "stem": "<p>Un blob est placé au niveau d'accès Froid (Cool). Il est supprimé 10 jours plus tard.</p><p>Combien de jours de suppression anticipée sont facturés ?</p>",
- "opts": [
-  "0 jour",
-  "10 jours",
-  "20 jours",
-  "30 jours"
- ],
- "ans": 2,
- "expl": "<p>Chaque niveau froid a une <b>durée minimale de conservation</b> : Froid (Cool) 30 jours, Cold 90 jours, Archive 180 jours. Si on supprime (ou déplace) le blob avant, Azure facture les jours restants.</p><p>Ici : 30 − 10 = <b>20 jours</b> facturés en plus.</p><p>Le niveau Chaud n'a pas de minimum.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage1",
-   "Conteneurs",
-   "data"
-  ],
-  "title": "rapport.pdf | Vue d'ensemble",
-  "menu": [
-   "*Vue d'ensemble",
-   "Versions",
-   "Instantanés"
-  ],
-  "rows": [
-   [
-    "*Niveau d'accès",
-    "Froid (Cool) · minimum 30 jours"
-   ],
-   [
-    "Âge du blob",
-    "10 jours"
-   ],
-   [
-    "Supprimer maintenant",
-    "20 jours de suppression anticipée facturés"
-   ]
-  ]
- },
- "keep": "Minimums : Froid 30 j, Cold 90 j, Archive 180 j. Supprimer avant = jours restants facturés."
+ "keep": "LRS = 1 centre, ZRS = 3 zones, GRS = + région secondaire, GZRS = zones + région. Préfixe RA = lecture de la secondaire.",
+ "tpl": "az storage account create --name storage1 --resource-group RG1 --location francecentral --sku {0} --kind {1}"
 },
 {
  "id": "D2-003",
  "dom": 2,
  "type": "hotspot",
  "stem": "<p>Vous disposez d'un compte de stockage nommé storage1. Des signatures d'accès partagé (SAS) de compte ont été distribuées à plusieurs partenaires. L'une d'elles a fuité.</p><p>Vous devez révoquer immédiatement toutes les SAS de compte signées avec la clé key1.</p><p>Quel paramètre devez-vous utiliser ? Pour répondre, sélectionnez le paramètre approprié dans la zone de réponse.</p>",
+ "ans": "Clés d'accès",
+ "expl": "<p>Une <b>SAS de compte</b> est signée avec l'une des deux clés d'accès (key1 ou key2). Azure ne garde aucune liste de ces SAS : on ne peut pas en annuler une seule.</p><p>La seule façon de les révoquer est de <b>régénérer la clé</b> qui les a signées, dans <b>Clés d'accès</b>. Toutes les SAS signées avec key1 deviennent immédiatement invalides. Attention : les applications qui utilisent key1 doivent ensuite être mises à jour.</p><p>La page <b>Signature d'accès partagé</b> sert à générer des SAS, pas à les révoquer. Pour pouvoir révoquer une SAS précise, on crée une SAS de service liée à une <b>stratégie d'accès stockée</b> sur le conteneur.</p>",
+ "portal": {
+  "path": [
+   "Comptes de stockage",
+   "storage1"
+  ],
+  "title": "storage1 | Clés d'accès",
+  "menu": [
+   "Vue d'ensemble",
+   "Signature d'accès partagé",
+   "*Clés d'accès",
+   "Chiffrement"
+  ],
+  "rows": [
+   [
+    "*key1",
+    "Faire pivoter la clé"
+   ],
+   [
+    "key2",
+    "Inchangée"
+   ]
+  ],
+  "btn": "Faire pivoter la clé"
+ },
+ "keep": "Révoquer les SAS de compte = régénérer la clé qui les a signées. SAS révocable une par une = stratégie d'accès stockée.",
  "win": {
   "title": "storage1 | Compte de stockage",
   "nav": [
@@ -148,34 +132,7 @@ AZ.questions.push(
     ]
    }
   ]
- },
- "ans": "Clés d'accès",
- "expl": "<p>Une <b>SAS de compte</b> est signée avec l'une des deux clés d'accès (key1 ou key2). Azure ne garde aucune liste de ces SAS : on ne peut pas en annuler une seule.</p><p>La seule façon de les révoquer est de <b>régénérer la clé</b> qui les a signées, dans <b>Clés d'accès</b>. Toutes les SAS signées avec key1 deviennent immédiatement invalides. Attention : les applications qui utilisent key1 doivent ensuite être mises à jour.</p><p>La page <b>Signature d'accès partagé</b> sert à générer des SAS, pas à les révoquer. Pour pouvoir révoquer une SAS précise, on crée une SAS de service liée à une <b>stratégie d'accès stockée</b> sur le conteneur.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage1"
-  ],
-  "title": "storage1 | Clés d'accès",
-  "menu": [
-   "Vue d'ensemble",
-   "Signature d'accès partagé",
-   "*Clés d'accès",
-   "Chiffrement"
-  ],
-  "rows": [
-   [
-    "*key1",
-    "Faire pivoter la clé"
-   ],
-   [
-    "key2",
-    "Inchangée"
-   ]
-  ],
-  "btn": "Faire pivoter la clé"
- },
- "keep": "Révoquer les SAS de compte = régénérer la clé qui les a signées. SAS révocable une par une = stratégie d'accès stockée."
+ }
 },
 {
  "id": "D2-004",
@@ -239,63 +196,10 @@ AZ.questions.push(
  "keep": "Pare-feu du stockage d'abord, autorisation ensuite. Chaque sous-réseau et chaque IP doivent être listés."
 },
 {
- "id": "D2-005",
- "dom": 2,
- "type": "multi",
- "pick": 2,
- "stem": "<p>Votre domaine AD DS est synchronisé avec Microsoft Entra ID. Le compte de stockage storage1 contient un partage Azure Files nommé share1.</p><p>Les utilisateurs du domaine doivent lire et modifier les fichiers de share1 en utilisant leurs identifiants AD DS.</p><p>Quelles deux actions devez-vous effectuer ? Chaque réponse correcte présente une partie de la solution.</p><p><b>REMARQUE :</b> chaque sélection correcte vaut un point.</p>",
- "opts": [
-  "Activer l'authentification AD DS sur storage1",
-  "Générer une SAS de service pour chaque utilisateur du domaine",
-  "Attribuer Contributeur de partage SMB sur share1",
-  "Attribuer le rôle Lecteur sur le compte storage1"
- ],
- "ans": [
-  0,
-  2
- ],
- "expl": "<p>L'accès aux fichiers Azure Files avec une identité se fait en trois niveaux :</p><ol><li><b>Source d'identité</b> sur le compte : ici <b>AD DS</b> (le compte de stockage est joint au domaine).</li><li><b>Autorisation au niveau du partage</b> par un rôle Azure : <b>Contributeur de partage SMB de données de fichier de stockage</b> pour lire et modifier.</li><li><b>Droits NTFS</b> sur les dossiers et fichiers, pour affiner.</li></ol><p>Une SAS n'utilise pas l'identité AD et ne fonctionne pas pour un montage SMB. Le rôle Lecteur porte sur le plan de contrôle : il ne donne pas accès aux fichiers.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage1",
-   "Partages de fichiers"
-  ],
-  "title": "Partages de fichiers | Accès basé sur l'identité",
-  "menu": [
-   "*Partages de fichiers"
-  ],
-  "rows": [
-   [
-    "*Active Directory Domain Services (AD DS)",
-    "Configuré"
-   ],
-   [
-    "Microsoft Entra Kerberos",
-    "Non configuré"
-   ]
-  ],
-  "btn": "Configurer"
- },
- "keep": "Azure Files + identité : source d'identité sur le compte, rôle SMB sur le partage, puis droits NTFS."
-},
-{
  "id": "D2-006",
  "dom": 2,
  "type": "order",
  "stem": "<p>Vous disposez de deux comptes de stockage nommés source1 et dest1. Vous devez configurer la réplication d'objets de source1 vers dest1.</p><p>Quelles trois actions devez-vous effectuer dans l'ordre ? Pour répondre, déplacez les actions appropriées de la liste des actions vers la zone de réponse et classez-les dans le bon ordre.</p>",
- "acts": [
-  "Activer le flux de modifications sur dest1",
-  "Activer le contrôle de version des blobs sur source1 et dest1",
-  "Activer la restauration à un point dans le temps sur source1",
-  "Activer le flux de modifications sur source1",
-  "Créer la règle de réplication d'objets de source1 vers dest1"
- ],
- "seq": [
-  1,
-  3,
-  4
- ],
  "expl": "<p>La réplication d'objets copie les blobs de façon asynchrone d'un compte source vers un compte de destination. Ses prérequis :</p><ul><li><b>Contrôle de version des blobs</b> sur la source <b>et</b> la destination ;</li><li><b>Flux de modifications</b> sur la <b>source</b> uniquement.</li></ul><p>On crée ensuite la <b>règle de réplication</b> (conteneur source → conteneur de destination, filtres éventuels).</p><p>Le flux de modifications sur la destination et la restauration à un point dans le temps ne sont pas requis.</p>",
  "portal": {
   "path": [
@@ -323,13 +227,54 @@ AZ.questions.push(
   ],
   "btn": "Créer des règles de réplication"
  },
- "keep": "Réplication d'objets : versioning des deux côtés, flux de modifications sur la source, puis la règle."
+ "keep": "Réplication d'objets : versioning des deux côtés, flux de modifications sur la source, puis la règle.",
+ "acts": [
+  "Activer le flux de modifications sur dest1",
+  "Activer le contrôle de version des blobs sur source1 et dest1",
+  "Activer la restauration à un point dans le temps sur source1",
+  "Activer le flux de modifications sur source1",
+  "Créer la règle de réplication d'objets de source1 vers dest1"
+ ],
+ "seq": [
+  1,
+  3,
+  4
+ ]
 },
 {
  "id": "D2-007",
  "dom": 2,
  "type": "screen",
  "stem": "<p>Vous disposez d'un compte de stockage nommé storage1.</p><p>Les utilisateurs doivent pouvoir récupérer, pendant 14 jours, un blob supprimé et l'ancienne version d'un blob écrasé. Seules les fonctionnalités nécessaires doivent être activées.</p><p>Comment devez-vous configurer la protection des données ? Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p>",
+ "expl": "<p>Deux besoins, deux fonctionnalités :</p><ul><li>Récupérer un blob <b>supprimé</b> → <b>suppression réversible des objets blob</b>, avec <b>14 jours</b> de conservation.</li><li>Récupérer l'ancienne version d'un blob <b>écrasé</b> → <b>contrôle de version</b>. (La suppression réversible seule garde un instantané lors d'un écrasement, mais le versioning est la fonctionnalité prévue pour cela.)</li></ul><p>La suppression réversible des <b>conteneurs</b> est cochée par défaut, mais elle n'est pas demandée : on la décoche. Le flux de modifications et la restauration à un point dans le temps non plus.</p>",
+ "portal": {
+  "path": [
+   "Comptes de stockage",
+   "storage1"
+  ],
+  "title": "storage1 | Protection des données",
+  "menu": [
+   "Vue d'ensemble",
+   "*Protection des données",
+   "Réplication d'objets"
+  ],
+  "rows": [
+   [
+    "*Activer la suppression réversible pour les objets blob",
+    "Coché · 14 jours"
+   ],
+   [
+    "*Activer le contrôle de version des objets blob",
+    "Coché"
+   ],
+   [
+    "Activer la suppression réversible pour les conteneurs",
+    "Décoché"
+   ]
+  ],
+  "btn": "Enregistrer"
+ },
+ "keep": "Blob supprimé = suppression réversible des blobs. Blob écrasé = contrôle de version. Conteneur supprimé = suppression réversible des conteneurs.",
  "win": {
   "title": "storage1 | Protection des données",
   "sub": "Compte de stockage",
@@ -384,79 +329,7 @@ AZ.questions.push(
     "a": false
    }
   ]
- },
- "expl": "<p>Deux besoins, deux fonctionnalités :</p><ul><li>Récupérer un blob <b>supprimé</b> → <b>suppression réversible des objets blob</b>, avec <b>14 jours</b> de conservation.</li><li>Récupérer l'ancienne version d'un blob <b>écrasé</b> → <b>contrôle de version</b>. (La suppression réversible seule garde un instantané lors d'un écrasement, mais le versioning est la fonctionnalité prévue pour cela.)</li></ul><p>La suppression réversible des <b>conteneurs</b> est cochée par défaut, mais elle n'est pas demandée : on la décoche. Le flux de modifications et la restauration à un point dans le temps non plus.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage1"
-  ],
-  "title": "storage1 | Protection des données",
-  "menu": [
-   "Vue d'ensemble",
-   "*Protection des données",
-   "Réplication d'objets"
-  ],
-  "rows": [
-   [
-    "*Activer la suppression réversible pour les objets blob",
-    "Coché · 14 jours"
-   ],
-   [
-    "*Activer le contrôle de version des objets blob",
-    "Coché"
-   ],
-   [
-    "Activer la suppression réversible pour les conteneurs",
-    "Décoché"
-   ]
-  ],
-  "btn": "Enregistrer"
- },
- "keep": "Blob supprimé = suppression réversible des blobs. Blob écrasé = contrôle de version. Conteneur supprimé = suppression réversible des conteneurs."
-},
-{
- "id": "D2-008",
- "dom": 2,
- "type": "single",
- "stem": "<p>Le conteneur legal1 contient des documents liés à un litige. Ils ne doivent être ni modifiés ni supprimés tant que le litige est en cours. La durée du litige est inconnue.</p><p>Que devez-vous configurer sur legal1 ?</p>",
- "opts": [
-  "Une stratégie de rétention basée sur le temps",
-  "Un verrou de type Supprimer sur le compte",
-  "Une règle de gestion du cycle de vie",
-  "Une conservation légale sur le conteneur"
- ],
- "ans": 3,
- "expl": "<p>Le stockage <b>immuable</b> (WORM : écriture unique, lectures multiples) propose deux types de stratégies sur un conteneur :</p><ul><li><b>Rétention basée sur le temps</b> : les blobs sont protégés pendant une durée fixée (par exemple 7 ans).</li><li><b>Conservation légale</b> : les blobs sont protégés sans durée, jusqu'à ce que la conservation soit retirée. C'est fait pour un litige dont on ne connaît pas la fin.</li></ul><p>Un verrou de ressource protège le compte sur le plan de contrôle, pas les fichiers. Le cycle de vie déplace ou supprime des blobs, il ne protège rien.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage1",
-   "Conteneurs",
-   "legal1"
-  ],
-  "title": "legal1 | Stratégie d'accès",
-  "menu": [
-   "Vue d'ensemble",
-   "*Stratégie d'accès"
-  ],
-  "rows": [
-   [
-    "#Stockage d'objets blob immuable",
-    ""
-   ],
-   [
-    "*Type de stratégie",
-    "Conservation légale"
-   ],
-   [
-    "Étiquette",
-    "Litige-2026"
-   ]
-  ],
-  "btn": "Enregistrer"
- },
- "keep": "Durée connue = rétention basée sur le temps. Durée inconnue = conservation légale."
+ }
 },
 {
  "id": "D2-009",

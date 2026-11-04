@@ -554,7 +554,7 @@ AZ.questions.push(
   "Enable last access tracking, then a last-access rule",
   "Replace R1's condition with “60 days after creation”",
   "Add a Read = No index tag to each blob in R1",
-  "Enable change feed, then a rule on reads"
+  "Enable change feed, then create a lifecycle rule based on reads"
  ],
  "ans": 0,
  "expl": "<p>The criterion is <b>reads</b>, not modifications. Enable <b>last access time tracking</b>, then a rule with daysAfterLastAccessTimeGreaterThan = 60 on the logs/ prefix.</p><ul><li>The creation date says nothing about reads.</li><li>Tagging each blob by hand doesn't track reads and takes ongoing effort.</li><li>Change feed records writes, not reads, and isn't a lifecycle condition.</li></ul>",
@@ -655,9 +655,9 @@ AZ.questions.push(
  ],
  "opts": [
   "Set the default share-level permission to SMB Share Reader",
-  "Assign each user SMB Share Reader on st1",
+  "Assign each domain user SMB Share Reader on the st1 account",
   "Generate a read account SAS and deploy it to computers",
-  "Add “Domain Users” to NTFS on sh1 and sh2 only"
+  "Add “Domain Users” to the NTFS ACLs on sh1 and sh2 only, with no role"
  ],
  "ans": 0,
  "expl": "<p>The <b>default share-level permission</b> applies to every authenticated identity without an explicit role. Setting it to SMB Share Reader lets all domain users read, then NTFS refines.</p><ul><li>A role per user contradicts the question.</li><li>A SAS isn't used for SMB mounting and bypasses identity.</li><li>NTFS alone isn't enough: without a share-level permission, access is denied.</li></ul>",
@@ -976,10 +976,10 @@ AZ.questions.push(
   }
  ],
  "opts": [
-  "Delete previous versions 90 days after their creation",
+  "Delete previous versions 90 days after creation",
   "Move previous versions to Archive after 30 days",
-  "Add a base blob deletion after 90 days to R1",
-  "Disable versioning, which purges the versions"
+  "Add to R1 a base blob deletion 90 days after modification",
+  "Disable account versioning, which purges the existing versions"
  ],
  "ans": [
   0,

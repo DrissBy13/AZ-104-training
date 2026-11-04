@@ -551,10 +551,10 @@ AZ.questions.push(
   }
  ],
  "opts": [
-  "Activer le suivi du dernier accès, puis une règle sur le dernier accès",
+  "Activer le suivi du dernier accès, puis règle sur le dernier accès",
   "Remplacer la condition de R1 par « 60 jours après la création »",
   "Ajouter à R1 une étiquette d'index Lu = Non sur chaque blob",
-  "Activer le flux de modification, puis une règle sur les lectures"
+  "Activer le flux de modification, puis créer une règle sur les lectures"
  ],
  "ans": 0,
  "expl": "<p>Le critère est la <b>lecture</b>, pas la modification. Il faut activer le <b>suivi de l'heure du dernier accès</b>, puis une règle avec daysAfterLastAccessTimeGreaterThan = 60 sur le préfixe logs/.</p><ul><li>La date de création ne dit rien des lectures.</li><li>Étiqueter chaque blob à la main ne suit pas les lectures et demande un effort permanent.</li><li>Le flux de modification enregistre les écritures, pas les lectures, et n'est pas une condition de cycle de vie.</li></ul>",
@@ -654,10 +654,10 @@ AZ.questions.push(
   }
  ],
  "opts": [
-  "Définir la permission par défaut du partage sur Lecteur de partage SMB",
-  "Attribuer à chaque utilisateur Lecteur de partage SMB sur st1",
+  "Définir la permission de partage par défaut sur Lecteur de partage SMB",
+  "Attribuer à chaque utilisateur Lecteur de partage SMB sur le compte st1",
   "Générer une SAS de compte en lecture et la distribuer aux postes",
-  "Ajouter « Utilisateurs du domaine » en NTFS sur sh1 et sh2 seulement"
+  "Ajouter « Utilisateurs du domaine » en NTFS sur sh1 et sh2, sans rôle"
  ],
  "ans": 0,
  "expl": "<p>La <b>permission par défaut au niveau du partage</b> s'applique à toute identité authentifiée qui n'a pas de rôle explicite. La régler sur Lecteur de partage SMB permet à tous les utilisateurs du domaine de lire, puis NTFS affine.</p><ul><li>Un rôle par utilisateur contredit l'énoncé.</li><li>Une SAS ne sert pas au montage SMB et contourne l'identité.</li><li>NTFS seul ne suffit pas : sans permission au niveau du partage, l'accès est refusé.</li></ul>",

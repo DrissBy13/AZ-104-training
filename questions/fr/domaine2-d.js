@@ -66,311 +66,6 @@ AZ.questions.push(
  "keep": "blob, file, queue, table, dfs (Data Lake), web (site statique)."
 },
 {
- "id": "D2-131",
- "dom": 2,
- "type": "single",
- "stem": "<p>Vous migrez vers Azure une application qui lit et écrit des fichiers sur un partage réseau <code>\\\\serveur\\donnees</code> en SMB. Vous ne pouvez pas modifier le code.</p><p>Quel service de stockage devez-vous utiliser ?</p>",
- "opts": [
-  "Azure Files",
-  "Stockage Table",
-  "Stockage Blob avec un conteneur privé",
-  "Stockage File d'attente"
- ],
- "ans": 0,
- "expl": "<p><b>Azure Files</b> fournit des partages accessibles en <b>SMB</b> (et NFS), montés comme un lecteur réseau : l'application continue d'utiliser un chemin UNC sans modification.</p><p>Le stockage blob s'utilise par API REST ou SDK, ce qui demanderait de modifier le code. Les files d'attente et les tables ne sont pas des systèmes de fichiers.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage1",
-   "Partages de fichiers"
-  ],
-  "title": "donnees | Se connecter",
-  "rows": [
-   [
-    "*Chemin UNC",
-    "\\\\storage1.file.core.windows.net\\donnees"
-   ],
-   [
-    "Protocole",
-    "SMB 3.x"
-   ]
-  ]
- },
- "keep": "Application qui utilise un partage SMB sans changement de code = Azure Files."
-},
-{
- "id": "D2-132",
- "dom": 2,
- "type": "single",
- "stem": "<p>Votre entreprise a 10 agences, chacune avec un serveur de fichiers local. Elle veut un seul ensemble de données central dans Azure, avec un accès local rapide aux fichiers chauds dans chaque agence.</p><p>Que devez-vous recommander ?</p>",
- "opts": [
-  "Un compte de stockage par agence, avec AzCopy",
-  "Azure Files, File Sync et hiérarchisation cloud",
-  "Azure Data Box envoyé chaque mois",
-  "AzCopy planifié dans chaque agence vers un compte"
- ],
- "ans": 1,
- "expl": "<p><b>Azure File Sync</b> synchronise plusieurs serveurs (un point de terminaison serveur par agence) avec le même partage Azure (point de terminaison cloud). La <b>hiérarchisation cloud</b> garde en local les fichiers les plus utilisés.</p><p>Un compte par agence ne centralise rien. AzCopy ne fait pas de synchronisation multidirectionnelle. Data Box est un transfert ponctuel.</p>",
- "portal": {
-  "path": [
-   "Services de synchronisation de stockage",
-   "Sync1",
-   "Groupe-Central"
-  ],
-  "title": "Groupe-Central",
-  "rows": [
-   [
-    "Point de terminaison cloud",
-    "partage-central"
-   ],
-   [
-    "*Points de terminaison serveur",
-    "10 serveurs d'agence, hiérarchisation cloud"
-   ]
-  ]
- },
- "keep": "Plusieurs sites + un jeu de données central + cache local = Azure File Sync."
-},
-{
- "id": "D2-133",
- "dom": 2,
- "type": "single",
- "stem": "<p>Le même fichier rapport.docx a été modifié en même temps sur deux serveurs de la même synchronisation Azure File Sync, FS-PARIS et FS-LYON.</p><p>Que fait Azure File Sync ?</p>",
- "opts": [
-  "Il bloque la synchronisation jusqu'à une décision manuelle",
-  "Il fusionne le contenu des deux fichiers en conflit",
-  "Il garde les deux : l'un est renommé avec un suffixe",
-  "Il garde uniquement la version la plus récente"
- ],
- "ans": 2,
- "expl": "<p>En cas de conflit, File Sync ne perd aucune modification : il conserve les deux fichiers. La version qui « gagne » garde le nom d'origine ; l'autre est renommée avec le nom du point de terminaison (serveur ou cloud) et un numéro, par exemple <code>rapport-FS-LYON.docx</code>.</p>",
- "portal": {
-  "path": [
-   "Partage-central",
-   "Rapports"
-  ],
-  "title": "Explorateur de fichiers",
-  "rows": [
-   [
-    "rapport.docx",
-    "Version gagnante"
-   ],
-   [
-    "*rapport-FS-LYON.docx",
-    "Version en conflit, conservée"
-   ]
-  ]
- },
- "keep": "Conflit File Sync : les deux fichiers sont gardés, le perdant est renommé."
-},
-{
- "id": "D2-134",
- "dom": 2,
- "type": "single",
- "stem": "<p>Un administrateur copie des fichiers directement dans le partage Azure share14 depuis le portail. Ce partage est le point de terminaison cloud d'un groupe Azure File Sync. Les fichiers n'apparaissent pas tout de suite sur le serveur.</p><p>Pourquoi ?</p>",
- "opts": [
-  "Le portail ne peut pas écrire dans un partage synchronisé",
-  "La hiérarchisation cloud bloque les nouveaux fichiers",
-  "Il faut redémarrer l'agent sur le serveur",
-  "Une tâche détecte ces changements toutes les 24 h"
- ],
- "ans": 3,
- "expl": "<p>Les changements faits sur un <b>serveur</b> sont détectés en temps réel par l'agent. Ceux faits <b>directement dans le partage Azure</b> (portail, SMB direct, API) sont détectés par une <b>tâche de détection des modifications</b> qui s'exécute une fois toutes les 24 heures. On peut la lancer à la demande avec <code>Invoke-AzStorageSyncChangeDetection</code>.</p>",
- "portal": {
-  "path": [
-   "Cloud Shell"
-  ],
-  "title": "PowerShell",
-  "rows": [
-   [
-    "Détection dans le cloud",
-    "Toutes les 24 h"
-   ],
-   [
-    "*À la demande",
-    "Invoke-AzStorageSyncChangeDetection"
-   ]
-  ]
- },
- "keep": "Modifs directes dans le partage Azure = détection toutes les 24 h (ou à la demande)."
-},
-{
- "id": "D2-135",
- "dom": 2,
- "type": "single",
- "stem": "<p>Vous devez transférer 25 To vers Azure. Votre équipe préfère des disques SSD qu'elle peut connecter en USB à un serveur.</p><p>Quelle offre Data Box convient le mieux ?</p>",
- "opts": [
-  "Data Box Disk",
-  "Data Box Next Gen 525",
-  "Azure Import/Export avec vos propres bandes",
-  "Data Box Gateway"
- ],
- "ans": 0,
- "expl": "<p><b>Data Box Disk</b> : des disques SSD chiffrés (environ 7 To utilisables chacun, jusqu'à 5 disques par commande, soit environ 35 To) connectés en USB ou SATA. Adapté à quelques dizaines de To.</p><p>Les appareils <b>Data Box Next Gen</b> visent des volumes bien plus grands (120 To ou 525 To utilisables). <b>Data Box Gateway</b> est une appliance virtuelle de transfert en ligne. Import/Export n'accepte pas de bandes.</p>",
- "portal": {
-  "path": [
-   "Azure Data Box",
-   "Commander"
-  ],
-  "title": "Sélectionner votre produit",
-  "rows": [
-   [
-    "*Data Box Disk",
-    "≈ 7 To par disque, jusqu'à 5 disques (USB/SATA)"
-   ],
-   [
-    "Data Box Next Gen",
-    "120 To ou 525 To"
-   ]
-  ],
-  "btn": "Sélectionner"
- },
- "keep": "Quelques dizaines de To en SSD USB = Data Box Disk."
-},
-{
- "id": "D2-136",
- "dom": 2,
- "type": "single",
- "stem": "<p>Un blob est placé au niveau <b>Froid (Cool)</b>. 10 jours plus tard, une règle de cycle de vie le déplace vers <b>Archive</b>.</p><p>Que se passe-t-il pour la facturation ?</p>",
- "opts": [
-  "Le déplacement est refusé avant 30 jours au niveau Froid",
-  "Des frais de suppression anticipée de 20 jours",
-  "Aucun frais supplémentaire, le niveau change",
-  "Des frais de 180 jours au niveau Archive, tout de suite"
- ],
- "ans": 1,
- "expl": "<p>Le niveau Froid a une durée minimale de <b>30 jours</b>. Le blob y est resté 10 jours : on paie les <b>20 jours restants</b> (frais de suppression anticipée). Ensuite, le compteur des 180 jours du niveau Archive démarre.</p><p>Le déplacement n'est jamais refusé ; seule la facturation en tient compte.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage1",
-   "Conteneurs",
-   "data"
-  ],
-  "title": "video.mp4 | Vue d'ensemble",
-  "rows": [
-   [
-    "Niveau précédent",
-    "Froid · 10 jours"
-   ],
-   [
-    "*Frais de suppression anticipée",
-    "20 jours au niveau Froid"
-   ],
-   [
-    "Niveau actuel",
-    "Archive"
-   ]
-  ]
- },
- "keep": "Quitter un niveau trop tôt = jours restants facturés, même en descendant."
-},
-{
- "id": "D2-137",
- "dom": 2,
- "type": "single",
- "stem": "<p>Vous avez réhydraté un blob du niveau Archive vers le niveau Froid. Le lendemain, votre règle de cycle de vie (« Archiver après 90 jours depuis la dernière modification ») le renvoie aussitôt au niveau Archive.</p><p>Quelle condition devez-vous ajouter à la règle pour éviter cela ?</p>",
- "opts": [
-  "daysAfterCreationGreaterThan",
-  "prefixMatch",
-  "daysAfterLastTierChangeGreaterThan",
-  "daysAfterLastAccessTimeGreaterThan"
- ],
- "ans": 2,
- "expl": "<p>La condition <b>daysAfterLastTierChangeGreaterThan</b> (jours depuis le dernier changement de niveau) s'utilise avec tierToArchive : un blob qui vient d'être réhydraté ne sera pas réarchivé avant le délai choisi.</p><p>La date de création et la date de modification ne changent pas lors d'une réhydratation, d'où le problème.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage1"
-  ],
-  "title": "Gestion du cycle de vie | Condition",
-  "menu": [
-   "*Gestion du cycle de vie"
-  ],
-  "rows": [
-   [
-    "Archiver si modifié il y a plus de",
-    "90 jours"
-   ],
-   [
-    "*Et dernier changement de niveau il y a plus de",
-    "7 jours"
-   ]
-  ]
- },
- "keep": "Éviter de réarchiver un blob réhydraté = daysAfterLastTierChangeGreaterThan."
-},
-{
- "id": "D2-138",
- "dom": 2,
- "type": "single",
- "stem": "<p>Vous avez lancé la réhydratation d'un blob archivé avec la priorité <b>Standard</b>. L'utilisateur en a finalement besoin d'urgence.</p><p>Que pouvez-vous faire ?</p>",
- "opts": [
-  "Rien : la priorité ne peut pas être modifiée",
-  "Copier le blob vers un autre conteneur au niveau Archive",
-  "Annuler la réhydratation et attendre 24 heures",
-  "Relancer l'opération avec la priorité Élevée"
- ],
- "ans": 3,
- "expl": "<p>Pendant une réhydratation en attente, on peut <b>passer de Standard à Élevée</b> (en refaisant Set Blob Tier avec la priorité High). On ne peut pas faire l'inverse. La priorité Élevée coûte plus cher.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage1",
-   "Conteneurs",
-   "archives"
-  ],
-  "title": "Modifier le niveau",
-  "rows": [
-   [
-    "État",
-    "Réhydratation en attente (Standard)"
-   ],
-   [
-    "*Priorité de réhydratation",
-    "Élevée"
-   ]
-  ],
-  "btn": "Enregistrer"
- },
- "keep": "Réhydratation en cours : on peut passer de Standard à Élevée, pas l'inverse."
-},
-{
- "id": "D2-139",
- "dom": 2,
- "type": "single",
- "stem": "<p>Vous devez lire un blob archivé sans modifier le blob d'origine, qui doit rester au niveau Archive.</p><p>Que devez-vous faire ?</p>",
- "opts": [
-  "Copier le blob archivé vers un blob Chaud ou Froid",
-  "Créer un instantané du blob archivé et le lire",
-  "Lire le blob archivé avec une SAS de service",
-  "Changer le niveau du blob d'origine en Chaud"
- ],
- "ans": 0,
- "expl": "<p>La <b>copie</b> d'un blob archivé vers un nouveau blob en ligne (opération Copy Blob avec un niveau cible) réhydrate la copie, tandis que l'original reste au niveau Archive.</p><p>Changer le niveau modifierait l'original. Un instantané d'un blob archivé est lui aussi hors ligne. Une SAS ne rend pas un blob archivé lisible.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage1",
-   "Conteneurs",
-   "archives"
-  ],
-  "title": "Copier l'objet blob",
-  "rows": [
-   [
-    "Source",
-    "contrat.pdf (Archive)"
-   ],
-   [
-    "*Destination",
-    "lecture/contrat.pdf · niveau Chaud"
-   ]
-  ],
-  "btn": "Copier"
- },
- "keep": "Lire sans toucher l'original archivé = copie vers un niveau en ligne."
-},
-{
  "id": "D2-140",
  "dom": 2,
  "type": "yngrid",
@@ -417,287 +112,10 @@ AZ.questions.push(
  "keep": "Versions : créées à chaque écriture, gardées après suppression, promouvables."
 },
 {
- "id": "D2-141",
- "dom": 2,
- "type": "single",
- "stem": "<p>Vous voulez appliquer des stratégies d'immuabilité différentes à des blobs précis d'un même conteneur, et non au conteneur entier.</p><p>Quel prérequis devez-vous activer ?</p>",
- "opts": [
-  "La géoredondance avec lecture dans la région secondaire",
-  "Le contrôle de version et l'immuabilité par version",
-  "La suppression réversible des conteneurs",
-  "L'espace de noms hiérarchique du compte"
- ],
- "ans": 1,
- "expl": "<p>L'<b>immuabilité au niveau de la version</b> permet d'appliquer une stratégie de rétention ou une conservation légale à un blob ou une version précis. Elle exige le <b>contrôle de version</b> et s'active sur le compte ou le conteneur.</p><p>Sans elle, les stratégies s'appliquent au niveau du conteneur.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage1",
-   "Conteneurs",
-   "preuves"
-  ],
-  "title": "Créer un conteneur",
-  "rows": [
-   [
-    "*Activer la prise en charge de l'immuabilité au niveau de la version",
-    "Coché"
-   ],
-   [
-    "Prérequis",
-    "Contrôle de version activé"
-   ]
-  ],
-  "btn": "Créer"
- },
- "keep": "Immuabilité par blob = immuabilité au niveau de la version (versioning requis)."
-},
-{
- "id": "D2-142",
- "dom": 2,
- "type": "single",
- "stem": "<p>Vous configurez la réplication d'objets de storage61 (locataire Contoso) vers storage62 (locataire Fabrikam). La création de la stratégie échoue.</p><p>Quel paramètre devez-vous vérifier ?</p>",
- "opts": [
-  "L'accès anonyme aux blobs",
-  "Le chiffrement d'infrastructure",
-  "La réplication entre locataires",
-  "Le niveau d'accès par défaut des comptes"
- ],
- "ans": 2,
- "expl": "<p>La réplication d'objets vers un compte d'un <b>autre locataire Microsoft Entra</b> doit être autorisée par le paramètre <b>Autoriser la réplication entre locataires</b> (AllowCrossTenantReplication), désactivé par défaut sur les nouveaux comptes.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage61"
-  ],
-  "title": "storage61 | Réplication d'objets",
-  "menu": [
-   "*Réplication d'objets"
-  ],
-  "rows": [
-   [
-    "*Autoriser la réplication entre locataires",
-    "Activé"
-   ]
-  ],
-  "btn": "Enregistrer"
- },
- "keep": "Réplication vers un autre locataire = AllowCrossTenantReplication."
-},
-{
- "id": "D2-143",
- "dom": 2,
- "type": "single",
- "stem": "<p>Vous créez une stratégie de réplication d'objets sur un conteneur qui contient déjà 10 000 blobs.</p><p>Que se passe-t-il pour les blobs existants ?</p>",
- "opts": [
-  "Ils sont toujours répliqués en premier",
-  "Ils ne sont jamais répliqués",
-  "Ils sont déplacés vers la destination et supprimés de la source",
-  "Selon l'option : tous, nouveaux seuls, ou après une date"
- ],
- "ans": 3,
- "expl": "<p>Une règle de réplication d'objets propose de <b>copier tous les objets</b>, <b>uniquement les nouveaux objets</b>, ou un filtre de date personnalisé. La réplication <b>copie</b> les blobs ; elle ne les supprime jamais de la source.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage1"
-  ],
-  "title": "Créer une règle de réplication",
-  "menu": [
-   "*Réplication d'objets"
-  ],
-  "rows": [
-   [
-    "*Copier les objets blob",
-    "Tout · Uniquement les nouveaux · Personnalisé (date)"
-   ]
-  ],
-  "btn": "Enregistrer"
- },
- "keep": "La réplication copie, ne supprime jamais ; l'existant selon l'option choisie."
-},
-{
- "id": "D2-144",
- "dom": 2,
- "type": "single",
- "stem": "<p>Vous utilisez des clés gérées par le client dans Key Vault pour storage63. Vous voulez que le compte utilise automatiquement chaque nouvelle version de la clé après une rotation.</p><p>Comment devez-vous configurer la clé dans le compte ?</p>",
- "opts": [
-  "Indiquer l'URI de la clé sans version",
-  "Copier la clé dans le compte de stockage",
-  "Indiquer l'URI d'une version précise de la clé",
-  "Utiliser une SAS de compte à la place"
- ],
- "ans": 0,
- "expl": "<p>Si l'on indique l'URI de la clé <b>sans numéro de version</b>, Azure Storage vérifie régulièrement et adopte automatiquement la dernière version. Avec une version précise, il faut mettre à jour le compte à chaque rotation.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage63"
-  ],
-  "title": "storage63 | Chiffrement",
-  "menu": [
-   "*Chiffrement"
-  ],
-  "rows": [
-   [
-    "*URI de clé",
-    "https://kv.vault.azure.net/keys/cle-sse (sans version)"
-   ],
-   [
-    "Mise à jour de version",
-    "Automatique"
-   ]
-  ],
-  "btn": "Enregistrer"
- },
- "keep": "Rotation automatique = URI de clé sans version."
-},
-{
- "id": "D2-145",
- "dom": 2,
- "type": "single",
- "stem": "<p>Un utilisateur a le rôle <b>Contributeur de partage SMB</b> au niveau du partage share15. Les permissions NTFS du dossier Paie ne lui donnent que la lecture.</p><p>Que peut-il faire dans Paie ?</p>",
- "opts": [
-  "Lire et écrire",
-  "Lire seulement",
-  "Rien",
-  "Modifier les permissions NTFS"
- ],
- "ans": 1,
- "expl": "<p>Les permissions <b>au niveau du partage</b> (RBAC) et les permissions <b>NTFS</b> s'appliquent toutes les deux : le résultat est le <b>plus restrictif</b> des deux. Le partage autorise l'écriture, mais NTFS ne donne que la lecture : il peut seulement lire.</p>",
- "portal": {
-  "path": [
-   "Partage share15",
-   "Paie"
-  ],
-  "title": "Propriétés › Sécurité",
-  "rows": [
-   [
-    "Niveau partage (RBAC)",
-    "Contributeur de partage SMB"
-   ],
-   [
-    "*NTFS",
-    "Lecture"
-   ],
-   [
-    "Effectif",
-    "Lecture (le plus restrictif)"
-   ]
-  ]
- },
- "keep": "Partage + NTFS = le plus restrictif des deux."
-},
-{
- "id": "D2-146",
- "dom": 2,
- "type": "single",
- "stem": "<p>Vous devez configurer les permissions NTFS racine du partage share16, qui utilise l'authentification AD DS.</p><p>Quelle méthode Microsoft recommande-t-elle pour la configuration initiale ?</p>",
- "opts": [
-  "Utiliser une SAS de compte en écriture",
-  "Configurer les permissions dans le pare-feu",
-  "Monter avec Contributeur élevé (ou la clé), puis icacls",
-  "Configurer les permissions NTFS dans le portail Azure"
- ],
- "ans": 2,
- "expl": "<p>Les ACL NTFS se gèrent depuis un client Windows : on monte le partage avec une identité qui a le droit de modifier les ACL (<b>Contributeur élevé de partage SMB</b>, ou la clé du compte, qui agit en super-utilisateur), puis on utilise l'<b>Explorateur Windows</b> ou <b>icacls</b>.</p><p>Le portail ne gère pas les ACL NTFS d'Azure Files.</p>",
- "portal": {
-  "path": [
-   "Windows",
-   "Explorateur"
-  ],
-  "title": "Z:\\ (share16) › Propriétés › Sécurité",
-  "rows": [
-   [
-    "*Monté avec",
-    "Contributeur élevé de partage SMB (ou clé du compte)"
-   ],
-   [
-    "Outil",
-    "Explorateur ou icacls"
-   ]
-  ]
- },
- "keep": "ACL NTFS d'Azure Files = depuis Windows (Explorateur/icacls), pas le portail."
-},
-{
- "id": "D2-147",
- "dom": 2,
- "type": "single",
- "stem": "<p>Une application web en JavaScript, hébergée sur www.contoso.com, doit charger directement des fichiers dans storage64 depuis le navigateur. Le navigateur bloque les requêtes.</p><p>Que devez-vous configurer sur le service blob ?</p>",
- "opts": [
-  "L'accès anonyme en écriture sur le conteneur",
-  "Un point de terminaison privé pour le compte",
-  "La redondance RA-GRS pour la lecture",
-  "Une règle CORS pour https://www.contoso.com"
- ],
- "ans": 3,
- "expl": "<p>Les navigateurs bloquent les requêtes vers un autre domaine sauf si le serveur les autorise par <b>CORS</b> (partage des ressources entre origines). Une règle CORS sur le service blob, avec l'origine, les méthodes (PUT, GET…) et les en-têtes autorisés, résout le problème. L'authentification passera par une SAS ou Entra.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage64"
-  ],
-  "title": "storage64 | Partage de ressources (CORS)",
-  "menu": [
-   "*Partage de ressources (CORS)"
-  ],
-  "rows": [
-   [
-    "*Origines autorisées",
-    "https://www.contoso.com"
-   ],
-   [
-    "Méthodes autorisées",
-    "GET, PUT"
-   ]
-  ],
-  "btn": "Enregistrer"
- },
- "keep": "Navigateur qui bloque un appel vers le stockage = règle CORS."
-},
-{
- "id": "D2-148",
- "dom": 2,
- "type": "single",
- "stem": "<p>Vous hébergez un site web statique dans storage65. Il doit être accessible en HTTPS sur www.contoso.com.</p><p>Que devez-vous ajouter ?</p>",
- "opts": [
-  "Azure Front Door avec le domaine et un certificat",
-  "La suppression réversible des blobs du site",
-  "Un point de terminaison privé sur le site web",
-  "Une SAS de compte ajoutée aux URL du site"
- ],
- "ans": 0,
- "expl": "<p>Le site web statique accepte un domaine personnalisé en HTTP, mais <b>pas en HTTPS</b> avec un certificat personnalisé. Pour HTTPS sur votre domaine, on place <b>Azure Front Door</b> (ou Azure CDN) devant le compte, qui gère le certificat.</p>",
- "portal": {
-  "path": [
-   "Front Door et CDN",
-   "fd-site"
-  ],
-  "title": "Domaines › Ajouter",
-  "rows": [
-   [
-    "*Domaine personnalisé",
-    "www.contoso.com"
-   ],
-   [
-    "Certificat",
-    "Géré par Front Door"
-   ],
-   [
-    "Origine",
-    "storage65 (site statique)"
-   ]
-  ],
-  "btn": "Ajouter"
- },
- "keep": "HTTPS sur un domaine personnalisé pour un site statique = Front Door ou CDN."
-},
-{
  "id": "D2-149",
  "dom": 2,
  "type": "cmd",
  "stem": "<p>Vous devez bloquer par défaut tout accès réseau à storage66, puis autoriser Subnet1 de VNet1, avec Azure CLI.</p><p>Comment devez-vous compléter les commandes ?</p><p>Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p>",
- "tpl": "az storage account update --name storage66 --resource-group RG1 --default-action {0}<br>az storage account {1} add --account-name storage66 --resource-group RG1 --vnet-name VNet1 --subnet Subnet1",
  "rows": [
   {
    "l": "Action par défaut",
@@ -740,14 +158,14 @@ AZ.questions.push(
   ],
   "btn": "Enregistrer"
  },
- "keep": "CLI : --default-action Deny puis az storage account network-rule add."
+ "keep": "CLI : --default-action Deny puis az storage account network-rule add.",
+ "tpl": "az storage account update --name storage66 --resource-group RG1 --default-action {0}<br>az storage account {1} add --account-name storage66 --resource-group RG1 --vnet-name VNet1 --subnet Subnet1"
 },
 {
  "id": "D2-150",
  "dom": 2,
  "type": "cmd",
  "stem": "<p>Vous devez interdire l'accès anonyme aux blobs pour tout le compte storage67, avec Azure PowerShell.</p><p>Comment devez-vous compléter la commande ?</p><p>Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p>",
- "tpl": "{0} -ResourceGroupName RG1 -Name storage67 {1} $false",
  "rows": [
   {
    "l": "Cmdlet",
@@ -786,14 +204,14 @@ AZ.questions.push(
   ],
   "btn": "Enregistrer"
  },
- "keep": "Interdire l'anonyme pour tout le compte = AllowBlobPublicAccess $false."
+ "keep": "Interdire l'anonyme pour tout le compte = AllowBlobPublicAccess $false.",
+ "tpl": "{0} -ResourceGroupName RG1 -Name storage67 {1} $false"
 },
 {
  "id": "D2-151",
  "dom": 2,
  "type": "cmd",
  "stem": "<p>Vous devez régénérer key1 de storage68 avec Azure PowerShell.</p><p>Comment devez-vous compléter la commande ?</p><p>Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p>",
- "tpl": "{0} -ResourceGroupName RG1 -Name storage68 -KeyName {1}",
  "rows": [
   {
    "l": "Cmdlet",
@@ -832,27 +250,14 @@ AZ.questions.push(
   ],
   "btn": "Faire pivoter la clé"
  },
- "keep": "Régénérer = New-AzStorageAccountKey -KeyName key1|key2."
+ "keep": "Régénérer = New-AzStorageAccountKey -KeyName key1|key2.",
+ "tpl": "{0} -ResourceGroupName RG1 -Name storage68 -KeyName {1}"
 },
 {
  "id": "D2-152",
  "dom": 2,
  "type": "order",
  "stem": "<p>Vous devez migrer storage69 de France Central vers West Europe, sans perdre sa configuration.</p><p>Quelles quatre actions devez-vous effectuer dans l'ordre ?</p><p>Pour répondre, déplacez les actions appropriées de la liste vers la zone de réponse et placez-les dans le bon ordre.</p>",
- "acts": [
-  "Exporter le modèle ARM de storage69",
-  "Modifier le modèle (région, nom du compte) et le déployer dans West Europe",
-  "Copier les données avec AzCopy de l'ancien compte vers le nouveau",
-  "Mettre à jour les applications, puis supprimer l'ancien compte",
-  "Lancer un basculement géographique",
-  "Changer la région dans les propriétés du compte"
- ],
- "seq": [
-  0,
-  1,
-  2,
-  3
- ],
  "expl": "<p>Un compte ne change jamais de région. On <b>exporte le modèle</b>, on le <b>déploie</b> dans la nouvelle région avec un nouveau nom, on <b>copie les données</b>, puis on <b>bascule les applications</b> et on supprime l'ancien compte.</p><p>Le basculement géographique ne va que vers la région jumelée, et la région n'est pas modifiable dans les propriétés.</p>",
  "portal": {
   "path": [
@@ -882,27 +287,27 @@ AZ.questions.push(
    ]
   ]
  },
- "keep": "Migration de région : modèle, nouveau compte, copie, bascule."
-},
-{
- "id": "D2-153",
- "dom": 2,
- "type": "order",
- "stem": "<p>Vous devez configurer storage70 pour utiliser des clés gérées par le client stockées dans KV2.</p><p>Quelles quatre actions devez-vous effectuer dans l'ordre ?</p><p>Pour répondre, déplacez les actions appropriées de la liste vers la zone de réponse et placez-les dans le bon ordre.</p>",
+ "keep": "Migration de région : modèle, nouveau compte, copie, bascule.",
  "acts": [
-  "Activer la suppression réversible et la protection contre le vidage sur KV2",
-  "Créer une clé RSA dans KV2",
-  "Donner à l'identité managée de storage70 le rôle Utilisateur du service de chiffrement Key Vault sur la clé",
-  "Choisir Clés gérées par le client dans Chiffrement et sélectionner la clé",
-  "Générer une SAS de compte",
-  "Activer l'accès anonyme"
+  "Exporter le modèle ARM de storage69",
+  "Modifier le modèle (région, nom du compte) et le déployer dans West Europe",
+  "Copier les données avec AzCopy de l'ancien compte vers le nouveau",
+  "Mettre à jour les applications, puis supprimer l'ancien compte",
+  "Lancer un basculement géographique",
+  "Changer la région dans les propriétés du compte"
  ],
  "seq": [
   0,
   1,
   2,
   3
- ],
+ ]
+},
+{
+ "id": "D2-153",
+ "dom": 2,
+ "type": "order",
+ "stem": "<p>Vous devez configurer storage70 pour utiliser des clés gérées par le client stockées dans KV2.</p><p>Quelles quatre actions devez-vous effectuer dans l'ordre ?</p><p>Pour répondre, déplacez les actions appropriées de la liste vers la zone de réponse et placez-les dans le bon ordre.</p>",
  "expl": "<p>Le coffre doit avoir la <b>protection contre le vidage</b>, on crée la <b>clé</b>, on donne à l'<b>identité du compte</b> le droit d'utiliser la clé (wrap/unwrap), puis on <b>configure le chiffrement</b> du compte avec cette clé.</p><p>SAS et accès anonyme ne sont pas liés au chiffrement.</p>",
  "portal": {
   "path": [
@@ -929,7 +334,21 @@ AZ.questions.push(
   ],
   "btn": "Enregistrer"
  },
- "keep": "CMK : coffre protégé, clé, droit pour l'identité, puis réglage du compte."
+ "keep": "CMK : coffre protégé, clé, droit pour l'identité, puis réglage du compte.",
+ "acts": [
+  "Activer la suppression réversible et la protection contre le vidage sur KV2",
+  "Créer une clé RSA dans KV2",
+  "Donner à l'identité managée de storage70 le rôle Utilisateur du service de chiffrement Key Vault sur la clé",
+  "Choisir Clés gérées par le client dans Chiffrement et sélectionner la clé",
+  "Générer une SAS de compte",
+  "Activer l'accès anonyme"
+ ],
+ "seq": [
+  0,
+  1,
+  2,
+  3
+ ]
 },
 {
  "id": "D2-154",
@@ -937,16 +356,16 @@ AZ.questions.push(
  "type": "dragdrop",
  "stem": "<p>Vous devez choisir la fonctionnalité de protection des données adaptée à chaque risque.</p><p>Pour répondre, faites glisser la fonctionnalité appropriée vers chaque risque. Chaque fonctionnalité peut être utilisée une fois, plusieurs fois ou pas du tout.</p>",
  "srcLabel": "Fonctionnalités",
+ "tgtHead": [
+  "Risque",
+  "Fonctionnalité"
+ ],
  "srcs": [
   "Suppression réversible des blobs",
   "Contrôle de version",
   "Suppression réversible des conteneurs",
   "Verrou Suppression impossible",
   "Immuabilité"
- ],
- "tgtHead": [
-  "Risque",
-  "Fonctionnalité"
  ],
  "tgts": [
   {
@@ -1000,16 +419,16 @@ AZ.questions.push(
  "type": "dragdrop",
  "stem": "<p>Vous devez indiquer la durée maximale ou la limite de chaque fonctionnalité.</p><p>Pour répondre, faites glisser la valeur appropriée vers chaque fonctionnalité. Chaque valeur peut être utilisée une fois, plusieurs fois ou pas du tout.</p>",
  "srcLabel": "Valeurs",
+ "tgtHead": [
+  "Fonctionnalité",
+  "Valeur"
+ ],
  "srcs": [
   "5",
   "7 jours",
   "14 jours",
   "200",
   "365 jours"
- ],
- "tgtHead": [
-  "Fonctionnalité",
-  "Valeur"
  ],
  "tgts": [
   {
@@ -1060,18 +479,25 @@ AZ.questions.push(
 {
  "id": "D2-156",
  "dom": 2,
- "type": "multi",
- "pick": 2,
- "stem": "<p>Un compte de stockage a le pare-feu activé (réseaux sélectionnés). Un utilisateur reçoit l'erreur « Cette requête n'est pas autorisée » en ouvrant un conteneur dans le portail, depuis son bureau.</p><p>Quelles <b>deux</b> solutions permettent l'accès ?</p><p>Chaque réponse correcte présente une solution complète.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
- "opts": [
-  "Désactiver la suppression réversible des blobs",
-  "Ajouter l'IP publique du bureau au pare-feu",
-  "Se connecter depuis une VM d'un sous-réseau autorisé",
-  "Lui attribuer le rôle Propriétaire sur le compte de stockage"
- ],
- "ans": [
-  1,
-  2
+ "type": "yngrid",
+ "stem": "<p>Un compte de stockage a le pare-feu activé (réseaux sélectionnés). Un utilisateur reçoit l'erreur « Cette requête n'est pas autorisée » en ouvrant un conteneur dans le portail, depuis son bureau.</p><p>Pour chacune des solutions suivantes, sélectionnez Oui si elle permet l'accès. Sinon, sélectionnez Non.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
+ "rows": [
+  {
+   "l": "Désactiver la suppression réversible des blobs",
+   "a": 1
+  },
+  {
+   "l": "Ajouter l'IP publique du bureau au pare-feu",
+   "a": 0
+  },
+  {
+   "l": "Se connecter depuis une VM d'un sous-réseau autorisé",
+   "a": 0
+  },
+  {
+   "l": "Lui attribuer le rôle Propriétaire sur le compte de stockage",
+   "a": 1
+  }
  ],
  "expl": "<p>L'erreur vient du <b>réseau</b>, pas des autorisations : le navigateur appelle le point de terminaison du stockage depuis l'adresse IP de l'utilisateur.</p><ul><li><b>Adresse IP du bureau : oui.</b></li><li><b>VM d'un sous-réseau autorisé : oui</b>, son trafic est accepté.</li><li><b>Propriétaire : non</b>, aucun rôle ne contourne le pare-feu.</li><li><b>Suppression réversible : non</b>, sans rapport.</li></ul>",
  "portal": {
@@ -1097,18 +523,25 @@ AZ.questions.push(
 {
  "id": "D2-157",
  "dom": 2,
- "type": "multi",
- "pick": 2,
- "stem": "<p>Vous devez choisir les fonctionnalités qui exigent l'<b>espace de noms hiérarchique</b> sur un compte de stockage.</p><p>Quelles <b>deux</b> fonctionnalités l'exigent ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
- "opts": [
-  "Site web statique",
-  "NFS 3.0 pour le stockage blob",
-  "Réplication d'objets entre comptes",
-  "SFTP pour le stockage blob"
- ],
- "ans": [
-  1,
-  3
+ "type": "yngrid",
+ "stem": "<p>Vous devez choisir les fonctionnalités qui exigent l'<b>espace de noms hiérarchique</b> sur un compte de stockage.</p><p>Pour chacune des fonctionnalités suivantes, sélectionnez Oui si elle exige l'espace de noms hiérarchique. Sinon, sélectionnez Non.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
+ "rows": [
+  {
+   "l": "Site web statique",
+   "a": 1
+  },
+  {
+   "l": "NFS 3.0 pour le stockage blob",
+   "a": 0
+  },
+  {
+   "l": "Réplication d'objets entre comptes",
+   "a": 1
+  },
+  {
+   "l": "SFTP pour le stockage blob",
+   "a": 0
+  }
  ],
  "expl": "<ul><li><b>SFTP : oui.</b></li><li><b>NFS 3.0 sur blob : oui.</b></li><li><b>Réplication d'objets : non</b>, elle n'est au contraire <b>pas compatible</b> avec l'espace de noms hiérarchique.</li><li><b>Site web statique : non</b>, il fonctionne avec ou sans.</li></ul>",
  "portal": {
@@ -1132,336 +565,6 @@ AZ.questions.push(
   ]
  },
  "keep": "SFTP et NFS 3.0 blob exigent l'espace de noms hiérarchique."
-},
-{
- "id": "D2-158",
- "dom": 2,
- "type": "single",
- "stem": "<p>Vous voulez convertir un compte universel v2 existant en compte Data Lake Storage Gen2. Il utilise le contrôle de version et la réplication d'objets.</p><p>Que se passe-t-il au lancement de la mise à niveau ?</p>",
- "opts": [
-  "La mise à niveau crée un nouveau compte à côté",
-  "La validation échoue : désactivez d'abord ces fonctions",
-  "La mise à niveau réussit et désactive ces fonctions seule",
-  "La mise à niveau est réversible à tout moment"
- ],
- "ans": 1,
- "expl": "<p>La mise à niveau vers l'espace de noms hiérarchique commence par une <b>validation</b>. Les fonctions incompatibles (comme la réplication d'objets, certaines options de contrôle de version ou de restauration) doivent être désactivées avant. La mise à niveau est <b>irréversible</b> et se fait sur le même compte.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage1"
-  ],
-  "title": "Mise à niveau vers Data Lake Gen2",
-  "menu": [
-   "*Mise à niveau Data Lake Gen2"
-  ],
-  "rows": [
-   [
-    "*Valider l'accord",
-    "Échec : réplication d'objets activée"
-   ]
-  ],
-  "btn": "Démarrer la validation"
- },
- "keep": "Mise à niveau Data Lake : validation, fonctions incompatibles à désactiver, irréversible."
-},
-{
- "id": "D2-159",
- "dom": 2,
- "type": "single",
- "stem": "<p>Vous devez permettre à un partenaire d'envoyer des messages dans la file d'attente commandes de storage71 pendant une semaine, sans lire ni supprimer de messages.</p><p>Quelle autorisation SAS devez-vous donner ?</p>",
- "opts": [
-  "Lecture (r) et Traitement (p)",
-  "Liste (l) sur le compte",
-  "Ajouter (a) sur la file commandes",
-  "Suppression (d) sur la file commandes"
- ],
- "ans": 2,
- "expl": "<p>Pour une file d'attente, l'autorisation <b>Ajouter</b> permet d'insérer des messages. <b>Lecture</b> permet de consulter les messages, <b>Traitement</b> (process) de les retirer (Get + Delete). Une SAS de service limitée à la file commandes, avec l'autorisation Ajouter et une expiration à 7 jours, suffit.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage71",
-   "Files d'attente",
-   "commandes"
-  ],
-  "title": "Générer une SAS",
-  "rows": [
-   [
-    "*Autorisations",
-    "Ajouter"
-   ],
-   [
-    "Expiration",
-    "Dans 7 jours"
-   ]
-  ]
- },
- "keep": "Déposer des messages = autorisation Ajouter ; les retirer = Traitement."
-},
-{
- "id": "D2-160",
- "dom": 2,
- "type": "single",
- "stem": "<p>Un message ajouté à une file d'attente Azure sans préciser de durée de vie n'est jamais traité.</p><p>Combien de temps reste-t-il dans la file par défaut ?</p>",
- "opts": [
-  "24 heures",
-  "Indéfiniment",
-  "30 jours",
-  "7 jours"
- ],
- "ans": 3,
- "expl": "<p>La durée de vie par défaut d'un message de file d'attente est de <b>7 jours</b>. On peut la modifier lors de l'ajout (y compris -1 pour ne jamais expirer).</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage1",
-   "Files d'attente",
-   "commandes"
-  ],
-  "title": "Ajouter un message",
-  "rows": [
-   [
-    "*Expire dans",
-    "7 jours (par défaut)"
-   ]
-  ],
-  "btn": "OK"
- },
- "keep": "Message de file d'attente : 7 jours par défaut."
-},
-{
- "id": "D2-161",
- "dom": 2,
- "type": "single",
- "stem": "<p>Vous voulez savoir combien de gigaoctets de données contient le compte storage72, et comment ce volume évolue depuis un mois.</p><p>Où devez-vous regarder ?</p>",
- "opts": [
-  "Les métriques du compte (Capacité utilisée)",
-  "Les clés d'accès du compte",
-  "Le journal d'activité de l'abonnement",
-  "La page Redondance du compte de stockage"
- ],
- "ans": 0,
- "expl": "<p>La métrique <b>Capacité utilisée</b> (Used capacity), et par service la capacité blob ou fichier, montre le volume stocké et son évolution dans le temps. Les métriques de capacité sont mises à jour une fois par jour environ.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage72"
-  ],
-  "title": "storage72 | Métriques",
-  "menu": [
-   "*Métriques"
-  ],
-  "rows": [
-   [
-    "*Métrique",
-    "Capacité utilisée"
-   ],
-   [
-    "Période",
-    "30 derniers jours"
-   ]
-  ]
- },
- "keep": "Volume stocké et évolution = métrique Capacité utilisée."
-},
-{
- "id": "D2-162",
- "dom": 2,
- "type": "single",
- "stem": "<p>Vous gérez un compte <b>Premium objets blob de blocs</b>. Vous voulez qu'une règle de cycle de vie déplace les anciens blobs vers le niveau Froid.</p><p>Que se passe-t-il ?</p>",
- "opts": [
-  "Le compte devient Standard pour appliquer la règle",
-  "Premium n'a pas de niveaux : seule la suppression existe",
-  "Les blobs passent en Archive comme prévu",
-  "La règle fonctionne normalement, sans changement"
- ],
- "ans": 1,
- "expl": "<p>Les comptes <b>Premium</b> ne prennent pas en charge les niveaux Chaud, Froid, Très froid et Archive. La gestion du cycle de vie y permet seulement de <b>supprimer</b> des blobs. Pour hiérarchiser, il faut copier les données vers un compte Standard.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "stpremium"
-  ],
-  "title": "Gestion du cycle de vie",
-  "menu": [
-   "*Gestion du cycle de vie"
-  ],
-  "rows": [
-   [
-    "Compte",
-    "Premium objets blob de blocs"
-   ],
-   [
-    "*Actions disponibles",
-    "Supprimer uniquement"
-   ]
-  ]
- },
- "keep": "Premium : pas de niveaux, le cycle de vie ne peut que supprimer."
-},
-{
- "id": "D2-163",
- "dom": 2,
- "type": "single",
- "stem": "<p>Une équipe doit supprimer tous les blobs du dossier temp/ du conteneur data, avec AzCopy.</p><p>Quelle commande devez-vous utiliser ?</p>",
- "opts": [
-  "azcopy make \"https://storage73.blob.core.windows.net/data/temp\"",
-  "azcopy copy --overwrite=false sur le dossier temp",
-  "azcopy remove \"…/data/temp?xSASx\" --recursive",
-  "azcopy sync --delete-destination=true vers le dossier temp"
- ],
- "ans": 2,
- "expl": "<p><code>azcopy remove</code> avec <code>--recursive</code> supprime tous les blobs sous le préfixe indiqué.</p><p>sync supprime seulement ce qui n'existe plus à la source. make crée un conteneur. copy ne supprime jamais rien.</p>",
- "portal": {
-  "path": [
-   "Cloud Shell"
-  ],
-  "title": "AzCopy",
-  "rows": [
-   [
-    "*Commande",
-    "azcopy remove \"…/data/temp?<SAS>\" --recursive"
-   ]
-  ]
- },
- "keep": "Supprimer en masse = azcopy remove --recursive."
-},
-{
- "id": "D2-164",
- "dom": 2,
- "type": "single",
- "stem": "<p>Un développeur doit se connecter à un seul conteneur avec Azure Storage Explorer. Vous lui avez fourni une URL de SAS de service.</p><p>Comment doit-il se connecter ?</p>",
- "opts": [
-  "Avec la clé du compte uniquement",
-  "Avec son compte Microsoft Entra uniquement",
-  "Avec un point de terminaison privé du compte",
-  "Avec « Conteneur d'objets blob » ou « URL SAS »"
- ],
- "ans": 3,
- "expl": "<p>Storage Explorer peut se connecter de plusieurs façons : compte Microsoft Entra (abonnements), clé et nom du compte, chaîne de connexion, ou <b>URL SAS</b> d'une ressource (compte, conteneur, partage, file). Avec une SAS de conteneur, il ne voit que ce conteneur.</p>",
- "portal": {
-  "path": [
-   "Azure Storage Explorer"
-  ],
-  "title": "Se connecter à Stockage Azure",
-  "rows": [
-   [
-    "Abonnement",
-    "Compte Entra"
-   ],
-   [
-    "*Conteneur d'objets blob",
-    "URL SAS"
-   ],
-   [
-    "Compte de stockage",
-    "Nom et clé"
-   ]
-  ]
- },
- "keep": "Storage Explorer accepte une URL SAS pour une seule ressource."
-},
-{
- "id": "D2-165",
- "dom": 2,
- "type": "single",
- "stem": "<p>Les données de storage74 sont chiffrées au repos. Un auditeur demande quel algorithme est utilisé par défaut.</p><p>Que devez-vous répondre ?</p>",
- "opts": [
-  "AES 256 bits, clés gérées par Microsoft",
-  "3DES, clés gérées par le client",
-  "Aucun chiffrement par défaut",
-  "RSA 2048 bits, clés gérées par Microsoft"
- ],
- "ans": 0,
- "expl": "<p>Le <b>chiffrement du service de stockage</b> (SSE) chiffre toujours les données au repos avec <b>AES 256 bits</b>. Il ne peut pas être désactivé. Les clés sont gérées par Microsoft par défaut, ou par vous (clés gérées par le client).</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage74"
-  ],
-  "title": "storage74 | Chiffrement",
-  "menu": [
-   "*Chiffrement"
-  ],
-  "rows": [
-   [
-    "*Algorithme",
-    "AES 256 bits (toujours actif)"
-   ],
-   [
-    "Type de chiffrement",
-    "Clés gérées par Microsoft"
-   ]
-  ]
- },
- "keep": "SSE = AES-256, toujours actif, clés Microsoft ou client."
-},
-{
- "id": "D2-166",
- "dom": 2,
- "type": "single",
- "stem": "<p>Vous devez permettre à une application de lire un blob une seule fois, pendant 10 minutes, avec une URL. Le compte interdit l'accès par clé partagée.</p><p>Quel type de SAS devez-vous générer ?</p>",
- "opts": [
-  "Aucune SAS n'est possible",
-  "Une SAS de délégation d'utilisateur",
-  "Une SAS de compte signée par key1",
-  "Une SAS de service signée par key1"
- ],
- "ans": 1,
- "expl": "<p>Quand l'accès par <b>clé partagée</b> est désactivé, les SAS de compte et de service (signées par une clé du compte) sont refusées. La <b>SAS de délégation d'utilisateur</b>, signée via Microsoft Entra, reste utilisable.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage1",
-   "Conteneurs",
-   "data"
-  ],
-  "title": "Générer une SAS",
-  "rows": [
-   [
-    "*Méthode de signature",
-    "Clé de délégation d'utilisateur"
-   ],
-   [
-    "Clé de compte",
-    "Indisponible (accès par clé désactivé)"
-   ]
-  ]
- },
- "keep": "Clé partagée désactivée = seule la SAS de délégation d'utilisateur fonctionne."
-},
-{
- "id": "D2-167",
- "dom": 2,
- "type": "single",
- "stem": "<p>Vous voulez que les nouveaux blobs de storage75 soient au niveau <b>Froid</b> par défaut, et que seuls certains soient en Chaud.</p><p>Que devez-vous configurer ?</p>",
- "opts": [
-  "Une stratégie d'immuabilité sur le conteneur",
-  "Une SAS par blob, avec niveau Froid",
-  "Le niveau d'accès par défaut à Froid",
-  "La redondance ZRS du compte"
- ],
- "ans": 2,
- "expl": "<p>Le <b>niveau d'accès par défaut</b> du compte (Configuration) s'applique aux blobs dont le niveau n'est pas défini explicitement. On peut ensuite fixer le niveau Chaud sur certains blobs, ou utiliser une règle de cycle de vie.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage75"
-  ],
-  "title": "storage75 | Configuration",
-  "menu": [
-   "*Configuration"
-  ],
-  "rows": [
-   [
-    "*Niveau d'accès par défaut",
-    "Froid"
-   ]
-  ],
-  "btn": "Enregistrer"
- },
- "keep": "Niveau par défaut du compte = niveau des blobs sans niveau explicite."
 },
 {
  "id": "D2-168",
@@ -1678,6 +781,37 @@ AZ.questions.push(
  "dom": 2,
  "type": "screen",
  "stem": "<p>Vous créez une règle de cycle de vie pour le conteneur rapports de storage77. Les blobs doivent passer au niveau Froid 30 jours après leur création, et être supprimés 2 ans après leur création.</p><p>Comment devez-vous configurer la règle ?</p><p>Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p>",
+ "expl": "<ul><li><b>Limiter avec des filtres</b> pour ne cibler que le conteneur rapports, avec le préfixe <code>rapports/</code> (nom du conteneur suivi d'une barre oblique ; pas de caractère générique).</li><li>Condition <b>Créé</b>, <b>30</b> jours, <b>Déplacer vers le stockage froid</b>. La suppression à 730 jours s'ajoute comme seconde condition dans la même règle.</li></ul><p>Le préfixe « rapports » sans barre oblique toucherait aussi un conteneur nommé rapports2.</p>",
+ "portal": {
+  "path": [
+   "Comptes de stockage",
+   "storage77"
+  ],
+  "title": "Gestion du cycle de vie | Ajouter une règle",
+  "menu": [
+   "*Gestion du cycle de vie"
+  ],
+  "rows": [
+   [
+    "Étendue",
+    "Limiter avec des filtres"
+   ],
+   [
+    "*Créé il y a plus de 30 jours",
+    "Déplacer vers le stockage froid"
+   ],
+   [
+    "*Créé il y a plus de 730 jours",
+    "Supprimer l'objet blob"
+   ],
+   [
+    "*Préfixe",
+    "rapports/"
+   ]
+  ],
+  "btn": "Ajouter"
+ },
+ "keep": "Préfixe = conteneur/dossier, sans caractère générique ; condition Créé, Modifié ou Dernier accès.",
  "win": {
   "title": "Ajouter une règle",
   "sub": "Gestion du cycle de vie",
@@ -1756,44 +890,43 @@ AZ.questions.push(
     "a": 0
    }
   ]
- },
- "expl": "<ul><li><b>Limiter avec des filtres</b> pour ne cibler que le conteneur rapports, avec le préfixe <code>rapports/</code> (nom du conteneur suivi d'une barre oblique ; pas de caractère générique).</li><li>Condition <b>Créé</b>, <b>30</b> jours, <b>Déplacer vers le stockage froid</b>. La suppression à 730 jours s'ajoute comme seconde condition dans la même règle.</li></ul><p>Le préfixe « rapports » sans barre oblique toucherait aussi un conteneur nommé rapports2.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage77"
-  ],
-  "title": "Gestion du cycle de vie | Ajouter une règle",
-  "menu": [
-   "*Gestion du cycle de vie"
-  ],
-  "rows": [
-   [
-    "Étendue",
-    "Limiter avec des filtres"
-   ],
-   [
-    "*Créé il y a plus de 30 jours",
-    "Déplacer vers le stockage froid"
-   ],
-   [
-    "*Créé il y a plus de 730 jours",
-    "Supprimer l'objet blob"
-   ],
-   [
-    "*Préfixe",
-    "rapports/"
-   ]
-  ],
-  "btn": "Ajouter"
- },
- "keep": "Préfixe = conteneur/dossier, sans caractère générique ; condition Créé, Modifié ou Dernier accès."
+ }
 },
 {
  "id": "D2-173",
  "dom": 2,
  "type": "screen",
  "stem": "<p>Vous créez un point de terminaison privé pour le service de fichiers de storage78 dans Subnet-PE de VNet1. Les VM de VNet1 doivent résoudre le nom du compte vers l'adresse privée automatiquement.</p><p>Comment devez-vous configurer le point de terminaison ?</p><p>Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p>",
+ "expl": "<ul><li><b>Sous-ressource file</b> pour Azure Files.</li><li><b>Subnet-PE</b> : les sous-réseaux réservés (GatewaySubnet, AzureBastionSubnet) ne doivent pas accueillir de point de terminaison privé.</li><li><b>Intégration DNS : Oui</b>, avec la zone <b>privatelink.file.core.windows.net</b>, liée à VNet1. Le nom public est alors redirigé (CNAME) vers cette zone qui renvoie l'adresse privée.</li></ul>",
+ "portal": {
+  "path": [
+   "Centre Private Link",
+   "Créer un point de terminaison privé"
+  ],
+  "title": "Créer un point de terminaison privé",
+  "menu": [
+   "Informations de base",
+   "Ressource",
+   "Réseau virtuel",
+   "*DNS"
+  ],
+  "rows": [
+   [
+    "Sous-ressource cible",
+    "file"
+   ],
+   [
+    "Sous-réseau",
+    "VNet1/Subnet-PE"
+   ],
+   [
+    "*Intégrer à une zone DNS privée",
+    "Oui · privatelink.file.core.windows.net"
+   ]
+  ],
+  "btn": "Créer"
+ },
+ "keep": "Point de terminaison privé : bonne sous-ressource, sous-réseau normal, zone privatelink.<service>.",
  "win": {
   "title": "Créer un point de terminaison privé",
   "sub": "Centre Private Link",
@@ -1857,63 +990,13 @@ AZ.questions.push(
     "a": 0
    }
   ]
- },
- "expl": "<ul><li><b>Sous-ressource file</b> pour Azure Files.</li><li><b>Subnet-PE</b> : les sous-réseaux réservés (GatewaySubnet, AzureBastionSubnet) ne doivent pas accueillir de point de terminaison privé.</li><li><b>Intégration DNS : Oui</b>, avec la zone <b>privatelink.file.core.windows.net</b>, liée à VNet1. Le nom public est alors redirigé (CNAME) vers cette zone qui renvoie l'adresse privée.</li></ul>",
- "portal": {
-  "path": [
-   "Centre Private Link",
-   "Créer un point de terminaison privé"
-  ],
-  "title": "Créer un point de terminaison privé",
-  "menu": [
-   "Informations de base",
-   "Ressource",
-   "Réseau virtuel",
-   "*DNS"
-  ],
-  "rows": [
-   [
-    "Sous-ressource cible",
-    "file"
-   ],
-   [
-    "Sous-réseau",
-    "VNet1/Subnet-PE"
-   ],
-   [
-    "*Intégrer à une zone DNS privée",
-    "Oui · privatelink.file.core.windows.net"
-   ]
-  ],
-  "btn": "Créer"
- },
- "keep": "Point de terminaison privé : bonne sous-ressource, sous-réseau normal, zone privatelink.<service>."
+ }
 },
 {
  "id": "D2-174",
  "dom": 2,
  "type": "hotspot",
  "stem": "<p>Vous devez créer une SAS de délégation d'utilisateur pour un seul blob depuis le portail.</p><p>Quelle option devez-vous sélectionner dans le menu contextuel du blob ?</p><p>Pour répondre, sélectionnez l'option appropriée dans la zone de réponse.</p>",
- "win": {
-  "title": "rapport.pdf | Objet blob",
-  "nav": [
-   {
-    "g": "",
-    "items": [
-     "Vue d'ensemble",
-     "Versions",
-     "Instantanés",
-     "Modifier",
-     "Générer une SAS",
-     "Propriétés",
-     "Métadonnées",
-     "Modifier le niveau",
-     "Acquérir un bail",
-     "Supprimer"
-    ]
-   }
-  ]
- },
  "ans": "Générer une SAS",
  "expl": "<p><b>Générer une SAS</b> au niveau du blob propose la méthode de signature : <b>Clé de délégation d'utilisateur</b> (avec votre compte Entra) ou une clé du compte, puis les autorisations, l'expiration, les adresses IP et le protocole.</p><p><b>Modifier le niveau</b> change le niveau d'accès. <b>Acquérir un bail</b> verrouille le blob en écriture pour un client.</p>",
  "portal": {
@@ -1938,212 +1021,26 @@ AZ.questions.push(
   ],
   "btn": "Générer le jeton et l'URL SAS"
  },
- "keep": "SAS d'un blob = Générer une SAS sur le blob."
-},
-{
- "id": "D2-175",
- "dom": 2,
- "type": "single",
- "stem": "<p>Vous devez empêcher que deux processus modifient le même blob en même temps : le premier doit obtenir un verrou exclusif en écriture.</p><p>Quelle fonctionnalité devez-vous utiliser ?</p>",
- "opts": [
-  "Une SAS en lecture seule",
-  "Une conservation légale",
-  "Un verrou de ressource Azure",
-  "Un bail (lease) sur le blob"
- ],
- "ans": 3,
- "expl": "<p>Un <b>bail</b> donne à un client un verrou exclusif en écriture et en suppression sur un blob (ou un conteneur), pour une durée de 15 à 60 secondes ou infinie. Les autres clients doivent présenter l'ID du bail pour écrire.</p><p>La conservation légale bloque tout le monde. Un verrou de ressource agit sur le plan de contrôle. Une SAS en lecture seule n'empêche pas les autres d'écrire.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage1",
-   "Conteneurs",
-   "data"
-  ],
-  "title": "doc.json | Acquérir un bail",
-  "rows": [
-   [
-    "*Durée",
-    "15 à 60 s ou infinie"
-   ],
-   [
-    "Effet",
-    "Écriture/suppression réservées au détenteur du bail"
-   ]
+ "keep": "SAS d'un blob = Générer une SAS sur le blob.",
+ "win": {
+  "title": "rapport.pdf | Objet blob",
+  "nav": [
+   {
+    "g": "",
+    "items": [
+     "Vue d'ensemble",
+     "Versions",
+     "Instantanés",
+     "Modifier",
+     "Générer une SAS",
+     "Propriétés",
+     "Métadonnées",
+     "Modifier le niveau",
+     "Acquérir un bail",
+     "Supprimer"
+    ]
+   }
   ]
- },
- "keep": "Verrou d'écriture exclusif sur un blob = bail."
-},
-{
- "id": "D2-176",
- "dom": 2,
- "type": "single",
- "stem": "<p>Un développeur stocke la date d'expiration d'un document dans une propriété du blob, et voudrait rechercher tous les blobs expirés du compte sans les parcourir un par un.</p><p>Que devez-vous lui conseiller d'utiliser ?</p>",
- "opts": [
-  "Des étiquettes d'index de blob",
-  "Des métadonnées de blob",
-  "Les propriétés système des blobs",
-  "Le nom du conteneur de chaque blob"
- ],
- "ans": 0,
- "expl": "<p>Les <b>étiquettes d'index</b> sont indexées par le service : l'opération <b>Find Blobs by Tags</b> retrouve les blobs correspondants dans tout le compte. Elles servent aussi de filtre aux règles de cycle de vie.</p><p>Les <b>métadonnées</b> sont stockées avec le blob mais ne sont pas indexées : il faudrait lire chaque blob.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "storage1"
-  ],
-  "title": "Rechercher des objets blob par étiquettes",
-  "rows": [
-   [
-    "*Requête",
-    "expiration < '2026-10-27'"
-   ],
-   [
-    "Étiquettes d'index",
-    "Indexées, interrogeables"
-   ],
-   [
-    "Métadonnées",
-    "Non indexées"
-   ]
-  ]
- },
- "keep": "Recherche sur tout le compte = étiquettes d'index (Find Blobs by Tags)."
-},
-{
- "id": "D2-177",
- "dom": 2,
- "type": "single",
- "stem": "<p>Votre application doit continuer à <b>écrire</b> dans le stockage même si la région primaire tombe en panne, sans intervention.</p><p>Quelle affirmation est vraie ?</p>",
- "opts": [
-  "ZRS écrit aussi dans la région jumelée",
-  "Aucune : il faut un basculement",
-  "GZRS bascule automatiquement les écritures",
-  "RA-GRS permet d'écrire dans le secondaire"
- ],
- "ans": 1,
- "expl": "<p>La région secondaire des comptes géoredondants est en <b>lecture seule</b> (avec RA-) jusqu'à un <b>basculement</b>, qui doit être lancé (par le client, ou par Microsoft dans des cas extrêmes). RA-GRS et RA-GZRS ne permettent que la lecture.</p><p>ZRS reste dans une seule région. Pour écrire sans interruption dans plusieurs régions, il faut une architecture applicative (par exemple deux comptes).</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "stgeo"
-  ],
-  "title": "stgeo | Redondance",
-  "menu": [
-   "*Redondance"
-  ],
-  "rows": [
-   [
-    "Secondaire",
-    "Lecture seule (RA-)"
-   ],
-   [
-    "*Écrire dans la secondaire",
-    "Après basculement seulement"
-   ]
-  ]
- },
- "keep": "Secondaire = lecture seule ; écrire = basculement."
-},
-{
- "id": "D2-178",
- "dom": 2,
- "type": "single",
- "stem": "<p>Vous devez permettre à un serveur local d'utiliser Azure File Sync. Le serveur exécute Windows Server 2022.</p><p>Quel composant devez-vous installer sur le serveur ?</p>",
- "opts": [
-  "L'agent Azure Monitor",
-  "AzCopy planifié",
-  "L'agent Azure File Sync",
-  "Microsoft Entra Connect"
- ],
- "ans": 2,
- "expl": "<p>L'<b>agent Azure File Sync</b> s'installe sur chaque serveur Windows Server pris en charge. Il inscrit le serveur auprès du service de synchronisation de stockage et gère la synchronisation et la hiérarchisation cloud.</p><p>Les autres composants ne participent pas à File Sync.</p>",
- "portal": {
-  "path": [
-   "Services de synchronisation de stockage",
-   "Sync1"
-  ],
-  "title": "Serveurs inscrits",
-  "menu": [
-   "*Serveurs inscrits"
-  ],
-  "rows": [
-   [
-    "*FS1",
-    "Agent Azure File Sync installé, inscrit"
-   ]
-  ]
- },
- "keep": "File Sync sur un serveur = agent Azure File Sync + inscription."
-},
-{
- "id": "D2-179",
- "dom": 2,
- "type": "single",
- "stem": "<p>Vous retirez un serveur d'une synchronisation Azure File Sync. Vous voulez que les fichiers hiérarchisés restent utilisables sur ce serveur.</p><p>Que devez-vous faire avant de supprimer le point de terminaison serveur ?</p>",
- "opts": [
-  "Désinstaller l'agent immédiatement",
-  "Supprimer le partage Azure synchronisé",
-  "Supprimer le service de synchronisation de stockage",
-  "Rappeler tous les fichiers hiérarchisés"
- ],
- "ans": 3,
- "expl": "<p>Les fichiers hiérarchisés ne sont que des <b>pointeurs</b> vers Azure. Si on supprime le point de terminaison sans les rappeler, ils deviennent inaccessibles sur le serveur. On les <b>rappelle</b> d'abord, par exemple avec <code>Invoke-StorageSyncFileRecall</code>.</p><p>Supprimer le partage ou le service détruirait les données ou la configuration.</p>",
- "portal": {
-  "path": [
-   "Cloud Shell"
-  ],
-  "title": "PowerShell sur le serveur",
-  "rows": [
-   [
-    "*Rappel",
-    "Invoke-StorageSyncFileRecall -Path D:\\Donnees"
-   ],
-   [
-    "Ensuite",
-    "Supprimer le point de terminaison serveur"
-   ]
-  ]
- },
- "keep": "Retirer un serveur : rappeler les fichiers hiérarchisés d'abord."
-},
-{
- "id": "D2-180",
- "dom": 2,
- "type": "single",
- "stem": "<p>Un compte de stockage contient 20 To de vidéos lues tous les jours pendant leur premier mois, puis presque jamais, mais qui doivent rester lisibles immédiatement pendant 3 ans.</p><p>Quelle stratégie est la plus économique ?</p>",
- "opts": [
-  "Chaud, puis Froid à 30 j, Très froid à 90 j, suppression à 3 ans",
-  "Un compte Premium objets blob de blocs pendant 3 ans",
-  "Le niveau Archive dès le chargement, puis suppression à 3 ans",
-  "Le niveau Chaud pendant 3 ans, puis suppression"
- ],
- "ans": 0,
- "expl": "<p>Les vidéos sont chaudes au début puis froides : une règle de cycle de vie les fait descendre progressivement vers des niveaux <b>en ligne</b> moins chers (Froid puis Très froid), et les supprime à 3 ans.</p><p>Archive empêcherait la lecture immédiate. Rester en Chaud ou en Premium coûterait beaucoup plus cher.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "stvideo"
-  ],
-  "title": "Gestion du cycle de vie",
-  "menu": [
-   "*Gestion du cycle de vie"
-  ],
-  "rows": [
-   [
-    "> 30 jours",
-    "Froid"
-   ],
-   [
-    "*> 90 jours",
-    "Très froid"
-   ],
-   [
-    "> 3 ans",
-    "Supprimer"
-   ]
-  ]
- },
- "keep": "Données qui refroidissent mais restent lisibles = cycle de vie Chaud → Froid → Cold."
+ }
 }
 );
