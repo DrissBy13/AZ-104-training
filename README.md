@@ -11,10 +11,10 @@ Un entraînement gratuit et open source à la certification **Microsoft Azure Ad
 ## Ce que tu trouves ici
 
 - **Une page d'accueil** qui explique les règles de l'examen réel (durée, score, formats, séries sans retour en arrière) et celles du simulateur.
-- **Deux langues** : interface et questions en français ou en anglais (bouton FR / EN). Les 1 161 questions existent dans les deux langues, avec les mêmes réponses.
+- **Deux langues** : interface et questions en français ou en anglais (bouton FR / EN). Toutes les questions existent dans les deux langues, avec les mêmes réponses.
 - **Une banque de questions** sur les cinq domaines du programme AZ-104, tirées au hasard à chaque session. Le tirage privilégie les questions que tu n'as pas encore vues : en enchaînant les sessions, tu fais le tour de la banque.
 - **Deux modes**
-  - **Examen blanc** : environ 45 questions indépendantes réparties selon le poids officiel des domaines, une série de questions Oui/Non et une étude de cas. Chronomètre de 100 minutes, score sur 1 000, réussite à 700.
+  - **Examen blanc** : environ 40 questions indépendantes réparties selon le poids officiel des domaines (20 % de QCM au plus), une série de questions Oui/Non et deux études de cas, soit 50 à 60 questions comme à l'examen réel. Chronomètre de 100 minutes, score sur 1 000, réussite à 700.
   - **Entraînement** : tu choisis les domaines et le nombre de questions, sans chronomètre.
 - **Les formats de l'examen réel** : choix unique, choix multiple, glisser-déplacer, réorganiser l'ordre, écran actif (formulaire du portail), zone réactive, listes déroulantes (y compris dans des commandes PowerShell, Azure CLI ou KQL), grille Oui/Non, onglets Document, séries « Cette solution répond-elle à l'objectif ? » sans retour en arrière, et études de cas en onglets.
 - **Un bouton « Vérifier ma réponse »** (absent de l'examen réel) qui affiche tout de suite la correction : pourquoi la bonne réponse est juste, et pourquoi les autres ne le sont pas. Chaque correction montre aussi **où trouver la réponse dans le portail Azure** (une fenêtre du portail reconstituée, avec l'élément à repérer surligné) et un encadré **« À retenir »**.

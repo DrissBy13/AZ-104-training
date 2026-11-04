@@ -6,15 +6,15 @@ AZ.questions.push(
  "type": "dragdrop",
  "stem": "<p>Vous devez choisir la source de données Azure Monitor adaptée à chaque besoin.</p><p>Pour répondre, faites glisser la source appropriée vers chaque besoin. Chaque source peut être utilisée une fois, plusieurs fois ou pas du tout.</p>",
  "srcLabel": "Sources",
+ "tgtHead": [
+  "Besoin",
+  "Source"
+ ],
  "srcs": [
   "Métriques de plateforme",
   "Journal d'activité",
   "Journaux de ressources",
   "Journaux invités (via l'agent Azure Monitor)"
- ],
- "tgtHead": [
-  "Besoin",
-  "Source"
  ],
  "tgts": [
   {
@@ -60,75 +60,6 @@ AZ.questions.push(
   ]
  },
  "keep": "Métrique auto ; qui a fait quoi = activité ; dans la ressource = ressources ; dans l'OS = agent."
-},
-{
- "id": "D5-010",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous devez conserver le journal d'activité de l'abonnement Sub1 pendant 2 ans et l'interroger avec KQL avec d'autres journaux.</p><p>Que devez-vous configurer ?</p>",
- "opts": [
-  "Un paramètre de diagnostic vers Log Analytics (rétention 2 ans)",
-  "Azure Advisor, avec l'historique des recommandations",
-  "Une alerte de journal d'activité sur toutes les opérations d'écriture",
-  "Rien : le journal d'activité est conservé 2 ans par défaut"
- ],
- "ans": 0,
- "expl": "<p>Le journal d'activité n'est conservé que <b>90 jours</b>. Pour aller plus loin, on crée un <b>paramètre de diagnostic</b> au niveau de l'abonnement qui l'envoie vers un espace de travail <b>Log Analytics</b> (table AzureActivity, interrogeable en KQL), un compte de stockage (archivage) ou Event Hubs.</p>",
- "portal": {
-  "path": [
-   "Moniteur",
-   "Journal d'activité"
-  ],
-  "title": "Exporter le journal d'activité",
-  "rows": [
-   [
-    "*Paramètre de diagnostic",
-    "Sub1 → LAW-Audit"
-   ],
-   [
-    "Rétention de la table",
-    "2 ans"
-   ]
-  ],
-  "btn": "Enregistrer"
- },
- "keep": "Journal d'activité > 90 jours = paramètre de diagnostic vers Log Analytics."
-},
-{
- "id": "D5-011",
- "dom": 5,
- "type": "single",
- "stem": "<p>Les journaux de ressources d'un coffre de clés ne sont collectés nulle part.</p><p>Que devez-vous créer pour les envoyer vers Log Analytics ?</p>",
- "opts": [
-  "Un classeur lié au coffre de clés",
-  "Un paramètre de diagnostic sur le coffre",
-  "Une alerte de métrique sur le coffre",
-  "Une règle de collecte de données pour les VM du coffre"
- ],
- "ans": 1,
- "expl": "<p>Les <b>journaux de ressources</b> ne sont pas collectés par défaut. On crée un <b>paramètre de diagnostic</b> sur la ressource, on choisit les catégories (par exemple AuditEvent) et les destinations : Log Analytics, compte de stockage, Event Hubs ou solution partenaire.</p><p>Une ressource peut avoir jusqu'à 5 paramètres de diagnostic.</p>",
- "portal": {
-  "path": [
-   "Coffres de clés",
-   "kv1"
-  ],
-  "title": "kv1 | Paramètres de diagnostic",
-  "menu": [
-   "*Paramètres de diagnostic"
-  ],
-  "rows": [
-   [
-    "*Catégories",
-    "AuditEvent"
-   ],
-   [
-    "Destination",
-    "Envoyer à Log Analytics"
-   ]
-  ],
-  "btn": "+ Ajouter un paramètre de diagnostic"
- },
- "keep": "Journaux de ressources = paramètre de diagnostic sur la ressource."
 },
 {
  "id": "D5-012",
@@ -189,228 +120,21 @@ AZ.questions.push(
  "keep": "KQL = Log Analytics ; archive = stockage ; flux externe = Event Hubs."
 },
 {
- "id": "D5-013",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous devez collecter les compteurs de performances (mémoire disponible, espace disque) et le journal Système de 50 VM Windows, vers l'espace de travail WS1.</p><p>Que devez-vous déployer ?</p>",
- "opts": [
-  "L'agent Log Analytics (MMA) avec une configuration d'espace de travail",
-  "Un paramètre de diagnostic sur chaque VM, vers WS1",
-  "L'agent Azure Monitor et une DCR associée aux 50 VM",
-  "Les diagnostics de démarrage vers un compte de stockage"
- ],
- "ans": 2,
- "expl": "<p>L'<b>agent Azure Monitor</b> (AMA) collecte les données invitées selon des <b>règles de collecte de données</b> (DCR) : quelles données (compteurs, événements, Syslog, fichiers journaux), et vers quelle destination. Une même DCR peut être associée à de nombreuses VM.</p><p>L'agent Log Analytics (MMA) a été retiré en août 2024. Le paramètre de diagnostic d'une VM ne collecte que des métriques de l'hôte, pas les données du système d'exploitation.</p>",
- "portal": {
-  "path": [
-   "Moniteur",
-   "Règles de collecte de données"
-  ],
-  "title": "Créer une règle de collecte de données",
-  "rows": [
-   [
-    "*Ressources",
-    "50 VM (agent Azure Monitor)"
-   ],
-   [
-    "Sources",
-    "Compteurs + journal Système"
-   ],
-   [
-    "Destination",
-    "WS1"
-   ]
-  ],
-  "btn": "Vérifier + créer"
- },
- "keep": "Données invitées = AMA + DCR (MMA retiré)."
-},
-{
- "id": "D5-014",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous voulez voir les dépendances réseau entre les processus de vos VM (quels serveurs parlent à quels serveurs, sur quels ports) et des graphiques de performances préconfigurés.</p><p>Que devez-vous activer ?</p>",
- "opts": [
-  "Azure Advisor, onglet Performances",
-  "Network Watcher : Tronçon suivant et topologie",
-  "Les diagnostics de démarrage des VM",
-  "VM Insights, avec la fonctionnalité Carte"
- ],
- "ans": 3,
- "expl": "<p><b>VM Insights</b> fournit des tableaux de bord de performances (CPU, mémoire, disque, réseau) et, avec l'<b>agent de dépendances</b>, la <b>Carte</b> des processus et des connexions entre machines.</p>",
- "portal": {
-  "path": [
-   "Moniteur",
-   "Insights des machines virtuelles"
-  ],
-  "title": "Insights des machines virtuelles",
-  "menu": [
-   "Performances",
-   "*Carte"
-  ],
-  "rows": [
-   [
-    "*Carte",
-    "Processus et connexions"
-   ]
-  ]
- },
- "keep": "Dépendances entre VM = VM Insights, Carte."
-},
-{
- "id": "D5-015",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous devez être prévenu par e-mail quand le CPU moyen de VM2 dépasse 85 % pendant 15 minutes.</p><p>Quel type d'alerte devez-vous créer ?</p>",
- "opts": [
-  "Une alerte de métrique",
-  "Une alerte de journal d'activité",
-  "Une alerte d'intégrité du service",
-  "Une alerte de budget"
- ],
- "ans": 0,
- "expl": "<p>Une <b>alerte de métrique</b> évalue régulièrement une métrique (ici Percentage CPU, moyenne sur 15 minutes) par rapport à un seuil, et déclenche un <b>groupe d'actions</b> (e-mail, SMS…). Elle réagit en quasi temps réel.</p>",
- "portal": {
-  "path": [
-   "Machines virtuelles",
-   "VM2"
-  ],
-  "title": "Créer une règle d'alerte",
-  "rows": [
-   [
-    "*Signal",
-    "Percentage CPU"
-   ],
-   [
-    "Condition",
-    "Moyenne > 85 · 15 min"
-   ],
-   [
-    "Actions",
-    "Groupe d'actions e-mail"
-   ]
-  ],
-  "btn": "Vérifier + créer"
- },
- "keep": "Seuil sur une valeur = alerte de métrique."
-},
-{
- "id": "D5-016",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous voulez être alerté quand quelqu'un <b>supprime</b> une machine virtuelle dans l'abonnement Sub1.</p><p>Quel type d'alerte devez-vous créer ?</p>",
- "opts": [
-  "Une alerte d'intégrité des ressources sur chaque VM",
-  "Une alerte de journal d'activité (Supprimer une VM)",
-  "Une alerte de métrique sur le nombre de VM en cours d'exécution",
-  "Une alerte de budget sur l'abonnement Sub1"
- ],
- "ans": 1,
- "expl": "<p>Une suppression est une opération du plan de contrôle, tracée dans le <b>journal d'activité</b>. Une <b>alerte de journal d'activité</b> filtrée sur l'opération <code>Microsoft.Compute/virtualMachines/delete</code> se déclenche à chaque suppression.</p>",
- "portal": {
-  "path": [
-   "Moniteur",
-   "Alertes"
-  ],
-  "title": "Créer une règle d'alerte",
-  "rows": [
-   [
-    "*Signal",
-    "Supprimer une machine virtuelle (journal d'activité)"
-   ],
-   [
-    "Étendue",
-    "Sub1"
-   ]
-  ],
-  "btn": "Vérifier + créer"
- },
- "keep": "Opération de gestion = alerte de journal d'activité."
-},
-{
- "id": "D5-017",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous voulez être prévenu quand une maintenance planifiée ou un incident de la plateforme Azure touche les services App Service en France Central utilisés par votre abonnement.</p><p>Que devez-vous configurer ?</p>",
- "opts": [
-  "Une alerte de budget sur App Service",
-  "Un paramètre de diagnostic des applications",
-  "Une alerte Service Health",
-  "Une alerte de métrique sur le CPU du plan"
- ],
- "ans": 2,
- "expl": "<p><b>Service Health</b> informe des incidents, maintenances planifiées, avis d'intégrité et avis de sécurité qui concernent <b>les services et régions</b> que vous utilisez. Une <b>alerte Service Health</b>, filtrée sur App Service et France Central, envoie la notification.</p>",
- "portal": {
-  "path": [
-   "Service Health"
-  ],
-  "title": "Service Health | Alertes d'intégrité",
-  "menu": [
-   "Problèmes de service",
-   "Maintenance planifiée",
-   "*Alertes d'intégrité"
-  ],
-  "rows": [
-   [
-    "*Services",
-    "App Service"
-   ],
-   [
-    "Régions",
-    "France Central"
-   ]
-  ],
-  "btn": "+ Créer une alerte d'intégrité du service"
- },
- "keep": "Incidents et maintenance Azure = Service Health."
-},
-{
- "id": "D5-018",
- "dom": 5,
- "type": "single",
- "stem": "<p>VM3 est devenue indisponible pendant 10 minutes cette nuit. Vous voulez savoir si la cause vient de la plateforme Azure (problème d'hôte) ou de votre VM.</p><p>Que devez-vous consulter ?</p>",
- "opts": [
-  "Azure Advisor, onglet Fiabilité",
-  "Les métriques du disque de VM3",
-  "L'analyse des coûts de la nuit",
-  "Resource Health de VM3"
- ],
- "ans": 3,
- "expl": "<p><b>Resource Health</b> indique l'état d'une ressource précise (Disponible, Indisponible, Dégradé, Inconnu) et son historique, avec la cause lorsqu'elle est liée à la plateforme (par exemple un redémarrage de l'hôte).</p><p>Service Health est global aux services et régions ; Resource Health concerne <b>votre</b> ressource.</p>",
- "portal": {
-  "path": [
-   "Machines virtuelles",
-   "VM3"
-  ],
-  "title": "VM3 | Resource Health",
-  "menu": [
-   "*Resource Health"
-  ],
-  "rows": [
-   [
-    "*Cette nuit 02:10",
-    "Indisponible · redémarrage de l'hôte (plateforme)"
-   ]
-  ]
- },
- "keep": "Ma ressource et la plateforme = Resource Health."
-},
-{
  "id": "D5-019",
  "dom": 5,
  "type": "dragdrop",
  "stem": "<p>Vous devez choisir le type d'alerte adapté à chaque besoin.</p><p>Pour répondre, faites glisser le type approprié vers chaque besoin. Chaque type peut être utilisé une fois, plusieurs fois ou pas du tout.</p>",
  "srcLabel": "Types d'alerte",
+ "tgtHead": [
+  "Besoin",
+  "Type"
+ ],
  "srcs": [
   "Alerte de métrique",
   "Alerte de recherche dans les journaux",
   "Alerte de journal d'activité",
   "Alerte Service Health",
   "Alerte Resource Health"
- ],
- "tgtHead": [
-  "Besoin",
-  "Type"
  ],
  "tgts": [
   {
@@ -457,108 +181,6 @@ AZ.questions.push(
   ]
  },
  "keep": "KQL = recherche dans les journaux ; opération = activité ; seuil = métrique."
-},
-{
- "id": "D5-020",
- "dom": 5,
- "type": "single",
- "stem": "<p>Trois alertes doivent envoyer un e-mail à l'équipe d'astreinte, un SMS au responsable et appeler un webhook vers l'outil de tickets.</p><p>Comment réduire l'effort de configuration ?</p>",
- "opts": [
-  "Un seul groupe d'actions, associé aux trois alertes",
-  "Trois espaces de travail, un par destinataire",
-  "Un classeur qui regroupe les trois alertes",
-  "Des notifications réglées séparément dans chaque alerte"
- ],
- "ans": 0,
- "expl": "<p>Un <b>groupe d'actions</b> regroupe des notifications (e-mail, SMS, notification push, appel vocal) et des actions (webhook, runbook Automation, fonction, application logique, ITSM, Event Hubs). Il est réutilisable par autant d'alertes que nécessaire.</p>",
- "portal": {
-  "path": [
-   "Moniteur",
-   "Groupes d'actions"
-  ],
-  "title": "Créer un groupe d'actions",
-  "rows": [
-   [
-    "*Notifications",
-    "E-mail + SMS"
-   ],
-   [
-    "Actions",
-    "Webhook"
-   ]
-  ],
-  "btn": "Vérifier + créer"
- },
- "keep": "Notifications réutilisables = groupe d'actions."
-},
-{
- "id": "D5-021",
- "dom": 5,
- "type": "single",
- "stem": "<p>Pendant une fenêtre de maintenance planifiée chaque samedi de 22 h à 2 h, les alertes des VM de RG-Prod ne doivent envoyer aucune notification, mais doivent rester visibles dans le portail.</p><p>Que devez-vous configurer ?</p>",
- "opts": [
-  "Un verrou Lecture seule sur RG-Prod le week-end",
-  "Une règle de traitement qui supprime les notifications",
-  "Désactiver chaque règle d'alerte le samedi matin",
-  "Supprimer le groupe d'actions vendredi, puis le recréer lundi"
- ],
- "ans": 1,
- "expl": "<p>Une <b>règle de traitement des alertes</b> (alert processing rule) peut, sur une étendue et une planification, <b>supprimer les notifications</b> (les alertes continuent d'être créées) ou <b>ajouter des groupes d'actions</b> à des alertes.</p>",
- "portal": {
-  "path": [
-   "Moniteur",
-   "Alertes"
-  ],
-  "title": "Créer une règle de traitement des alertes",
-  "rows": [
-   [
-    "Étendue",
-    "RG-Prod"
-   ],
-   [
-    "*Type",
-    "Supprimer les notifications"
-   ],
-   [
-    "Planification",
-    "Samedi 22:00 → 02:00"
-   ]
-  ],
-  "btn": "Vérifier + créer"
- },
- "keep": "Silence planifié = règle de traitement des alertes."
-},
-{
- "id": "D5-022",
- "dom": 5,
- "type": "single",
- "stem": "<p>La charge CPU d'une application varie fortement selon les heures et les jours. Un seuil fixe génère trop de fausses alertes.</p><p>Quel type de seuil devez-vous utiliser dans l'alerte de métrique ?</p>",
- "opts": [
-  "Un seuil statique plus bas",
-  "Une alerte Service Health",
-  "Un seuil dynamique",
-  "Une alerte de journal d'activité"
- ],
- "ans": 2,
- "expl": "<p>Les <b>seuils dynamiques</b> apprennent le comportement habituel de la métrique (y compris les cycles horaires et hebdomadaires) et alertent sur les écarts anormaux, avec une sensibilité réglable (élevée, moyenne, faible).</p>",
- "portal": {
-  "path": [
-   "Moniteur",
-   "Alertes"
-  ],
-  "title": "Condition",
-  "rows": [
-   [
-    "*Type de seuil",
-    "Dynamique"
-   ],
-   [
-    "Sensibilité",
-    "Moyenne"
-   ]
-  ]
- },
- "keep": "Charge cyclique = seuil dynamique."
 },
 {
  "id": "D5-023",
@@ -619,7 +241,6 @@ AZ.questions.push(
  "dom": 5,
  "type": "cmd",
  "stem": "<p>Vous devez afficher, dans l'espace de travail WS1, le nombre d'événements de niveau Erreur par ordinateur au cours des dernières 24 heures, du plus grand au plus petit.</p><p>Comment devez-vous compléter la requête KQL ?</p><p>Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p>",
- "tpl": "Event<br>| where TimeGenerated &gt; {0}(24h) and EventLevelName == \"Error\"<br>| {1} NbErreurs = count() by Computer<br>| {2} by NbErreurs desc",
  "rows": [
   {
    "l": "Fonction de temps",
@@ -675,14 +296,14 @@ AZ.questions.push(
   ],
   "btn": "Exécuter"
  },
- "keep": "ago = période ; summarize = agréger ; sort/order = trier."
+ "keep": "ago = période ; summarize = agréger ; sort/order = trier.",
+ "tpl": "Event<br>| where TimeGenerated &gt; {0}(24h) and EventLevelName == \"Error\"<br>| {1} NbErreurs = count() by Computer<br>| {2} by NbErreurs desc"
 },
 {
  "id": "D5-025",
  "dom": 5,
  "type": "cmd",
  "stem": "<p>Vous devez afficher les 10 VM avec le CPU moyen le plus élevé sur la dernière heure, à partir de la table Perf.</p><p>Comment devez-vous compléter la requête KQL ?</p><p>Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p>",
- "tpl": "Perf<br>| where TimeGenerated &gt; ago(1h) and ObjectName == \"Processor\" and CounterName == \"% Processor Time\"<br>| summarize CpuMoyen = {0}(CounterValue) by Computer<br>| {1} 10 by CpuMoyen desc",
  "rows": [
   {
    "l": "Fonction",
@@ -722,186 +343,8 @@ AZ.questions.push(
   ],
   "btn": "Exécuter"
  },
- "keep": "top = tri + limite ; take/limit = sans tri."
-},
-{
- "id": "D5-026",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous voulez afficher le résultat d'une requête KQL sous forme de graphique temporel dans Log Analytics.</p><p>Quel opérateur devez-vous ajouter à la fin de la requête ?</p>",
- "opts": [
-  "extend graph",
-  "project chart",
-  "summarize timechart",
-  "render timechart"
- ],
- "ans": 3,
- "expl": "<p><code>render</code> choisit la visualisation : <code>timechart</code>, <code>barchart</code>, <code>piechart</code>… On l'utilise souvent après un <code>summarize ... by bin(TimeGenerated, 5m)</code> qui regroupe les données par intervalles de temps.</p>",
- "portal": {
-  "path": [
-   "Espaces de travail Log Analytics",
-   "WS1"
-  ],
-  "title": "Résultats",
-  "rows": [
-   [
-    "*render timechart",
-    "Graphique temporel"
-   ]
-  ]
- },
- "keep": "Graphique = render."
-},
-{
- "id": "D5-027",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous devez compter le nombre de requêtes HTTP par tranche de 5 minutes sur la dernière journée.</p><p>Quelle fonction devez-vous utiliser dans le summarize ?</p>",
- "opts": [
-  "bin(TimeGenerated, 5m)",
-  "ago(TimeGenerated, 5m)",
-  "range(TimeGenerated, 5m)",
-  "now(TimeGenerated) - 5m"
- ],
- "ans": 0,
- "expl": "<p><code>bin()</code> arrondit une valeur à l'intervalle choisi : <code>summarize count() by bin(TimeGenerated, 5m)</code> donne un compte par tranche de 5 minutes. <code>ago()</code> sert à filtrer une période relative.</p>",
- "portal": {
-  "path": [
-   "Espaces de travail Log Analytics",
-   "WS1"
-  ],
-  "title": "Requête",
-  "rows": [
-   [
-    "*bin(TimeGenerated, 5m)",
-    "Tranches de 5 min"
-   ]
-  ]
- },
- "keep": "Regrouper par intervalle = bin()."
-},
-{
- "id": "D5-028",
- "dom": 5,
- "type": "single",
- "stem": "<p>Une équipe veut un rapport interactif qui combine des requêtes KQL, des métriques, des paramètres (sélection de l'abonnement) et du texte explicatif, partagé avec d'autres administrateurs.</p><p>Que devez-vous créer ?</p>",
- "opts": [
-  "Une alerte de métrique",
-  "Un classeur Azure Monitor",
-  "Une règle de collecte de données",
-  "Un groupe d'actions partagé"
- ],
- "ans": 1,
- "expl": "<p>Les <b>classeurs</b> (Workbooks) combinent texte, requêtes de journaux, métriques et paramètres dans des rapports interactifs, partageables. Les <b>tableaux de bord</b> Azure épinglent des vues, avec moins d'interactivité.</p>",
- "portal": {
-  "path": [
-   "Moniteur",
-   "Classeurs"
-  ],
-  "title": "Nouveau classeur",
-  "menu": [
-   "*Classeurs"
-  ],
-  "rows": [
-   [
-    "*Contenu",
-    "Texte, requêtes, métriques, paramètres"
-   ]
-  ],
-  "btn": "Enregistrer"
- },
- "keep": "Rapport interactif partagé = classeur."
-},
-{
- "id": "D5-029",
- "dom": 5,
- "type": "single",
- "stem": "<p>Les données de la table SecurityEvent doivent rester interrogeables pendant 1 an, puis être conservées à bas coût jusqu'à 7 ans, sans être exportées.</p><p>Que devez-vous configurer sur la table ?</p>",
- "opts": [
-  "Un export continu des données vers un compte de stockage",
-  "Un second espace de travail pour l'archive",
-  "Rétention interactive 365 jours, totale 7 ans",
-  "Une règle de traitement des alertes sur la table"
- ],
- "ans": 2,
- "expl": "<p>Chaque table d'un espace de travail a une <b>rétention interactive</b> (données interrogeables normalement, jusqu'à 2 ans) et une <b>rétention totale</b> (jusqu'à 12 ans). Entre les deux, les données sont en <b>rétention à long terme</b> (archive), moins chère, accessibles par des travaux de recherche ou une restauration.</p>",
- "portal": {
-  "path": [
-   "Espaces de travail Log Analytics",
-   "WS1",
-   "Tables"
-  ],
-  "title": "SecurityEvent | Gérer la table",
-  "rows": [
-   [
-    "*Rétention interactive",
-    "365 jours"
-   ],
-   [
-    "*Rétention totale",
-    "7 ans"
-   ]
-  ],
-  "btn": "Enregistrer"
- },
- "keep": "Interrogeable puis archive = rétention interactive + totale."
-},
-{
- "id": "D5-030",
- "dom": 5,
- "type": "single",
- "stem": "<p>Les membres de l'équipe Web ne doivent voir, dans l'espace de travail partagé WS2, que les journaux des ressources sur lesquelles ils ont des droits.</p><p>Quel mode de contrôle d'accès de l'espace de travail permet cela ?</p>",
- "opts": [
-  "Une clé partagée de l'espace de travail",
-  "Un espace de travail distinct pour chaque utilisateur",
-  "Exiger les autorisations d'espace de travail",
-  "Autorisations de ressource ou d'espace de travail"
- ],
- "ans": 3,
- "expl": "<p>Avec le mode <b>« Utiliser les autorisations de ressource ou d'espace de travail »</b>, un utilisateur qui ouvre les journaux depuis une ressource (contexte de ressource) voit les données des ressources sur lesquelles il a un accès en lecture, sans droit sur tout l'espace de travail. On peut aussi définir des RBAC au niveau des tables.</p>",
- "portal": {
-  "path": [
-   "Espaces de travail Log Analytics",
-   "WS2"
-  ],
-  "title": "WS2 | Propriétés",
-  "rows": [
-   [
-    "*Mode de contrôle d'accès",
-    "Autorisations de ressource ou d'espace de travail"
-   ]
-  ]
- },
- "keep": "Voir seulement ses ressources = contexte de ressource."
-},
-{
- "id": "D5-031",
- "dom": 5,
- "type": "single",
- "stem": "<p>Une équipe doit créer et modifier des règles d'alerte et des groupes d'actions, sans pouvoir modifier les ressources supervisées.</p><p>Quel rôle devez-vous lui attribuer ?</p>",
- "opts": [
-  "Contributeur de surveillance",
-  "Contributeur Log Analytics",
-  "Lecteur de surveillance",
-  "Contributeur sur l'abonnement"
- ],
- "ans": 0,
- "expl": "<p><b>Contributeur de surveillance</b> lit toutes les données de supervision et gère les paramètres de supervision (alertes, groupes d'actions, paramètres de diagnostic). <b>Lecteur de surveillance</b> ne fait que lire. <b>Contributeur</b> donne accès aux ressources.</p>",
- "portal": {
-  "path": [
-   "Abonnements",
-   "Sub1"
-  ],
-  "title": "Ajouter une attribution de rôle",
-  "rows": [
-   [
-    "*Rôle",
-    "Contributeur de surveillance"
-   ]
-  ],
-  "btn": "Vérifier + attribuer"
- },
- "keep": "Gérer alertes sans toucher aux ressources = Contributeur de surveillance."
+ "keep": "top = tri + limite ; take/limit = sans tri.",
+ "tpl": "Perf<br>| where TimeGenerated &gt; ago(1h) and ObjectName == \"Processor\" and CounterName == \"% Processor Time\"<br>| summarize CpuMoyen = {0}(CounterValue) by Computer<br>| {1} 10 by CpuMoyen desc"
 },
 {
  "id": "D5-032",
@@ -946,170 +389,18 @@ AZ.questions.push(
  "keep": "Métriques 93 j ; activité 90 j ; ressources = rien sans diagnostic."
 },
 {
- "id": "D5-033",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous voulez superviser la disponibilité et les performances d'une application web (temps de réponse, exceptions, dépendances), et tester son URL depuis plusieurs régions du monde.</p><p>Que devez-vous utiliser ?</p>",
- "opts": [
-  "Azure Advisor, onglet Performances",
-  "Application Insights et tests de disponibilité",
-  "Network Watcher et moniteur de connexion",
-  "VM Insights et sa carte des dépendances entre serveurs"
- ],
- "ans": 1,
- "expl": "<p><b>Application Insights</b> (fonction d'Azure Monitor, basée sur un espace de travail Log Analytics) collecte la télémétrie applicative : requêtes, temps de réponse, exceptions, dépendances. Les <b>tests de disponibilité</b> interrogent l'URL depuis plusieurs emplacements et alertent en cas d'échec.</p>",
- "portal": {
-  "path": [
-   "Application Insights",
-   "appi-web"
-  ],
-  "title": "appi-web | Disponibilité",
-  "menu": [
-   "*Disponibilité",
-   "Performances",
-   "Échecs"
-  ],
-  "rows": [
-   [
-    "*Test standard",
-    "5 emplacements"
-   ]
-  ],
-  "btn": "+ Ajouter un test standard"
- },
- "keep": "Télémétrie applicative + test d'URL = Application Insights."
-},
-{
- "id": "D5-034",
- "dom": 5,
- "type": "single",
- "stem": "<p>Une configuration réseau a changé hier et une application ne fonctionne plus. Vous voulez voir rapidement les changements de propriétés des ressources au cours des derniers jours.</p><p>Que devez-vous utiliser ?</p>",
- "opts": [
-  "Les diagnostics de démarrage de chaque ressource",
-  "Azure Backup et ses points de restauration",
-  "L'analyse des modifications des ressources",
-  "Une alerte de budget sur le groupe de ressources"
- ],
- "ans": 2,
- "expl": "<p>L'<b>analyse des modifications</b> (ou l'historique des modifications dans le journal d'activité et Resource Graph) montre les changements de configuration des ressources (avant et après), qu'ils viennent du portail, d'un modèle ou d'un script. C'est souvent le moyen le plus rapide de trouver la cause d'une régression.</p>",
- "portal": {
-  "path": [
-   "Moniteur",
-   "Analyse des modifications"
-  ],
-  "title": "Modifications",
-  "rows": [
-   [
-    "*Hier 17:05",
-    "nsg-app · règle 200 modifiée"
-   ]
-  ]
- },
- "keep": "Qu'est-ce qui a changé = analyse des modifications."
-},
-{
- "id": "D5-035",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous devez sauvegarder chaque nuit 20 VM Azure de France Central, avec une rétention de 30 jours.</p><p>Où devez-vous créer le coffre Recovery Services ?</p>",
- "opts": [
-  "Dans West Europe, pour la redondance",
-  "Dans n'importe quelle région",
-  "Dans la région jumelée France South",
-  "Dans la région France Central"
- ],
- "ans": 3,
- "expl": "<p>Pour sauvegarder des VM Azure, le coffre doit être dans la <b>même région</b> que les VM. La protection contre une panne régionale vient de la redondance du coffre (<b>GRS</b>) et de la <b>restauration interrégion</b>.</p>",
- "portal": {
-  "path": [
-   "Coffres Recovery Services",
-   "Créer"
-  ],
-  "title": "Créer un coffre",
-  "rows": [
-   [
-    "*Région",
-    "France Central"
-   ]
-  ],
-  "btn": "Vérifier + créer"
- },
- "keep": "Sauvegarde de VM = coffre dans la région des VM."
-},
-{
- "id": "D5-036",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous devez pouvoir restaurer les VM sauvegardées dans la région jumelée, même si la région primaire est toujours disponible (par exemple pour un exercice).</p><p>Que devez-vous activer sur le coffre Recovery Services ?</p>",
- "opts": [
-  "La redondance GRS et la restauration interrégion",
-  "La suppression réversible améliorée du coffre",
-  "Le mode immuable verrouillé sur le coffre",
-  "La redondance LRS avec une copie manuelle dans l'autre région"
- ],
- "ans": 0,
- "expl": "<p>Avec un coffre en <b>GRS</b>, les données de sauvegarde sont répliquées dans la région jumelée. La <b>restauration interrégion</b> permet de restaurer depuis cette région secondaire à tout moment, pas seulement après une panne déclarée par Microsoft.</p>",
- "portal": {
-  "path": [
-   "Coffres Recovery Services",
-   "Vault1"
-  ],
-  "title": "Vault1 | Propriétés",
-  "rows": [
-   [
-    "Redondance",
-    "Géoredondant"
-   ],
-   [
-    "*Restauration interrégion",
-    "Activer"
-   ]
-  ],
-  "btn": "Enregistrer"
- },
- "keep": "Restaurer dans la région jumelée = GRS + restauration interrégion."
-},
-{
- "id": "D5-037",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous avez créé un coffre Recovery Services avec la redondance par défaut et protégé 10 VM. Vous voulez maintenant passer le coffre en LRS pour réduire les coûts.</p><p>Que se passe-t-il ?</p>",
- "opts": [
-  "Il faut changer la redondance de chaque VM protégée",
-  "Impossible avec des éléments protégés : nouveau coffre",
-  "La redondance se change à tout moment, sans impact",
-  "Le coffre passe en LRS au prochain cycle de sauvegarde"
- ],
- "ans": 1,
- "expl": "<p>La <b>redondance du stockage</b> d'un coffre (GRS par défaut, LRS ou ZRS) doit être choisie <b>avant</b> la première sauvegarde. Une fois des éléments inscrits, elle ne peut plus être modifiée (sauf en arrêtant la protection et en supprimant les données). On crée souvent un nouveau coffre.</p>",
- "portal": {
-  "path": [
-   "Coffres Recovery Services",
-   "Vault1"
-  ],
-  "title": "Configuration de sauvegarde",
-  "rows": [
-   [
-    "*Redondance du stockage",
-    "Verrouillée (éléments protégés)"
-   ]
-  ]
- },
- "keep": "Redondance du coffre : à choisir avant la première sauvegarde."
-},
-{
  "id": "D5-038",
  "dom": 5,
  "type": "dragdrop",
  "stem": "<p>Vous devez choisir le type de coffre adapté à chaque charge de travail.</p><p>Pour répondre, faites glisser le type approprié vers chaque charge. Chaque type peut être utilisé une fois, plusieurs fois ou pas du tout.</p>",
  "srcLabel": "Coffres",
- "srcs": [
-  "Coffre Recovery Services",
-  "Coffre de sauvegarde (Backup vault)"
- ],
  "tgtHead": [
   "Charge de travail",
   "Coffre"
+ ],
+ "srcs": [
+  "Coffre Recovery Services",
+  "Coffre de sauvegarde (Backup vault)"
  ],
  "tgts": [
   {
@@ -1149,49 +440,20 @@ AZ.questions.push(
  "keep": "VM + Files = Recovery Services ; disques + blobs = coffre de sauvegarde."
 },
 {
- "id": "D5-039",
- "dom": 5,
- "type": "single",
- "stem": "<p>Une VM Windows exécute SQL Server. Vous voulez que les sauvegardes Azure Backup de la VM soient cohérentes avec les applications.</p><p>Quel mécanisme Azure Backup utilise-t-il sur Windows ?</p>",
- "opts": [
-  "Un script pre-post obligatoire dans la VM",
-  "Le disque temporaire de la VM",
-  "Le service VSS (clichés instantanés)",
-  "Les diagnostics de démarrage"
- ],
- "ans": 2,
- "expl": "<p>Sur Windows, Azure Backup coordonne avec le <b>VSS</b> pour obtenir une sauvegarde <b>cohérente avec les applications</b> (les applications vident leurs écritures). Sur Linux, on utilise des scripts pre et post pour obtenir la même cohérence ; sinon la sauvegarde est cohérente avec le système de fichiers.</p><p>Pour SQL Server, la sauvegarde dédiée « SQL Server dans une VM Azure » permet en plus les sauvegardes de journaux.</p>",
- "portal": {
-  "path": [
-   "Coffres Recovery Services",
-   "Vault1",
-   "Travaux"
-  ],
-  "title": "Sauvegarde VM-SQL",
-  "rows": [
-   [
-    "*Cohérence",
-    "Application (VSS)"
-   ]
-  ]
- },
- "keep": "Cohérence applicative sous Windows = VSS."
-},
-{
  "id": "D5-040",
  "dom": 5,
  "type": "dragdrop",
  "stem": "<p>Vous devez choisir l'option de restauration Azure Backup adaptée à chaque besoin.</p><p>Pour répondre, faites glisser l'option appropriée vers chaque besoin. Chaque option peut être utilisée une fois, plusieurs fois ou pas du tout.</p>",
  "srcLabel": "Options",
+ "tgtHead": [
+  "Besoin",
+  "Option"
+ ],
  "srcs": [
   "Créer une machine virtuelle",
   "Restaurer les disques",
   "Remplacer l'existant",
   "Récupération de fichiers"
- ],
- "tgtHead": [
-  "Besoin",
-  "Option"
  ],
  "tgts": [
   {
@@ -1240,20 +502,6 @@ AZ.questions.push(
  "dom": 5,
  "type": "order",
  "stem": "<p>Un utilisateur a supprimé un dossier sur le disque de données de VM4, sauvegardée chaque nuit. Vous devez récupérer ce dossier sans restaurer la VM.</p><p>Quelles quatre actions devez-vous effectuer dans l'ordre ?</p><p>Pour répondre, déplacez les actions appropriées de la liste vers la zone de réponse et placez-les dans le bon ordre.</p>",
- "acts": [
-  "Ouvrir Récupération de fichiers et choisir un point de récupération",
-  "Télécharger et exécuter le script dans une machine (par exemple VM4)",
-  "Copier le dossier depuis les lecteurs montés",
-  "Démonter les disques depuis le portail",
-  "Arrêter VM4",
-  "Restaurer les disques de VM4"
- ],
- "seq": [
-  0,
-  1,
-  2,
-  3
- ],
  "expl": "<p>La <b>récupération de fichiers</b> : on choisit le <b>point de récupération</b>, on exécute le <b>script</b> (avec le mot de passe fourni) qui monte les disques en iSCSI, on <b>copie</b> les fichiers, puis on <b>démonte</b> les disques. La VM n'a pas besoin d'être arrêtée.</p>",
  "portal": {
   "path": [
@@ -1277,72 +525,21 @@ AZ.questions.push(
   ],
   "btn": "Démonter les disques"
  },
- "keep": "Point → script → copier → démonter."
-},
-{
- "id": "D5-042",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous voulez restaurer rapidement une VM à partir de la sauvegarde d'hier, avec le délai le plus court.</p><p>D'où proviennent les restaurations les plus rapides ?</p>",
- "opts": [
-  "Des diagnostics de démarrage de la VM",
-  "Du niveau coffre en GRS, dans la région jumelée",
-  "Du niveau Archive du coffre, réhydraté",
-  "Des instantanés locaux (restauration instantanée)"
+ "keep": "Point → script → copier → démonter.",
+ "acts": [
+  "Ouvrir Récupération de fichiers et choisir un point de récupération",
+  "Télécharger et exécuter le script dans une machine (par exemple VM4)",
+  "Copier le dossier depuis les lecteurs montés",
+  "Démonter les disques depuis le portail",
+  "Arrêter VM4",
+  "Restaurer les disques de VM4"
  ],
- "ans": 3,
- "expl": "<p>Azure Backup garde des <b>instantanés</b> des disques pendant quelques jours (1 à 5 jours en stratégie standard, plus en stratégie améliorée) : la <b>restauration instantanée</b> à partir de ces instantanés est beaucoup plus rapide que depuis le coffre.</p>",
- "portal": {
-  "path": [
-   "Éléments de sauvegarde",
-   "VM1"
-  ],
-  "title": "Points de restauration",
-  "rows": [
-   [
-    "*Instantané",
-    "Hier · restauration instantanée"
-   ],
-   [
-    "Coffre",
-    "Plus lent"
-   ]
-  ]
- },
- "keep": "Restauration la plus rapide = instantanés (restauration instantanée)."
-},
-{
- "id": "D5-043",
- "dom": 5,
- "type": "single",
- "stem": "<p>Une application critique doit être sauvegardée toutes les 4 heures, avec des points de restauration conservés 7 jours.</p><p>Quel type de stratégie de sauvegarde de VM devez-vous utiliser ?</p>",
- "opts": [
-  "Une stratégie améliorée (Enhanced), horaire",
-  "Une stratégie standard quotidienne, deux fois",
-  "Une stratégie de cycle de vie sur le coffre",
-  "Une règle de traitement des alertes horaire"
- ],
- "ans": 0,
- "expl": "<p>La <b>stratégie améliorée</b> permet plusieurs sauvegardes par jour (toutes les 4, 6, 8 ou 12 heures), une rétention plus longue des instantanés, et prend en charge les VM avec Lancement fiable. La stratégie <b>standard</b> ne fait qu'une sauvegarde par jour.</p>",
- "portal": {
-  "path": [
-   "Coffres Recovery Services",
-   "Vault1"
-  ],
-  "title": "Créer une stratégie",
-  "rows": [
-   [
-    "*Sous-type",
-    "Améliorée"
-   ],
-   [
-    "Fréquence",
-    "Toutes les 4 heures"
-   ]
-  ],
-  "btn": "Créer"
- },
- "keep": "Plusieurs sauvegardes par jour = stratégie améliorée."
+ "seq": [
+  0,
+  1,
+  2,
+  3
+ ]
 },
 {
  "id": "D5-044",
@@ -1404,403 +601,6 @@ AZ.questions.push(
  "keep": "Un point est gardé s'il entre dans au moins une rétention."
 },
 {
- "id": "D5-045",
- "dom": 5,
- "type": "single",
- "stem": "<p>Un administrateur malveillant arrête la protection d'une VM et supprime ses données de sauvegarde.</p><p>Quelle fonctionnalité permet de récupérer ces données pendant un certain temps ?</p>",
- "opts": [
-  "Une alerte de métrique sur le coffre",
-  "La suppression réversible du coffre",
-  "Les diagnostics de démarrage de la VM",
-  "La redondance LRS du coffre"
- ],
- "ans": 1,
- "expl": "<p>Avec la <b>suppression réversible</b> (activée par défaut), les données de sauvegarde supprimées restent récupérables <b>14 jours</b> sans frais supplémentaires. La suppression réversible <b>améliorée</b> permet jusqu'à 180 jours et peut être rendue toujours active (irréversible).</p>",
- "portal": {
-  "path": [
-   "Coffres Recovery Services",
-   "Vault1"
-  ],
-  "title": "Paramètres de sécurité",
-  "rows": [
-   [
-    "*Suppression réversible",
-    "Activée · 14 jours"
-   ]
-  ]
- },
- "keep": "Sauvegarde supprimée récupérable = suppression réversible."
-},
-{
- "id": "D5-046",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous voulez qu'aucune donnée de sauvegarde du coffre ne puisse être supprimée ou raccourcie avant sa date d'expiration, même par un administrateur, pour se protéger des rançongiciels.</p><p>Que devez-vous activer, puis verrouiller ?</p>",
- "opts": [
-  "La restauration interrégion",
-  "Une alerte",
-  "Le coffre immuable",
-  "La redondance ZRS"
- ],
- "ans": 2,
- "expl": "<p>Un <b>coffre immuable</b> empêche les opérations qui pourraient faire perdre des points de récupération (suppression, réduction de la rétention). Une fois <b>verrouillé</b>, ce réglage est irréversible.</p>",
- "portal": {
-  "path": [
-   "Coffres Recovery Services",
-   "Vault1"
-  ],
-  "title": "Propriétés › Immuabilité",
-  "rows": [
-   [
-    "*Coffre immuable",
-    "Activé et verrouillé"
-   ]
-  ],
-  "btn": "Appliquer"
- },
- "keep": "Rien ne peut raccourcir les sauvegardes = coffre immuable verrouillé."
-},
-{
- "id": "D5-047",
- "dom": 5,
- "type": "single",
- "stem": "<p>Les opérations critiques du coffre (désactiver la suppression réversible, réduire la rétention) doivent exiger l'approbation d'une autre équipe, propriétaire d'une ressource de garde dans un autre abonnement.</p><p>Que devez-vous configurer ?</p>",
- "opts": [
-  "Un second coffre dans l'autre abonnement",
-  "Un verrou Lecture seule sur le coffre",
-  "Une alerte de journal d'activité sur les opérations du coffre",
-  "L'autorisation multi-utilisateur (Resource Guard)"
- ],
- "ans": 3,
- "expl": "<p>L'<b>autorisation multi-utilisateur</b> associe le coffre à une <b>Resource Guard</b> gérée par une autre équipe. Les opérations protégées exigent alors une autorisation sur la Resource Guard (souvent via PIM), en plus des droits sur le coffre.</p>",
- "portal": {
-  "path": [
-   "Coffres Recovery Services",
-   "Vault1"
-  ],
-  "title": "Autorisation multi-utilisateur",
-  "rows": [
-   [
-    "*Resource Guard",
-    "rg-guard (autre abonnement)"
-   ]
-  ],
-  "btn": "Enregistrer"
- },
- "keep": "Approbation d'une autre équipe = MUA + Resource Guard."
-},
-{
- "id": "D5-048",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous devez sauvegarder chaque jour des dossiers d'un serveur de fichiers <b>local</b> (pas une VM Azure) vers Azure, sans serveur de sauvegarde intermédiaire.</p><p>Que devez-vous installer sur le serveur ?</p>",
- "opts": [
-  "L'agent MARS (Recovery Services)",
-  "L'agent Azure Monitor avec une DCR",
-  "L'agent de dépendances de VM Insights",
-  "Azure File Sync et un point de terminaison"
- ],
- "ans": 0,
- "expl": "<p>L'<b>agent MARS</b> sauvegarde des fichiers, des dossiers et l'état du système d'un serveur Windows (local ou VM) directement vers un coffre Recovery Services, jusqu'à 3 fois par jour.</p><p>Pour des charges applicatives complètes (SQL, Hyper-V…), on utilise <b>Microsoft Azure Backup Server</b> (MABS) ou DPM.</p>",
- "portal": {
-  "path": [
-   "Coffres Recovery Services",
-   "Vault1"
-  ],
-  "title": "Objectif de sauvegarde",
-  "rows": [
-   [
-    "Où",
-    "Local"
-   ],
-   [
-    "*Quoi",
-    "Fichiers et dossiers → agent MARS"
-   ]
-  ]
- },
- "keep": "Fichiers d'un serveur local, sans serveur intermédiaire = MARS."
-},
-{
- "id": "D5-049",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous installez l'agent MARS sur un serveur local. L'assistant d'inscription vous demande un fichier.</p><p>Quel fichier devez-vous fournir, et où l'obtenir ?</p>",
- "opts": [
-  "Un certificat SSL du serveur, depuis l'autorité interne",
-  "Les informations d'identification du coffre",
-  "Une clé d'accès du compte de stockage du coffre",
-  "Un fichier de paramètres ARM exporté du portail"
- ],
- "ans": 1,
- "expl": "<p>On télécharge les <b>informations d'identification du coffre</b> (vault credentials) depuis le coffre Recovery Services. Elles ne sont valables que pour une durée limitée : il faut les télécharger juste avant l'inscription. L'agent demande aussi une <b>phrase secrète</b> de chiffrement, à conserver précieusement : sans elle, la restauration est impossible.</p>",
- "portal": {
-  "path": [
-   "Coffres Recovery Services",
-   "Vault1"
-  ],
-  "title": "Préparer l'infrastructure",
-  "rows": [
-   [
-    "*Informations d'identification du coffre",
-    "Télécharger"
-   ],
-   [
-    "Phrase secrète",
-    "À conserver"
-   ]
-  ],
-  "btn": "Télécharger"
- },
- "keep": "Inscription MARS = informations d'identification du coffre + phrase secrète."
-},
-{
- "id": "D5-050",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous devez sauvegarder le partage Azure Files share1 chaque jour, avec une rétention de 30 jours et la possibilité de restaurer un seul fichier.</p><p>Que devez-vous configurer ?</p>",
- "opts": [
-  "La réplication d'objets vers un autre compte",
-  "L'agent MARS sur chaque poste client",
-  "Azure Backup pour Azure Files (même région)",
-  "Azure Site Recovery pour le compte de stockage"
- ],
- "ans": 2,
- "expl": "<p>La sauvegarde <b>Azure Files</b> d'Azure Backup (coffre Recovery Services) planifie des <b>instantanés de partage</b> (ou une sauvegarde en coffre), gère leur rétention, et permet de restaurer tout le partage ou des fichiers individuels, vers l'emplacement d'origine ou un autre.</p>",
- "portal": {
-  "path": [
-   "Comptes de stockage",
-   "stfiles"
-  ],
-  "title": "share1 | Sauvegarde",
-  "rows": [
-   [
-    "*Coffre",
-    "Recovery Services (même région)"
-   ],
-   [
-    "Rétention",
-    "30 jours"
-   ]
-  ],
-  "btn": "Activer la sauvegarde"
- },
- "keep": "Sauvegarder Azure Files = Azure Backup (coffre Recovery Services)."
-},
-{
- "id": "D5-051",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous devez pouvoir restaurer les blobs d'un compte de stockage à n'importe quel moment des 14 derniers jours, sans copier les données ailleurs.</p><p>Quel type de sauvegarde des blobs devez-vous configurer dans un coffre de sauvegarde ?</p>",
- "opts": [
-  "L'agent MARS sur une VM qui monte le conteneur",
-  "Azure Site Recovery pour le compte",
-  "La sauvegarde en coffre uniquement",
-  "La sauvegarde opérationnelle des blobs"
- ],
- "ans": 3,
- "expl": "<p>La <b>sauvegarde opérationnelle</b> des blobs est locale : elle s'appuie sur les fonctions du compte (restauration à un point dans le temps, contrôle de version, suppression réversible, flux de modification) et permet une restauration continue. La <b>sauvegarde en coffre</b> copie les données dans le coffre, ce qui protège aussi contre la perte du compte.</p>",
- "portal": {
-  "path": [
-   "Coffres de sauvegarde",
-   "bv1"
-  ],
-  "title": "Configurer la sauvegarde",
-  "rows": [
-   [
-    "Source",
-    "Blobs"
-   ],
-   [
-    "*Type",
-    "Opérationnelle · 14 jours"
-   ]
-  ],
-  "btn": "Vérifier + configurer"
- },
- "keep": "Restauration continue locale des blobs = sauvegarde opérationnelle."
-},
-{
- "id": "D5-052",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous voulez arrêter la sauvegarde de VM5, qui est décommissionnée, mais garder les points de récupération existants selon leur rétention.</p><p>Quelle option devez-vous choisir ?</p>",
- "opts": [
-  "Arrêter la sauvegarde en conservant les données de sauvegarde",
-  "Arrêter la sauvegarde en supprimant les données de sauvegarde",
-  "Supprimer le coffre",
-  "Suspendre la stratégie pour toutes les VM"
- ],
- "ans": 0,
- "expl": "<p><b>Arrêter la sauvegarde et conserver les données</b> : plus aucune nouvelle sauvegarde, mais les points existants restent restaurables (selon la stratégie, ou indéfiniment selon l'option choisie). Le stockage reste facturé.</p>",
- "portal": {
-  "path": [
-   "Éléments de sauvegarde",
-   "VM5"
-  ],
-  "title": "Arrêter la sauvegarde",
-  "rows": [
-   [
-    "*Option",
-    "Conserver les données de sauvegarde"
-   ]
-  ],
-  "btn": "Arrêter la sauvegarde"
- },
- "keep": "Plus de sauvegardes mais garder les points = arrêter en conservant."
-},
-{
- "id": "D5-053",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous voulez supprimer le coffre Recovery Services Vault2. La suppression échoue.</p><p>Quelle est la cause la plus probable ?</p>",
- "opts": [
-  "Le groupe de ressources a un verrou Lecture seule",
-  "Il reste des éléments protégés ou supprimés (réversible)",
-  "Le coffre est en GRS et doit d'abord repasser en LRS",
-  "Le coffre n'a aucune règle d'alerte associée"
- ],
- "ans": 1,
- "expl": "<p>Un coffre ne peut pas être supprimé tant qu'il contient des <b>éléments protégés</b>, des <b>données de sauvegarde</b> (y compris en suppression réversible), des serveurs inscrits ou des éléments de réplication Site Recovery. Il faut tout arrêter et supprimer, puis attendre la fin de la suppression réversible ou la purger.</p>",
- "portal": {
-  "path": [
-   "Coffres Recovery Services",
-   "Vault2"
-  ],
-  "title": "Supprimer le coffre",
-  "rows": [
-   [
-    "*Éléments protégés",
-    "3"
-   ],
-   [
-    "Supprimés de façon réversible",
-    "2"
-   ]
-  ]
- },
- "keep": "Vider le coffre (y compris réversible) avant de le supprimer."
-},
-{
- "id": "D5-054",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous devez vérifier en un seul endroit l'état des sauvegardes de 15 coffres répartis dans plusieurs abonnements et régions, avec les travaux en échec.</p><p>Que devez-vous utiliser ?</p>",
- "opts": [
-  "Le journal d'activité de chaque abonnement",
-  "Azure Advisor, onglet Fiabilité uniquement",
-  "Le centre de continuité d'activité Azure",
-  "Chaque coffre séparément, un par un"
- ],
- "ans": 2,
- "expl": "<p>Le <b>Centre de continuité d'activité</b> (Business Continuity Center), qui remplace le Centre de sauvegarde, offre une vue unifiée de la protection (Backup et Site Recovery) sur plusieurs coffres, abonnements et régions : éléments protégés, travaux, alertes, stratégies.</p>",
- "portal": {
-  "path": [
-   "Centre de continuité d'activité"
-  ],
-  "title": "Vue d'ensemble",
-  "rows": [
-   [
-    "*Coffres",
-    "15 · plusieurs abonnements"
-   ],
-   [
-    "Travaux en échec",
-    "4"
-   ]
-  ]
- },
- "keep": "Vue multicoffres = Centre de continuité d'activité."
-},
-{
- "id": "D5-055",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous voulez des rapports sur la consommation de stockage de sauvegarde, les tendances des travaux et les éléments protégés sur les 6 derniers mois.</p><p>Que devez-vous configurer ?</p>",
- "opts": [
-  "Une alerte de métrique sur chaque coffre, avec historique",
-  "Une règle de cycle de vie sur le stockage",
-  "Le flux de modification des coffres, exporté chaque mois",
-  "Les rapports de sauvegarde (diagnostic vers Log Analytics)"
- ],
- "ans": 3,
- "expl": "<p>Les <b>rapports de sauvegarde</b> (basés sur des classeurs) s'appuient sur les données envoyées par les <b>paramètres de diagnostic</b> des coffres vers <b>Log Analytics</b>. Ils couvrent la consommation, les travaux, les stratégies et l'optimisation.</p>",
- "portal": {
-  "path": [
-   "Centre de continuité d'activité",
-   "Rapports"
-  ],
-  "title": "Rapports de sauvegarde",
-  "rows": [
-   [
-    "*Source",
-    "Diagnostics des coffres → Log Analytics"
-   ]
-  ]
- },
- "keep": "Rapports de sauvegarde = diagnostics des coffres vers Log Analytics."
-},
-{
- "id": "D5-056",
- "dom": 5,
- "type": "single",
- "stem": "<p>Les sauvegardes de VM6 échouent avec une erreur liée à l'agent de VM.</p><p>Que devez-vous vérifier en premier ?</p>",
- "opts": [
-  "L'agent de VM Azure : installé, démarré, et qui joint Azure",
-  "Que le coffre est en LRS, et pas en GRS",
-  "Que la VM est dans un groupe à haute disponibilité",
-  "Que la VM a une adresse IP publique Standard pour joindre le coffre"
- ],
- "ans": 0,
- "expl": "<p>Azure Backup utilise une extension qui dépend de l'<b>agent de VM</b>. Les échecs viennent souvent d'un agent arrêté ou obsolète, ou d'un blocage réseau (NSG, proxy, pare-feu) vers les services Azure et l'adresse 168.63.129.16.</p>",
- "portal": {
-  "path": [
-   "Machines virtuelles",
-   "VM6"
-  ],
-  "title": "VM6 | Propriétés",
-  "rows": [
-   [
-    "*État de l'agent",
-    "Pas prêt"
-   ],
-   [
-    "Réseau",
-    "168.63.129.16 joignable ?"
-   ]
-  ]
- },
- "keep": "Échec de sauvegarde lié à l'agent = agent de VM + réseau."
-},
-{
- "id": "D5-057",
- "dom": 5,
- "type": "single",
- "stem": "<p>VM7 est chiffrée avec Azure Disk Encryption (clés dans Key Vault). La configuration de la sauvegarde échoue.</p><p>Que devez-vous vérifier ?</p>",
- "opts": [
-  "Que le coffre de clés autorise l'accès public",
-  "Que Backup Management Service accède aux clés et secrets",
-  "Que le coffre Recovery Services est dans une autre région que VM7",
-  "Que VM7 n'a pas de disque de données chiffré"
- ],
- "ans": 1,
- "expl": "<p>Pour sauvegarder une VM chiffrée par ADE, Azure Backup doit pouvoir lire les <b>clés et secrets</b> dans le coffre de clés : il faut donner l'accès au service <b>Backup Management Service</b> (stratégie d'accès ou rôle). Le portail le propose lors de l'activation.</p>",
- "portal": {
-  "path": [
-   "Coffres de clés",
-   "kv-ade"
-  ],
-  "title": "Stratégies d'accès",
-  "rows": [
-   [
-    "*Backup Management Service",
-    "Clés + secrets"
-   ]
-  ]
- },
- "keep": "VM ADE = accès de Backup Management Service au coffre de clés."
-},
-{
  "id": "D5-058",
  "dom": 5,
  "type": "yngrid",
@@ -1842,67 +642,5 @@ AZ.questions.push(
   ]
  },
  "keep": "Un coffre par VM ; stratégie partagée ; disque temporaire jamais sauvegardé."
-},
-{
- "id": "D5-059",
- "dom": 5,
- "type": "single",
- "stem": "<p>Vous lancez une sauvegarde à la demande de VM8 avant une mise à jour risquée. Quelle date d'expiration pouvez-vous choisir pour ce point de récupération ?</p>",
- "opts": [
-  "Aucune : il est conservé indéfiniment",
-  "Toujours 30 jours, quelle que soit la stratégie appliquée",
-  "Une date choisie au lancement de la sauvegarde",
-  "Toujours celle de la stratégie quotidienne"
- ],
- "ans": 2,
- "expl": "<p>Une <b>sauvegarde à la demande</b> (Sauvegarder maintenant) permet de choisir une <b>date de conservation</b> propre à ce point de récupération, indépendamment de la stratégie.</p>",
- "portal": {
-  "path": [
-   "Éléments de sauvegarde",
-   "VM8"
-  ],
-  "title": "Sauvegarder maintenant",
-  "rows": [
-   [
-    "*Conserver la sauvegarde jusqu'au",
-    "Date au choix"
-   ]
-  ],
-  "btn": "OK"
- },
- "keep": "Sauvegarde à la demande = date de conservation au choix."
-},
-{
- "id": "D5-060",
- "dom": 5,
- "type": "single",
- "stem": "<p>Les sauvegardes de 200 VM doivent être activées automatiquement dès leur création, dans toutes les VM qui portent l'étiquette Backup=Oui.</p><p>Que devez-vous utiliser ?</p>",
- "opts": [
-  "Une règle de traitement des alertes sur l'étiquette",
-  "Un script exécuté à la main chaque semaine",
-  "Une alerte de journal d'activité à la création de VM",
-  "Une stratégie DeployIfNotExists intégrée"
- ],
- "ans": 3,
- "expl": "<p>Azure propose des stratégies intégrées <b>DeployIfNotExists</b> qui configurent la sauvegarde des VM (avec ou sans filtre d'étiquette) vers un coffre et une stratégie donnés. Les VM existantes sont corrigées avec une tâche de correction.</p>",
- "portal": {
-  "path": [
-   "Stratégie",
-   "Affecter une stratégie"
-  ],
-  "title": "Configurer la sauvegarde des VM avec une étiquette",
-  "rows": [
-   [
-    "*Effet",
-    "DeployIfNotExists"
-   ],
-   [
-    "Étiquette",
-    "Backup=Oui"
-   ]
-  ],
-  "btn": "Vérifier + créer"
- },
- "keep": "Sauvegarde automatique à la création = Azure Policy DeployIfNotExists."
 }
 );
