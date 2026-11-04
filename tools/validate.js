@@ -209,7 +209,7 @@ for (const l of LANGS) lengthBias(l, banks[l]);
 /* Part des QCM : les questions à choix unique ou multiple ne doivent pas dépasser MCQ_MAX des questions
  * de chaque domaine (questions indépendantes et questions d'études de cas). Les domaines de MCQ_PENDING
  * ne sont pas encore traités : simple avertissement. */
-const MCQ_MAX = 0.25, MCQ_PENDING = new Set([1, 3]);
+const MCQ_MAX = 0.25, MCQ_PENDING = new Set([1]);
 const mcqStats = {};
 for (const l of LANGS) {
   const all = [...banks[l].questions, ...banks[l].cases.flatMap(c => c.questions || [])];

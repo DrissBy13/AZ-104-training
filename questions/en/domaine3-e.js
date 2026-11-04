@@ -5,7 +5,6 @@ AZ.questions.push(
  "dom": 3,
  "type": "cmd",
  "stem": "<p>You need to create an Ubuntu VM with SSH key authentication, with Azure CLI.</p><p>How should you complete the command?</p><p>To answer, select the appropriate options in the answer area.</p>",
- "tpl": "az vm create --resource-group RG1 --name VM35 --image {0} --size Standard_B2s --admin-username azureuser {1}",
  "rows": [
   {
    "l": "Image",
@@ -39,14 +38,14 @@ AZ.questions.push(
    ]
   ]
  },
- "keep": "Linux VM with SSH key in the CLI = --generate-ssh-keys (or --ssh-key-values)."
+ "keep": "Linux VM with SSH key in the CLI = --generate-ssh-keys (or --ssh-key-values).",
+ "tpl": "az vm create --resource-group RG1 --name VM35 --image {0} --size Standard_B2s --admin-username azureuser {1}"
 },
 {
  "id": "D3-178",
  "dom": 3,
  "type": "cmd",
  "stem": "<p>You need to resize VM36 to Standard_D4s_v5 with Azure CLI.</p><p>How should you complete the command?</p><p>To answer, select the appropriate options in the answer area.</p>",
- "tpl": "az vm {0} --resource-group RG1 --name VM36 {1} Standard_D4s_v5",
  "rows": [
   {
    "l": "Subcommand",
@@ -84,14 +83,14 @@ AZ.questions.push(
    ]
   ]
  },
- "keep": "Resizing in the CLI = az vm resize --size."
+ "keep": "Resizing in the CLI = az vm resize --size.",
+ "tpl": "az vm {0} --resource-group RG1 --name VM36 {1} Standard_D4s_v5"
 },
 {
  "id": "D3-179",
  "dom": 3,
  "type": "cmd",
  "stem": "<p>You need to manually set the scale set VMSS7 to 6 instances, with Azure CLI.</p><p>How should you complete the command?</p><p>To answer, select the appropriate options in the answer area.</p>",
- "tpl": "az vmss {0} --resource-group RG1 --name VMSS7 {1} 6",
  "rows": [
   {
    "l": "Subcommand",
@@ -129,14 +128,14 @@ AZ.questions.push(
    ]
   ]
  },
- "keep": "Manual instance count = az vmss scale --new-capacity."
+ "keep": "Manual instance count = az vmss scale --new-capacity.",
+ "tpl": "az vmss {0} --resource-group RG1 --name VMSS7 {1} 6"
 },
 {
  "id": "D3-180",
  "dom": 3,
  "type": "cmd",
  "stem": "<p>You need to attach a new 256 GiB data disk to VM37, with Azure CLI.</p><p>How should you complete the command?</p><p>To answer, select the appropriate options in the answer area.</p>",
- "tpl": "az vm disk {0} --resource-group RG1 --vm-name VM37 --name VM37-data1 {1} --size-gb 256 --sku Premium_LRS",
  "rows": [
   {
    "l": "Subcommand",
@@ -170,14 +169,14 @@ AZ.questions.push(
    ]
   ]
  },
- "keep": "New attached disk in the CLI = az vm disk attach --new."
+ "keep": "New attached disk in the CLI = az vm disk attach --new.",
+ "tpl": "az vm disk {0} --resource-group RG1 --vm-name VM37 --name VM37-data1 {1} --size-gb 256 --sku Premium_LRS"
 },
 {
  "id": "D3-181",
  "dom": 3,
  "type": "cmd",
  "stem": "<p>You need to stop and deallocate VM38 with Azure PowerShell.</p><p>How should you complete the command?</p><p>To answer, select the appropriate options in the answer area.</p>",
- "tpl": "{0} -ResourceGroupName RG1 -Name VM38 {1}",
  "rows": [
   {
    "l": "Cmdlet",
@@ -215,7 +214,8 @@ AZ.questions.push(
    ]
   ]
  },
- "keep": "Stop-AzVM deallocates by default; -StayProvisioned doesn't."
+ "keep": "Stop-AzVM deallocates by default; -StayProvisioned doesn't.",
+ "tpl": "{0} -ResourceGroupName RG1 -Name VM38 {1}"
 },
 {
  "id": "D3-182",
@@ -230,8 +230,8 @@ AZ.questions.push(
  ],
  "opts": [
   "Impossible: VM-C must be recreated in AS1",
-  "Move VM-C to AS1's resource group",
-  "Restart VM-C after choosing AS1",
+  "Move VM-C to the resource group that contains AS1",
+  "Restart VM-C after selecting AS1 in its settings",
   "Change VM-C's Availability property"
  ],
  "ans": 0,
@@ -357,427 +357,19 @@ AZ.questions.push(
  "keep": "Rules always stop at the minimum and maximum."
 },
 {
- "id": "D3-185",
- "dom": 3,
- "type": "single",
- "stem": "<p>You manage a VM VM39 in zone 2. It uses a Standard SKU public IP address. You want the public IP address to survive the loss of any zone.</p><p>How must the public IP address be configured?</p>",
- "opts": [
-  "Dynamic",
-  "Zone-redundant",
-  "Basic SKU",
-  "Zonal in zone 2"
- ],
- "ans": 1,
- "expl": "<p>A Standard public IP address can be <b>zone-redundant</b> (served by all zones), <b>zonal</b> (tied to one zone), or non-zonal. A zone-redundant address stays available if a zone goes down.</p><p>The Basic SKU is retired and doesn't support zones.</p>",
- "portal": {
-  "path": [
-   "Public IP addresses",
-   "Create"
-  ],
-  "title": "Create public IP address",
-  "rows": [
-   [
-    "SKU",
-    "Standard"
-   ],
-   [
-    "*Availability zone",
-    "Zone-redundant"
-   ]
-  ],
-  "btn": "Create"
- },
- "keep": "IP that survives a zone = Standard, zone-redundant."
-},
-{
- "id": "D3-186",
- "dom": 3,
- "type": "single",
- "stem": "<p>An application needs 3 web VMs behind a load balancer, spread to withstand a zone failure. The budget allows no more than 3 VMs.</p><p>Which configuration offers the best availability?</p>",
- "opts": [
-  "Three VMs in zone 1, behind a Standard load balancer",
-  "Three VMs in an availability set",
-  "One VM per zone (1, 2, 3) and a Standard LB",
-  "Three VMs in a proximity placement group"
- ],
- "ans": 2,
- "expl": "<p>One VM per zone, behind a zone-redundant <b>Standard load balancer</b>: if a zone goes down, two VMs keep serving. 99.99% SLA.</p><p>An availability set withstands a rack failure but not a datacenter failure. Three VMs in the same zone share the same risk.</p>",
- "portal": {
-  "path": [
-   "Load balancers",
-   "lb-web"
-  ],
-  "title": "lb-web | Backend pools",
-  "menu": [
-   "*Backend pools"
-  ],
-  "rows": [
-   [
-    "*VM-Z1, VM-Z2, VM-Z3",
-    "One VM per zone"
-   ],
-   [
-    "SKU",
-    "Standard (zone-redundant)"
-   ]
-  ]
- },
- "keep": "3 VMs and zone resilience = 1 VM per zone + Standard load balancer."
-},
-{
- "id": "D3-187",
- "dom": 3,
- "type": "single",
- "stem": "<p>A web app receives very short spikes (a few seconds). You want new VMSS9 instances to be ready faster.</p><p>Which option can help?</p>",
- "opts": [
-  "Lengthen the cool down",
-  "Reduce the maximum instance count",
-  "Switch to the Manual upgrade policy",
-  "Use a preconfigured image (gallery)"
- ],
- "ans": 3,
- "expl": "<p>A <b>preconfigured</b> image (software already installed) avoids running long extensions on each new instance: the delay between the scale decision and the ready instance shrinks. You can also keep a higher minimum instance count.</p>",
- "portal": {
-  "path": [
-   "Virtual machine scale sets",
-   "VMSS9"
-  ],
-  "title": "VMSS9 | Operating system",
-  "rows": [
-   [
-    "*Image",
-    "Azure Compute Gallery · app-ready:2.0"
-   ],
-   [
-    "Startup extensions",
-    "Reduced"
-   ]
-  ]
- },
- "keep": "Instances ready faster = preconfigured image."
-},
-{
- "id": "D3-188",
- "dom": 3,
- "type": "single",
- "stem": "<p>You deploy a new image version to VMSS10, which uses the <b>Manual</b> upgrade policy. Existing instances keep the old image.</p><p>What should you do?</p>",
- "opts": [
-  "Upgrade the instances (update-instances)",
-  "Redeploy the VMSS to other hosts",
-  "Increase the cool down",
-  "Nothing: they'll update at the next restart"
- ],
- "ans": 0,
- "expl": "<p>In <b>Manual</b> mode, the set's model is updated, but each instance keeps the old model until you <b>upgrade</b> it (portal: Upgrade, or CLI <code>az vmss update-instances</code>). New instances created by scaling use the new model directly.</p>",
- "portal": {
-  "path": [
-   "Virtual machine scale sets",
-   "VMSS10",
-   "Instances"
-  ],
-  "title": "Instances",
-  "rows": [
-   [
-    "*Latest model applied",
-    "No"
-   ]
-  ],
-  "btn": "Upgrade"
- },
- "keep": "Manual mode = upgrade instances yourself."
-},
-{
- "id": "D3-189",
- "dom": 3,
- "type": "single",
- "stem": "<p>You restored an App Service backup of WebApp23 to a new app, WebApp23-test, to investigate a problem.</p><p>Which feature did you use?</p>",
- "opts": [
-  "A restore deployment slot",
-  "Restore a backup to another app",
-  "A Template Spec of the app",
-  "Azure Site Recovery for App Service"
- ],
- "ans": 1,
- "expl": "<p>An App Service backup can be restored to the original app, to a <b>slot</b>, or to <b>another app</b> (new or existing). It's handy for testing without touching production.</p>",
- "portal": {
-  "path": [
-   "App Services",
-   "WebApp23"
-  ],
-  "title": "WebApp23 | Backups › Restore",
-  "menu": [
-   "*Backups"
-  ],
-  "rows": [
-   [
-    "*Target",
-    "Another app: WebApp23-test"
-   ]
-  ],
-  "btn": "Restore"
- },
- "keep": "Restoring an App Service backup to another app = risk-free testing."
-},
-{
- "id": "D3-190",
- "dom": 3,
- "type": "single",
- "stem": "<p>You need to create a copy of WebApp24 (code and configuration) in another region, to prepare for global scale.</p><p>Which App Service feature fits best?</p>",
- "opts": [
-  "Move the app to the other region (Properties)",
-  "Increase the plan's instance count",
-  "Clone the app to the other region",
-  "A deployment slot in the other region"
- ],
- "ans": 2,
- "expl": "<p>App <b>cloning</b> (Standard tier or higher) creates a copy of the content and configuration in another plan, possibly in another region. You can also restore a backup to an app in another region.</p><p>A slot is always in the same region as its app. An app doesn't change region.</p>",
- "portal": {
-  "path": [
-   "App Services",
-   "WebApp24"
-  ],
-  "title": "WebApp24 | Clone app",
-  "rows": [
-   [
-    "*Target plan",
-    "ASP-Asia (Southeast Asia)"
-   ],
-   [
-    "Content",
-    "Code + configuration"
-   ]
-  ],
-  "btn": "Clone"
- },
- "keep": "Copying an app to another region = cloning (or restore)."
-},
-{
- "id": "D3-191",
- "dom": 3,
- "type": "single",
- "stem": "<p>A containerized web app must be redeployed automatically each time a new app:latest image is pushed to ACR9.</p><p>What should you enable?</p>",
- "opts": [
-  "Always On",
-  "Geo-replication of the container registry",
-  "Auto swap on the staging slot",
-  "Continuous deployment (ACR webhook)"
- ],
- "ans": 3,
- "expl": "<p>With <b>continuous deployment</b> enabled for a container, App Service creates a <b>webhook</b> in ACR: on each push of the tracked image, the app pulls the new image and restarts.</p>",
- "portal": {
-  "path": [
-   "App Services",
-   "WebApp-Container"
-  ],
-  "title": "Deployment Center",
-  "menu": [
-   "*Deployment Center"
-  ],
-  "rows": [
-   [
-    "Source",
-    "Azure Container Registry · app:latest"
-   ],
-   [
-    "*Continuous deployment",
-    "On (ACR webhook)"
-   ]
-  ],
-  "btn": "Save"
- },
- "keep": "Redeploying on each image push = continuous deployment (ACR webhook)."
-},
-{
- "id": "D3-192",
- "dom": 3,
- "type": "single",
- "stem": "<p>Teams in Europe and Asia pull the same images from ACR10, located in France Central. Pulls from Asia are slow and incur data egress charges.</p><p>What should you do?</p>",
- "opts": [
-  "ACR10 to Premium, geo-replication to Asia",
-  "Enable the registry's retention policy",
-  "Increase the size of the VMs in Asia",
-  "Create a second, unrelated Basic registry in Asia"
- ],
- "ans": 0,
- "expl": "<p><b>Geo-replication</b> (Premium) creates replicas of the registry in other regions, with a single login name. Clients pull from the nearest replica: faster and with no cross-region egress charges. Pushes are replicated automatically.</p>",
- "portal": {
-  "path": [
-   "Container registries",
-   "ACR10"
-  ],
-  "title": "ACR10 | Geo-replications",
-  "menu": [
-   "*Geo-replications"
-  ],
-  "rows": [
-   [
-    "France Central",
-    "Home"
-   ],
-   [
-    "*Southeast Asia",
-    "Replica"
-   ]
-  ],
-  "btn": "+ Add"
- },
- "keep": "Nearby pulls for several regions = geo-replication (Premium)."
-},
-{
- "id": "D3-193",
- "dom": 3,
- "type": "single",
- "stem": "<p>The registry ACR11 must only be reachable from VNet5, through a private IP address.</p><p>What should you configure?</p>",
- "opts": [
-  "The admin account with a strong password",
-  "A private endpoint (Premium)",
-  "A manifest retention policy",
-  "The Basic tier with a firewall"
- ],
- "ans": 1,
- "expl": "<p>ACR <b>private endpoints</b> require the <b>Premium</b> tier. You then disable public network access. The private DNS zone is <code>privatelink.azurecr.io</code>.</p>",
- "portal": {
-  "path": [
-   "Container registries",
-   "ACR11"
-  ],
-  "title": "ACR11 | Networking",
-  "menu": [
-   "*Networking"
-  ],
-  "rows": [
-   [
-    "*Public access",
-    "Disabled"
-   ],
-   [
-    "*Private endpoint connections",
-    "VNet5"
-   ],
-   [
-    "DNS zone",
-    "privatelink.azurecr.io"
-   ]
-  ]
- },
- "keep": "Private ACR = Premium + private endpoint."
-},
-{
- "id": "D3-194",
- "dom": 3,
- "type": "single",
- "stem": "<p>You need to deploy an Azure Container Apps application that reads a database password, without writing it in clear text in the app definition.</p><p>What should you use?</p>",
- "opts": [
-  "A resource tag on the app",
-  "The active revision's name",
-  "A Container Apps secret (environment variable)",
-  "A setting of the environment's Log Analytics workspace"
- ],
- "ans": 2,
- "expl": "<p>Container Apps manages <b>secrets</b> at the app level, which can reference a <b>Key Vault</b> secret with the app's managed identity. An environment variable references them with <code>secretRef</code>.</p>",
- "portal": {
-  "path": [
-   "Container Apps",
-   "app1"
-  ],
-  "title": "app1 | Secrets",
-  "menu": [
-   "*Secrets"
-  ],
-  "rows": [
-   [
-    "*db-password",
-    "Key Vault reference (managed identity)"
-   ],
-   [
-    "Variable",
-    "DB_PASSWORD → secretRef: db-password"
-   ]
-  ],
-  "btn": "+ Add"
- },
- "keep": "Secret in Container Apps = app secret (Key Vault possible) + secretRef."
-},
-{
- "id": "D3-195",
- "dom": 3,
- "type": "single",
- "stem": "<p>A developer wants to expose an API from an ACI container on port 8080.</p><p>What must he configure when creating the container group?</p>",
- "opts": [
-  "An App Service plan to expose the port",
-  "A required load balancer in front of the group",
-  "A scale rule on port 8080",
-  "Port 8080 exposed (and a public IP)"
- ],
- "ans": 3,
- "expl": "<p>Ports to open are declared in the container and in the container group (<code>--ports 8080</code> parameter). A public IP address or a virtual network deployment makes the group reachable. No load balancer is needed.</p>",
- "portal": {
-  "path": [
-   "Container instances",
-   "Create"
-  ],
-  "title": "Networking",
-  "menu": [
-   "*Networking"
-  ],
-  "rows": [
-   [
-    "*Ports",
-    "8080 / TCP"
-   ],
-   [
-    "Networking type",
-    "Public"
-   ]
-  ]
- },
- "keep": "Exposing an ACI port = declare it in the group's ports."
-},
-{
- "id": "D3-196",
- "dom": 3,
- "type": "single",
- "stem": "<p>You need to run a Windows container in Azure Container Instances.</p><p>Which constraint must you know?</p>",
- "opts": [
-  "A group holds only one Windows container",
-  "Windows containers aren't supported",
-  "Windows containers require an Ultra disk",
-  "Windows containers must be in an App Service plan"
- ],
- "ans": 0,
- "expl": "<p>ACI supports <b>Windows</b> containers, but a Windows group contains only <b>one</b> container. Features such as multi-container groups or some volumes are Linux-only.</p>",
- "portal": {
-  "path": [
-   "Container instances",
-   "Create"
-  ],
-  "title": "Create container instance",
-  "menu": [
-   "*Basics"
-  ],
-  "rows": [
-   [
-    "*OS type",
-    "Windows · 1 container per group"
-   ]
-  ]
- },
- "keep": "Windows ACI = one container per group."
-},
-{
  "id": "D3-197",
  "dom": 3,
  "type": "dragdrop",
  "stem": "<p>You need to choose the appropriate scaling option for each situation.</p><p>To answer, drag the appropriate option to each situation. Each option may be used once, more than once, or not at all.</p>",
  "srcLabel": "Options",
+ "tgtHead": [
+  "Situation",
+  "Option"
+ ],
  "srcs": [
   "Scale up (vertical)",
   "Scale out (horizontal)",
   "Scheduled scaling"
- ],
- "tgtHead": [
-  "Situation",
-  "Option"
  ],
  "tgts": [
   {
@@ -823,15 +415,15 @@ AZ.questions.push(
  "type": "dragdrop",
  "stem": "<p>You need to choose the appropriate redundancy option for each level of VM protection.</p><p>To answer, drag the appropriate option to each level. Each option may be used once, more than once, or not at all.</p>",
  "srcLabel": "Options",
+ "tgtHead": [
+  "Protection",
+  "Option"
+ ],
  "srcs": [
   "Fault domains",
   "Update domains",
   "Availability zones",
   "Azure Site Recovery to another region"
- ],
- "tgtHead": [
-  "Protection",
-  "Option"
  ],
  "tgts": [
   {
@@ -884,18 +476,6 @@ AZ.questions.push(
  "dom": 3,
  "type": "order",
  "stem": "<p>You need to deploy a containerized app to Azure Container Apps from your local source code, with a private registry.</p><p>Which three actions should you perform in sequence?</p><p>To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.</p>",
- "acts": [
-  "Create an Azure Container Registry",
-  "Build the image and push it to the registry (az acr build)",
-  "Create the Container Apps app from the image, with an identity that has AcrPull",
-  "Create an App Service plan",
-  "Create an availability set"
- ],
- "seq": [
-  0,
-  1,
-  2
- ],
  "expl": "<p>The <b>registry</b> must exist to receive the image; you <b>build and push</b> the image; finally you create the <b>app</b> that pulls the image (with a managed identity that has AcrPull). The <code>az containerapp up</code> command can automate all these steps.</p><p>An App Service plan and an availability set don't apply to Container Apps.</p>",
  "portal": {
   "path": [
@@ -921,27 +501,25 @@ AZ.questions.push(
    ]
   ]
  },
- "keep": "Container Apps from code: registry, build, app."
+ "keep": "Container Apps from code: registry, build, app.",
+ "acts": [
+  "Create an Azure Container Registry",
+  "Build the image and push it to the registry (az acr build)",
+  "Create the Container Apps app from the image, with an identity that has AcrPull",
+  "Create an App Service plan",
+  "Create an availability set"
+ ],
+ "seq": [
+  0,
+  1,
+  2
+ ]
 },
 {
  "id": "D3-200",
  "dom": 3,
  "type": "order",
  "stem": "<p>You need to set up HTTPS on the domain www.fabrikam.com for WebApp25, with a free managed certificate. WebApp25 is in a Free plan.</p><p>Which four actions should you perform in sequence?</p><p>To answer, move the appropriate actions from the list of actions to the answer area and arrange them in the correct order.</p>",
- "acts": [
-  "Move the plan to the Basic tier or higher",
-  "Create the CNAME and TXT asuid.www DNS records",
-  "Add the custom domain www.fabrikam.com to WebApp25",
-  "Create an App Service managed certificate and bind it with an SNI binding",
-  "Create a deployment slot",
-  "Export the managed certificate"
- ],
- "seq": [
-  0,
-  1,
-  2,
-  3
- ],
  "expl": "<p>The Free plan doesn't support custom domains: you <b>move to Basic</b>. You create the verification and routing <b>DNS records</b>, <b>add the domain</b>, then create the <b>managed certificate</b> and the <b>TLS binding</b> (SNI).</p><p>A managed certificate can't be exported, and no slot is needed.</p>",
  "portal": {
   "path": [
@@ -964,168 +542,21 @@ AZ.questions.push(
    ]
   ]
  },
- "keep": "Free HTTPS: Basic, DNS, domain, managed certificate + binding."
-},
-{
- "id": "D3-201",
- "dom": 3,
- "type": "single",
- "stem": "<p>Your company must host web apps in a fully isolated environment, inside its own virtual network, with a very large number of instances.</p><p>What should you deploy?</p>",
- "opts": [
-  "A Premium v3 plan with virtual network integration",
-  "An App Service Environment v3 (Isolated v2 plans)",
-  "ACI containers",
-  "A Standard plan with access restrictions"
+ "keep": "Free HTTPS: Basic, DNS, domain, managed certificate + binding.",
+ "acts": [
+  "Move the plan to the Basic tier or higher",
+  "Create the CNAME and TXT asuid.www DNS records",
+  "Add the custom domain www.fabrikam.com to WebApp25",
+  "Create an App Service managed certificate and bind it with an SNI binding",
+  "Create a deployment slot",
+  "Export the managed certificate"
  ],
- "ans": 1,
- "expl": "<p>An <b>App Service Environment</b> v3 is a <b>single-tenant</b> App Service deployment, injected into a subnet of your virtual network, with <b>Isolated v2</b> plans. It suits strong isolation and large-scale requirements.</p><p>A Premium plan's virtual network integration only concerns outbound traffic; the infrastructure stays shared.</p>",
- "portal": {
-  "path": [
-   "App Service Environments",
-   "Create"
-  ],
-  "title": "Create App Service Environment v3",
-  "rows": [
-   [
-    "*Virtual network",
-    "VNet-ASE / snet-ase"
-   ],
-   [
-    "Plans",
-    "Isolated v2"
-   ]
-  ],
-  "btn": "Create"
- },
- "keep": "Full isolation in your VNet = App Service Environment v3."
-},
-{
- "id": "D3-202",
- "dom": 3,
- "type": "single",
- "stem": "<p>A developer wants to deploy his code to a web app over FTPS. The connection is refused.</p><p>Which App Service setting should you check?</p>",
- "opts": [
-  "Always On on the production slot",
-  "ARR affinity (sticky sessions)",
-  "FTP state and basic credentials",
-  "The app's health check"
- ],
- "ans": 2,
- "expl": "<p>In <b>Configuration > General settings</b>, the <b>FTP state</b> can be set to “FTPS only” or “Disabled”, and basic authentication (used by FTP) can be disabled. For security, Microsoft recommends disabling FTP and preferring other deployment methods.</p>",
- "portal": {
-  "path": [
-   "App Services",
-   "WebApp1"
-  ],
-  "title": "Configuration › General settings",
-  "rows": [
-   [
-    "*FTP state",
-    "FTPS only"
-   ],
-   [
-    "FTP basic auth publishing credentials",
-    "On"
-   ]
-  ],
-  "btn": "Save"
- },
- "keep": "FTP refused = FTP state or basic authentication disabled."
-},
-{
- "id": "D3-203",
- "dom": 3,
- "type": "single",
- "stem": "<p>You want all HTTP requests to WebApp26 to be redirected to HTTPS.</p><p>Which setting should you enable?</p>",
- "opts": [
-  "ARR affinity",
-  "Always On",
-  "Minimum TLS version 1.0",
-  "HTTPS only"
- ],
- "ans": 3,
- "expl": "<p>The <b>HTTPS only</b> setting automatically redirects HTTP requests to HTTPS. You also set the <b>minimum TLS version</b> (1.2 recommended) to reject older protocols.</p>",
- "portal": {
-  "path": [
-   "App Services",
-   "WebApp26"
-  ],
-  "title": "Configuration › General settings",
-  "rows": [
-   [
-    "*HTTPS only",
-    "On"
-   ],
-   [
-    "Minimum TLS version",
-    "1.2"
-   ]
-  ],
-  "btn": "Save"
- },
- "keep": "Redirecting HTTP to HTTPS = HTTPS only."
-},
-{
- "id": "D3-204",
- "dom": 3,
- "type": "single",
- "stem": "<p>A Linux web app must run a .NET image with a custom startup command.</p><p>Where should you specify the command?</p>",
- "opts": [
-  "General settings > Startup command",
-  "In the app's App Service plan",
-  "In an Azure tag on the app",
-  "In Deployment Center only"
- ],
- "ans": 0,
- "expl": "<p>For Linux apps, the <b>startup command</b> is set in the configuration's general settings (or with <code>az webapp config set --startup-file</code>).</p>",
- "portal": {
-  "path": [
-   "App Services",
-   "WebApp-Linux"
-  ],
-  "title": "Configuration › General settings",
-  "rows": [
-   [
-    "*Startup command",
-    "dotnet MyApp.dll"
-   ]
-  ],
-  "btn": "Save"
- },
- "keep": "Linux startup command = General settings."
-},
-{
- "id": "D3-205",
- "dom": 3,
- "type": "single",
- "stem": "<p>The App Service plan ASP4 (Standard S1, 3 instances) hosts 6 apps. One of them uses almost all the CPU and slows down the others.</p><p>What is the best solution?</p>",
- "opts": [
-  "Enable ARR affinity on every app",
-  "Move the resource-hungry app to its own plan",
-  "Add a deployment slot to the plan",
-  "Disable Always On on all the other apps in the plan"
- ],
- "ans": 1,
- "expl": "<p>All apps in a plan share the same instances. Isolating the resource-hungry app in a <b>dedicated plan</b> lets you scale it separately without penalizing the others.</p><p>Note: deployment slots also share the plan's resources.</p>",
- "portal": {
-  "path": [
-   "App Service plans",
-   "ASP-Dedicated"
-  ],
-  "title": "Create App Service plan",
-  "rows": [
-   [
-    "*App moved",
-    "hungry-app"
-   ],
-   [
-    "Tier",
-    "As needed"
-   ]
-  ],
-  "btn": "Create"
- },
- "keep": "Neighbor app too hungry = move it to its own plan."
+ "seq": [
+  0,
+  1,
+  2,
+  3
+ ]
 },
 {
  "id": "D3-206",
@@ -1372,6 +803,38 @@ AZ.questions.push(
  "dom": 3,
  "type": "screen",
  "stem": "<p>You create a container registry for production. It must be replicated to West Europe and reachable only through a private endpoint. The admin account must stay disabled.</p><p>How should you configure the registry?</p><p>To answer, select the appropriate options in the answer area.</p>",
+ "expl": "<ul><li><b>Premium</b>: the only tier that offers geo-replication and private endpoints.</li><li><b>Private access</b>: private endpoint, public access disabled.</li><li><b>Admin user</b>: left disabled; use identities with AcrPull and AcrPush.</li><li><b>Geo-replication</b> to West Europe.</li></ul>",
+ "portal": {
+  "path": [
+   "Container registries",
+   "Create"
+  ],
+  "title": "Create container registry",
+  "menu": [
+   "*Basics",
+   "Networking"
+  ],
+  "rows": [
+   [
+    "*SKU",
+    "Premium"
+   ],
+   [
+    "*Connectivity",
+    "Private access"
+   ],
+   [
+    "Admin user",
+    "Disabled"
+   ],
+   [
+    "*Geo-replication",
+    "West Europe"
+   ]
+  ],
+  "btn": "Review + create"
+ },
+ "keep": "Private, replicated production registry = Premium.",
  "win": {
   "title": "Create container registry",
   "sub": "Container registries",
@@ -1426,45 +889,42 @@ AZ.questions.push(
     "a": 1
    }
   ]
- },
- "expl": "<ul><li><b>Premium</b>: the only tier that offers geo-replication and private endpoints.</li><li><b>Private access</b>: private endpoint, public access disabled.</li><li><b>Admin user</b>: left disabled; use identities with AcrPull and AcrPush.</li><li><b>Geo-replication</b> to West Europe.</li></ul>",
- "portal": {
-  "path": [
-   "Container registries",
-   "Create"
-  ],
-  "title": "Create container registry",
-  "menu": [
-   "*Basics",
-   "Networking"
-  ],
-  "rows": [
-   [
-    "*SKU",
-    "Premium"
-   ],
-   [
-    "*Connectivity",
-    "Private access"
-   ],
-   [
-    "Admin user",
-    "Disabled"
-   ],
-   [
-    "*Geo-replication",
-    "West Europe"
-   ]
-  ],
-  "btn": "Review + create"
- },
- "keep": "Private, replicated production registry = Premium."
+ }
 },
 {
  "id": "D3-212",
  "dom": 3,
  "type": "screen",
  "stem": "<p>You create an Azure Container Apps app for a public API. It must be reachable on the internet over HTTPS on port 443 (the container listens on port 8080), and scale down to zero replicas at night.</p><p>How should you configure the app?</p><p>To answer, select the appropriate options in the answer area.</p>",
+ "expl": "<ul><li><b>Ingress enabled</b>, traffic <b>from anywhere</b> (external). Container Apps exposes HTTPS on 443 and forwards to the container's <b>target port 8080</b>.</li><li><b>Minimum 0</b>: scale to zero replicas with no traffic.</li></ul><p>The maximum isn't scored here.</p>",
+ "portal": {
+  "path": [
+   "Container Apps",
+   "Create"
+  ],
+  "title": "Create container app",
+  "menu": [
+   "Basics",
+   "*Ingress",
+   "Scale"
+  ],
+  "rows": [
+   [
+    "*Ingress traffic",
+    "From anywhere"
+   ],
+   [
+    "*Target port",
+    "8080"
+   ],
+   [
+    "*Min replicas",
+    "0"
+   ]
+  ],
+  "btn": "Review + create"
+ },
+ "keep": "External ingress: HTTPS 443 → container's target port; min 0 = scale to zero.",
  "win": {
   "title": "Create container app",
   "sub": "Container Apps",
@@ -1524,42 +984,34 @@ AZ.questions.push(
     "a": null
    }
   ]
- },
- "expl": "<ul><li><b>Ingress enabled</b>, traffic <b>from anywhere</b> (external). Container Apps exposes HTTPS on 443 and forwards to the container's <b>target port 8080</b>.</li><li><b>Minimum 0</b>: scale to zero replicas with no traffic.</li></ul><p>The maximum isn't scored here.</p>",
- "portal": {
-  "path": [
-   "Container Apps",
-   "Create"
-  ],
-  "title": "Create container app",
-  "menu": [
-   "Basics",
-   "*Ingress",
-   "Scale"
-  ],
-  "rows": [
-   [
-    "*Ingress traffic",
-    "From anywhere"
-   ],
-   [
-    "*Target port",
-    "8080"
-   ],
-   [
-    "*Min replicas",
-    "0"
-   ]
-  ],
-  "btn": "Review + create"
- },
- "keep": "External ingress: HTTPS 443 → container's target port; min 0 = scale to zero."
+ }
 },
 {
  "id": "D3-213",
  "dom": 3,
  "type": "hotspot",
  "stem": "<p>You need to configure autoscale for the App Service plan that hosts WebApp28.</p><p>Which option should you select?</p><p>To answer, select the appropriate option in the answer area.</p>",
+ "ans": "Scale out (App Service plan)",
+ "expl": "<p><b>Scale out</b> sets the number of instances: manual or autoscale with rules. <b>Scale up</b> changes the plan's tier and size.</p>",
+ "portal": {
+  "path": [
+   "App Services",
+   "WebApp28"
+  ],
+  "title": "WebApp28 | Scale out (App Service plan)",
+  "menu": [
+   "Scale up (App Service plan)",
+   "*Scale out (App Service plan)"
+  ],
+  "rows": [
+   [
+    "*Method",
+    "Custom autoscale"
+   ]
+  ],
+  "btn": "Save"
+ },
+ "keep": "Instance count = Scale out; size and tier = Scale up.",
  "win": {
   "title": "WebApp28 | App Service",
   "nav": [
@@ -1589,34 +1041,33 @@ AZ.questions.push(
     ]
    }
   ]
- },
- "ans": "Scale out (App Service plan)",
- "expl": "<p><b>Scale out</b> sets the number of instances: manual or autoscale with rules. <b>Scale up</b> changes the plan's tier and size.</p>",
- "portal": {
-  "path": [
-   "App Services",
-   "WebApp28"
-  ],
-  "title": "WebApp28 | Scale out (App Service plan)",
-  "menu": [
-   "Scale up (App Service plan)",
-   "*Scale out (App Service plan)"
-  ],
-  "rows": [
-   [
-    "*Method",
-    "Custom autoscale"
-   ]
-  ],
-  "btn": "Save"
- },
- "keep": "Instance count = Scale out; size and tier = Scale up."
+ }
 },
 {
  "id": "D3-214",
  "dom": 3,
  "type": "hotspot",
  "stem": "<p>You need to see the output of the Custom Script extension installed on VM40.</p><p>Which option should you select?</p><p>To answer, select the appropriate option in the answer area.</p>",
+ "ans": "Extensions + applications",
+ "expl": "<p><b>Extensions + applications</b> lists installed extensions, their status, and their detailed messages (output and error for Custom Script). You can also add or uninstall an extension there.</p>",
+ "portal": {
+  "path": [
+   "Virtual machines",
+   "VM40"
+  ],
+  "title": "VM40 | Extensions + applications",
+  "menu": [
+   "Disks",
+   "*Extensions + applications"
+  ],
+  "rows": [
+   [
+    "*CustomScriptExtension",
+    "Provisioning succeeded · View detailed status"
+   ]
+  ]
+ },
+ "keep": "An extension's output = Extensions + applications.",
  "win": {
   "title": "VM40 | Virtual machine",
   "nav": [
@@ -1649,43 +1100,30 @@ AZ.questions.push(
     ]
    }
   ]
- },
- "ans": "Extensions + applications",
- "expl": "<p><b>Extensions + applications</b> lists installed extensions, their status, and their detailed messages (output and error for Custom Script). You can also add or uninstall an extension there.</p>",
- "portal": {
-  "path": [
-   "Virtual machines",
-   "VM40"
-  ],
-  "title": "VM40 | Extensions + applications",
-  "menu": [
-   "Disks",
-   "*Extensions + applications"
-  ],
-  "rows": [
-   [
-    "*CustomScriptExtension",
-    "Provisioning succeeded · View detailed status"
-   ]
-  ]
- },
- "keep": "An extension's output = Extensions + applications."
+ }
 },
 {
  "id": "D3-215",
  "dom": 3,
- "type": "multi",
- "pick": 2,
- "stem": "<p>VM41 is in a <b>Failed</b> state after an interrupted operation. You want to bring it back to a consistent state without moving it or losing data.</p><p>Which <b>two</b> actions can help?</p><p>Each correct answer presents a complete solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
- "opts": [
-  "Rerun the last operation (for example a resize)",
-  "Reapply the VM's state",
-  "Export the OS disk",
-  "Delete the VM and its disks, then recreate it from a template"
- ],
- "ans": [
-  0,
-  1
+ "type": "yngrid",
+ "stem": "<p>VM41 is in a <b>Failed</b> state after an interrupted operation. You want to bring it back to a consistent state without moving it or losing data.</p><p>For each of the following actions, select Yes if it can help. Otherwise, select No.</p><p>NOTE: Each correct selection is worth one point.</p>",
+ "rows": [
+  {
+   "l": "Rerun the last operation (for example a resize)",
+   "a": 0
+  },
+  {
+   "l": "Reapply the VM's state",
+   "a": 0
+  },
+  {
+   "l": "Export the OS disk",
+   "a": 1
+  },
+  {
+   "l": "Delete the VM and its disks, then recreate it from a template",
+   "a": 1
+  }
  ],
  "expl": "<ul><li><b>Reapply: yes.</b> It reruns the VM's provisioning on the same host, often enough to leave the Failed state.</li><li><b>Rerun the operation: yes.</b> A VM update (even with no change) often brings the state back to consistency.</li><li><b>Delete: no</b>, destructive.</li><li><b>Export: no</b>, fixes nothing.</li></ul>",
  "portal": {
@@ -1714,18 +1152,25 @@ AZ.questions.push(
 {
  "id": "D3-216",
  "dom": 3,
- "type": "multi",
- "pick": 2,
- "stem": "<p>You need to let a web app read Key Vault secrets without storing credentials.</p><p>Which <b>two</b> actions should you perform?</p><p>Each correct answer presents part of the solution.</p><p>NOTE: Each correct selection is worth one point.</p>",
- "opts": [
-  "Put the vault's access key in an app setting",
-  "Key Vault Secrets User for that identity",
-  "Enable the system-assigned managed identity",
-  "Contributor on the vault for all users"
- ],
- "ans": [
-  1,
-  2
+ "type": "yngrid",
+ "stem": "<p>You need to let a web app read Key Vault secrets without storing credentials.</p><p>For each of the following actions, select Yes if it's required. Otherwise, select No.</p><p>NOTE: Each correct selection is worth one point.</p>",
+ "rows": [
+  {
+   "l": "Put the vault's access key in an app setting",
+   "a": 1
+  },
+  {
+   "l": "Key Vault Secrets User for that identity",
+   "a": 0
+  },
+  {
+   "l": "Enable the system-assigned managed identity",
+   "a": 0
+  },
+  {
+   "l": "Contributor on the vault for all users",
+   "a": 1
+  }
  ],
  "expl": "<ul><li><b>Managed identity: yes</b>, it gives the app an Entra identity, with no secret.</li><li><b>Key Vault Secrets User: yes</b>, it allows reading secret values (vault in RBAC mode).</li><li>A vault has no “key” to put in settings. Contributor for everyone would be dangerous and doesn't grant secret access in RBAC mode.</li></ul>",
  "portal": {
@@ -1750,490 +1195,5 @@ AZ.questions.push(
   "btn": "Save"
  },
  "keep": "App → Key Vault with no secret = managed identity + role on the vault."
-},
-{
- "id": "D3-217",
- "dom": 3,
- "type": "single",
- "stem": "<p>A critical application runs on VM42, with no redundancy. You want to be warned 15 minutes before planned maintenance that will restart the host, to shut the application down cleanly.</p><p>What should you use in the VM?</p>",
- "opts": [
-  "The VM's serial console",
-  "Boot diagnostics",
-  "The Scheduled Events service",
-  "A budget alert on the VM"
- ],
- "ans": 2,
- "expl": "<p><b>Scheduled Events</b>, exposed by the Instance Metadata Service (IMDS, <code>169.254.169.254</code>), informs the VM of upcoming events (reboot, redeploy, Spot eviction) with advance notice. The application can prepare for them.</p>",
- "portal": {
-  "path": [
-   "Virtual machines",
-   "VM42"
-  ],
-  "title": "Instance Metadata Service",
-  "rows": [
-   [
-    "*Endpoint",
-    "http://169.254.169.254/metadata/scheduledevents"
-   ],
-   [
-    "Events",
-    "Reboot, Redeploy, Freeze, Preempt"
-   ]
-  ]
- },
- "keep": "Maintenance notice inside the VM = Scheduled Events (IMDS)."
-},
-{
- "id": "D3-218",
- "dom": 3,
- "type": "single",
- "stem": "<p>You want to control when platform updates are applied to the hosts of your dedicated VMs, within a 5-hour window on Sunday.</p><p>What should you configure?</p>",
- "opts": [
-  "Boot diagnostics",
-  "An availability set",
-  "A Rolling upgrade policy on the VMs",
-  "A scheduled Maintenance Configuration"
- ],
- "ans": 3,
- "expl": "<p><b>Maintenance Configurations</b> let you control platform updates for dedicated hosts and isolated VMs, or schedule guest patching, within a defined window.</p>",
- "portal": {
-  "path": [
-   "Maintenance Configurations",
-   "Create"
-  ],
-  "title": "Create a maintenance configuration",
-  "rows": [
-   [
-    "*Scope",
-    "Host"
-   ],
-   [
-    "Window",
-    "Sunday 01:00 · 5 hours"
-   ]
-  ],
-  "btn": "Create"
- },
- "keep": "Controlling the maintenance window = maintenance configuration."
-},
-{
- "id": "D3-219",
- "dom": 3,
- "type": "single",
- "stem": "<p>You need to automatically apply Windows and Linux patches on 200 VMs, on a schedule, with a compliance report.</p><p>Which service should you use?</p>",
- "opts": [
-  "Azure Update Manager",
-  "Azure Advisor",
-  "Azure Site Recovery",
-  "Azure Resource Mover"
- ],
- "ans": 0,
- "expl": "<p><b>Azure Update Manager</b> assesses missing updates, deploys them on schedules (maintenance configurations), and shows compliance, for Azure VMs and Arc servers. It replaces Azure Automation Update Management.</p>",
- "portal": {
-  "path": [
-   "Azure Update Manager"
-  ],
-  "title": "Azure Update Manager | Machines",
-  "menu": [
-   "Overview",
-   "*Machines",
-   "Schedules"
-  ],
-  "rows": [
-   [
-    "*Schedule",
-    "Patch-Tuesday · 200 machines"
-   ],
-   [
-    "Compliance",
-    "Missing updates"
-   ]
-  ]
- },
- "keep": "Scheduled patching and compliance = Azure Update Manager."
-},
-{
- "id": "D3-220",
- "dom": 3,
- "type": "single",
- "stem": "<p>You deploy 20 VMs with an ARM template. The deployment fails with a regional vCPU quota error.</p><p>What should you do?</p>",
- "opts": [
-  "Add a dependsOn on the VM",
-  "Raise the vCPU quota (or change family)",
-  "Create a new resource group for the VM",
-  "Switch the deployment to Complete mode"
- ],
- "ans": 1,
- "expl": "<p>vCPU <b>quotas</b> (regional total and per family) limit the number of VMs. You request an increase in <b>Usage + quotas</b>, or choose a family that still has quota. The deployment mode and resource group change nothing.</p>",
- "portal": {
-  "path": [
-   "Subscriptions",
-   "Sub1"
-  ],
-  "title": "Sub1 | Usage + quotas",
-  "menu": [
-   "*Usage + quotas"
-  ],
-  "rows": [
-   [
-    "*Total Regional vCPUs",
-    "100 / 100"
-   ],
-   [
-    "Standard DSv5 Family vCPUs",
-    "40 / 40"
-   ]
-  ],
-  "btn": "New quota request"
- },
- "keep": "vCPU quota error = quota increase or another family."
-},
-{
- "id": "D3-221",
- "dom": 3,
- "type": "single",
- "stem": "<p>You want development VMs to shut down every evening at 7 PM, with a notification to developers 30 minutes before.</p><p>Which VM feature should you configure?</p>",
- "opts": [
-  "Redeploy the VM every evening",
-  "Boot diagnostics",
-  "Auto-shutdown with notification",
-  "Availability set"
- ],
- "ans": 2,
- "expl": "<p><b>Auto-shutdown</b> stops and deallocates the VM every day at the chosen time (with the time zone), and can send an email or webhook notification before shutdown.</p>",
- "portal": {
-  "path": [
-   "Virtual machines",
-   "VM-Dev1"
-  ],
-  "title": "VM-Dev1 | Auto-shutdown",
-  "menu": [
-   "*Auto-shutdown"
-  ],
-  "rows": [
-   [
-    "*Scheduled shutdown",
-    "7:00 PM"
-   ],
-   [
-    "Send notification",
-    "Yes · 30 minutes before"
-   ]
-  ],
-  "btn": "Save"
- },
- "keep": "Daily shutdown + notice = Auto-shutdown."
-},
-{
- "id": "D3-222",
- "dom": 3,
- "type": "single",
- "stem": "<p>You review the sizes Standard_D2s_v5 and Standard_D2as_v5.</p><p>What does the letter <b>a</b> in D2<b>a</b>s_v5 mean?</p>",
- "opts": [
-  "Accelerated networking",
-  "An ARM VM",
-  "An included Ultra disk",
-  "An AMD processor"
- ],
- "ans": 3,
- "expl": "<p>In size names, <b>a</b> means an <b>AMD</b> processor, <b>s</b> Premium storage support, <b>d</b> a local temporary disk, <b>p</b> an ARM processor, <b>l</b> reduced memory. The number (2) is the vCPU count, and v5 the version.</p>",
- "portal": {
-  "path": [
-   "Virtual machines",
-   "Create"
-  ],
-  "title": "Select a size",
-  "rows": [
-   [
-    "*a",
-    "AMD"
-   ],
-   [
-    "s",
-    "Premium storage"
-   ],
-   [
-    "d",
-    "Local temporary disk"
-   ],
-   [
-    "p",
-    "ARM"
-   ]
-  ]
- },
- "keep": "Size letters: a AMD, s Premium, d local disk, p ARM, l low memory."
-},
-{
- "id": "D3-223",
- "dom": 3,
- "type": "single",
- "stem": "<p>You want D-series VMs with a local temporary disk. Which size includes a temporary disk?</p>",
- "opts": [
-  "Standard_D4ds_v5",
-  "Standard_D4ps_v5",
-  "Standard_D4s_v5",
-  "Standard_D4as_v5"
- ],
- "ans": 0,
- "expl": "<p>The letter <b>d</b> (D4<b>d</b>s_v5) indicates a <b>local temporary disk</b>. Since the v4 generation, sizes without “d” no longer have a temporary disk.</p>",
- "portal": {
-  "path": [
-   "Virtual machines",
-   "Create"
-  ],
-  "title": "Select a size",
-  "rows": [
-   [
-    "*Standard_D4ds_v5",
-    "With temporary disk"
-   ],
-   [
-    "Standard_D4s_v5",
-    "No temporary disk"
-   ]
-  ]
- },
- "keep": "“d” in the name = local temporary disk."
-},
-{
- "id": "D3-224",
- "dom": 3,
- "type": "single",
- "stem": "<p>A web app stores user sessions in memory, on the instance. You go from 1 to 3 instances and users are randomly signed out.</p><p>Which quick fix can you apply?</p>",
- "opts": [
-  "Enable HTTPS only",
-  "Enable ARR affinity",
-  "Disable Always On on the app",
-  "Move to a Basic plan with one instance"
- ],
- "ans": 1,
- "expl": "<p><b>ARR affinity</b> sends each user back to the same instance with a cookie: the in-memory session stays available. The real long-term fix is to store sessions outside the instance (for example Azure Cache for Redis).</p>",
- "portal": {
-  "path": [
-   "App Services",
-   "WebApp1"
-  ],
-  "title": "Configuration › General settings",
-  "rows": [
-   [
-    "*ARR affinity",
-    "On"
-   ]
-  ],
-  "btn": "Save"
- },
- "keep": "In-memory sessions on several instances = ARR affinity (until Redis)."
-},
-{
- "id": "D3-225",
- "dom": 3,
- "type": "single",
- "stem": "<p>A web app's logs must be kept for 90 days and queried with KQL along with those of other resources.</p><p>What should you configure?</p>",
- "opts": [
-  "Application logging to the file system",
-  "The app's log stream",
-  "A diagnostic setting to Log Analytics",
-  "The app's scheduled backups"
- ],
- "ans": 2,
- "expl": "<p>A <b>diagnostic setting</b> sends App Service logs (HTTP, console, application, audit…) to <b>Log Analytics</b>, where you set retention and query them in KQL with other sources.</p><p>File system logging turns itself off after 12 hours. Log stream is live, with no retention.</p>",
- "portal": {
-  "path": [
-   "App Services",
-   "WebApp1"
-  ],
-  "title": "WebApp1 | Diagnostic settings",
-  "menu": [
-   "*Diagnostic settings"
-  ],
-  "rows": [
-   [
-    "*Categories",
-    "AppServiceHTTPLogs, AppServiceConsoleLogs"
-   ],
-   [
-    "Destination",
-    "Log Analytics (90-day retention)"
-   ]
-  ],
-  "btn": "Save"
- },
- "keep": "Retained, queryable logs = diagnostic setting to Log Analytics."
-},
-{
- "id": "D3-226",
- "dom": 3,
- "type": "single",
- "stem": "<p>You need to deploy several identical VMs in a region where a size family is in high demand. You want to reserve the capacity in advance, without a 1- or 3-year price commitment.</p><p>What should you use?</p>",
- "opts": [
-  "An Azure reservation (1- or 3-year discount)",
-  "Spot VMs in the region",
-  "A proximity placement group",
-  "An on-demand capacity reservation"
- ],
- "ans": 3,
- "expl": "<p>An <b>on-demand capacity reservation</b> guarantees that compute capacity will be available for a size and region (or zone), billed at the normal rate as long as it exists, with no term commitment.</p><p>An <b>Azure reservation</b> is a <b>discount</b> in exchange for a commitment, with no capacity guarantee (unless the priority option is chosen). Spot VMs are the opposite: no guarantee.</p>",
- "portal": {
-  "path": [
-   "Capacity reservation groups",
-   "Create"
-  ],
-  "title": "Create a capacity reservation",
-  "rows": [
-   [
-    "*Size",
-    "Standard_D8s_v5"
-   ],
-   [
-    "Quantity",
-    "20"
-   ],
-   [
-    "Commitment",
-    "None"
-   ]
-  ],
-  "btn": "Create"
- },
- "keep": "Guaranteed capacity with no commitment = on-demand capacity reservation."
-},
-{
- "id": "D3-227",
- "dom": 3,
- "type": "single",
- "stem": "<p>A team wants a Windows desktop VM reachable from a browser, with minimal management, for 50 users sharing the same session hosts.</p><p>Which service fits best?</p>",
- "opts": [
-  "Azure Virtual Desktop",
-  "Azure Container Instances",
-  "Azure Batch",
-  "Azure App Service"
- ],
- "ans": 0,
- "expl": "<p><b>Azure Virtual Desktop</b> provides virtual Windows desktops and apps, with shared multi-session hosts, reachable through a client or browser. This service isn't central to AZ-104, but it's good to recognize it among the other compute options.</p>",
- "portal": {
-  "path": [
-   "Azure Virtual Desktop"
-  ],
-  "title": "Host pools › Create",
-  "rows": [
-   [
-    "*Host pool type",
-    "Pooled (multi-session)"
-   ],
-   [
-    "Access",
-    "Client or browser"
-   ]
-  ],
-  "btn": "Create"
- },
- "keep": "Shared virtual Windows desktops = Azure Virtual Desktop."
-},
-{
- "id": "D3-228",
- "dom": 3,
- "type": "single",
- "stem": "<p>An application runs on a single VM. You want it automatically replicated to another region, with failover in minutes in case of disaster.</p><p>Which service should you configure?</p>",
- "opts": [
-  "Azure Backup only",
-  "Azure Site Recovery",
-  "A deployment slot",
-  "An availability set"
- ],
- "ans": 1,
- "expl": "<p><b>Azure Site Recovery</b> continuously replicates the VM's disks to a target region and allows a <b>failover</b> (and failback) with an RPO of seconds to minutes.</p><p>Azure Backup lets you restore, but with a longer delay and an RPO tied to backup frequency.</p>",
- "portal": {
-  "path": [
-   "Virtual machines",
-   "VM-App"
-  ],
-  "title": "VM-App | Disaster recovery",
-  "menu": [
-   "*Disaster recovery"
-  ],
-  "rows": [
-   [
-    "*Target region",
-    "West Europe"
-   ],
-   [
-    "Replication",
-    "Continuous"
-   ]
-  ],
-  "btn": "Review + Start replication"
- },
- "keep": "VM failover to another region = Azure Site Recovery."
-},
-{
- "id": "D3-229",
- "dom": 3,
- "type": "single",
- "stem": "<p>You manage VMSS11's applications with a template. A new software version must be installed on all instances, including future ones.</p><p>Where should you define it?</p>",
- "opts": [
-  "In a tag on the scale set",
-  "On each instance, by hand, over an RDP session",
-  "In the model, then upgrade the instances",
-  "In the associated App Service plan"
- ],
- "ans": 2,
- "expl": "<p>The set's <b>model</b> (image, extensions, VM applications) describes all instances. You update it, then <b>upgrade</b> the existing instances according to the upgrade policy. New instances use the new model automatically.</p>",
- "portal": {
-  "path": [
-   "Virtual machine scale sets",
-   "VMSS11"
-  ],
-  "title": "VMSS11 | Extensions + applications",
-  "menu": [
-   "*Extensions + applications"
-  ],
-  "rows": [
-   [
-    "*VM application",
-    "software:3.2 (model)"
-   ],
-   [
-    "Instances",
-    "To be upgraded"
-   ]
-  ]
- },
- "keep": "Anything that must be on every instance = in the set's model."
-},
-{
- "id": "D3-230",
- "dom": 3,
- "type": "single",
- "stem": "<p>A compute application needs 500 VMs for 2 hours every night for parallel simulations, then none.</p><p>Which solution fits best?</p>",
- "opts": [
-  "A single ACI container with 500 processes",
-  "An App Service Premium plan with 30 fixed instances",
-  "500 individual VMs running all the time",
-  "A VMSS (or Batch) that scales to 500, then back to 0"
- ],
- "ans": 3,
- "expl": "<p>A <b>virtual machine scale set</b> creates and deletes hundreds of identical VMs on demand (scheduled or automatic), down to zero. <b>Azure Batch</b> drives this kind of large-scale parallel compute. Combining with Spot VMs cuts cost further.</p>",
- "portal": {
-  "path": [
-   "Virtual machine scale sets",
-   "VMSS-HPC"
-  ],
-  "title": "VMSS-HPC | Scaling",
-  "menu": [
-   "*Scaling"
-  ],
-  "rows": [
-   [
-    "*Night profile",
-    "500 instances · 01:00-03:00"
-   ],
-   [
-    "Day profile",
-    "0 instances"
-   ]
-  ]
- },
- "keep": "Many identical VMs occasionally = VMSS (or Batch), down to zero."
 }
 );

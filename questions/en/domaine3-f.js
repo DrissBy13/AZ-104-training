@@ -937,7 +937,7 @@ AZ.questions.push(
  "opts": [
   "Redeploy cg1 in a subnet that reaches acr2's private endpoint",
   "Enable acr2's admin account and keep cg1's public IP",
-  "Give cg1 the AcrPull role on acr2, with no other change",
+  "Give cg1's managed identity the AcrPull role on acr2, with no other change",
   "Add cg1's public IP address to acr2's firewall"
  ],
  "ans": 0,

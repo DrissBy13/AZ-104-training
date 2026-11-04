@@ -1,46 +1,6 @@
 /* Domaine 3 : Calcul */
 AZ.questions.push(
 {
- "id": "D3-001",
- "dom": 3,
- "type": "single",
- "stem": "<p>Vous déployez 10 machines virtuelles dans un groupe à haute disponibilité configuré avec 2 domaines d'erreur et 5 domaines de mise à jour.</p><p>Pendant une maintenance planifiée d'Azure, combien de machines virtuelles au maximum peuvent être indisponibles en même temps ?</p>",
- "opts": [
-  "1",
-  "2",
-  "5",
-  "10"
- ],
- "ans": 1,
- "expl": "<p>Dans un groupe à haute disponibilité, deux notions se combinent :</p><ul><li><b>Domaines de mise à jour</b> : groupes de VM redémarrés ensemble pendant une maintenance planifiée. Azure n'en redémarre qu'<b>un à la fois</b>.</li><li><b>Domaines d'erreur</b> : groupes de VM qui partagent le même rack (alimentation, réseau). Ils protègent des pannes matérielles, pas de la maintenance.</li></ul><p>10 VM réparties sur 5 domaines de mise à jour = 2 VM par domaine. Pendant la maintenance, au plus <b>2 VM</b> sont indisponibles en même temps.</p>",
- "portal": {
-  "path": [
-   "Groupes à haute disponibilité",
-   "AS1"
-  ],
-  "title": "AS1 | Vue d'ensemble",
-  "menu": [
-   "*Vue d'ensemble",
-   "Propriétés"
-  ],
-  "rows": [
-   [
-    "Domaines d'erreur",
-    "2"
-   ],
-   [
-    "*Domaines de mise à jour",
-    "5"
-   ],
-   [
-    "VM par domaine de mise à jour",
-    "2"
-   ]
-  ]
- },
- "keep": "Maintenance planifiée = 1 domaine de mise à jour à la fois. Panne matérielle = 1 domaine d'erreur."
-},
-{
  "id": "D3-002",
  "dom": 3,
  "type": "hot",
@@ -170,6 +130,7 @@ AZ.questions.push(
  "id": "D3-004",
  "dom": 3,
  "type": "single",
+ "stem": "<p>Vous disposez du groupe de ressources RG1 présenté dans le document RG1 (cliquez sur l'onglet <b>RG1</b>).</p><p>Vous déployez un modèle ARM comme indiqué dans le document Déploiement (cliquez sur l'onglet <b>Déploiement</b>).</p><p>Quel est le résultat ?</p>",
  "docs": [
   {
    "t": "RG1",
@@ -180,7 +141,6 @@ AZ.questions.push(
    "h": "<p>Le fichier vm1.json ne décrit qu'une seule ressource : VM1.</p><p>Vous exécutez la commande suivante :</p><pre class=\"code\">New-AzResourceGroupDeployment -ResourceGroupName RG1 `\n  -TemplateFile .\\vm1.json -Mode Complete</pre>"
   }
  ],
- "stem": "<p>Vous disposez du groupe de ressources RG1 présenté dans le document RG1 (cliquez sur l'onglet <b>RG1</b>).</p><p>Vous déployez un modèle ARM comme indiqué dans le document Déploiement (cliquez sur l'onglet <b>Déploiement</b>).</p><p>Quel est le résultat ?</p>",
  "opts": [
   "VM1 est mise à jour et VM2 est conservée",
   "Le déploiement échoue, car VM2 n'est pas dans le modèle",
@@ -221,6 +181,36 @@ AZ.questions.push(
  "dom": 3,
  "type": "hotspot",
  "stem": "<p>Vous disposez d'une machine virtuelle nommée VM1. Vous recevez une notification indiquant que l'hôte physique de VM1 va subir une maintenance.</p><p>Vous devez déplacer VM1 vers un autre hôte physique.</p><p>Quel paramètre devez-vous utiliser ? Pour répondre, sélectionnez le paramètre approprié dans la zone de réponse.</p>",
+ "ans": "Redéployer + réappliquer",
+ "expl": "<p><b>Redéployer</b> arrête la VM, la déplace vers un <b>autre hôte</b> du même centre de données, puis la redémarre. C'est la solution quand l'hôte pose problème. Attention : le disque temporaire est vidé.</p><p><b>Réappliquer</b>, dans le même menu, réapplique l'état de la VM sur le même hôte. <b>Taille</b> change la puissance (et peut aussi déplacer la VM, mais ce n'est pas le but). <b>Récupération d'urgence</b> configure Azure Site Recovery vers une autre région.</p>",
+ "portal": {
+  "path": [
+   "Machines virtuelles",
+   "VM1"
+  ],
+  "title": "VM1 | Redéployer + réappliquer",
+  "menu": [
+   "Vue d'ensemble",
+   "Taille",
+   "*Redéployer + réappliquer"
+  ],
+  "rows": [
+   [
+    "*Redéployer",
+    "Nouvel hôte, même centre de données"
+   ],
+   [
+    "Réappliquer",
+    "Même hôte"
+   ],
+   [
+    "Attention",
+    "Disque temporaire perdu"
+   ]
+  ],
+  "btn": "Redéployer"
+ },
+ "keep": "Changer d'hôte physique = Redéployer.",
  "win": {
   "title": "VM1 | Machine virtuelle",
   "nav": [
@@ -259,80 +249,13 @@ AZ.questions.push(
     ]
    }
   ]
- },
- "ans": "Redéployer + réappliquer",
- "expl": "<p><b>Redéployer</b> arrête la VM, la déplace vers un <b>autre hôte</b> du même centre de données, puis la redémarre. C'est la solution quand l'hôte pose problème. Attention : le disque temporaire est vidé.</p><p><b>Réappliquer</b>, dans le même menu, réapplique l'état de la VM sur le même hôte. <b>Taille</b> change la puissance (et peut aussi déplacer la VM, mais ce n'est pas le but). <b>Récupération d'urgence</b> configure Azure Site Recovery vers une autre région.</p>",
- "portal": {
-  "path": [
-   "Machines virtuelles",
-   "VM1"
-  ],
-  "title": "VM1 | Redéployer + réappliquer",
-  "menu": [
-   "Vue d'ensemble",
-   "Taille",
-   "*Redéployer + réappliquer"
-  ],
-  "rows": [
-   [
-    "*Redéployer",
-    "Nouvel hôte, même centre de données"
-   ],
-   [
-    "Réappliquer",
-    "Même hôte"
-   ],
-   [
-    "Attention",
-    "Disque temporaire perdu"
-   ]
-  ],
-  "btn": "Redéployer"
- },
- "keep": "Changer d'hôte physique = Redéployer."
-},
-{
- "id": "D3-006",
- "dom": 3,
- "type": "single",
- "stem": "<p>Vous déplacez VM1, avec ses disques et son interface réseau, de l'abonnement Sub1 vers l'abonnement Sub2, dans le même locataire.</p><p>Qu'est-ce qui change pour VM1 ?</p>",
- "opts": [
-  "Sa région",
-  "Sa taille",
-  "Son système d'exploitation",
-  "Son ID de ressource"
- ],
- "ans": 3,
- "expl": "<p>L'<b>ID de ressource</b> a la forme <code>/subscriptions/&lt;id&gt;/resourceGroups/&lt;rg&gt;/providers/Microsoft.Compute/virtualMachines/VM1</code>. Il contient l'abonnement et le groupe de ressources : il <b>change</b> lors du déplacement. Les scripts et alertes qui utilisent l'ancien ID doivent être mis à jour.</p><p>La région, la taille et le système d'exploitation ne changent pas. Pour changer de région, on utilise Azure Resource Mover ou Site Recovery.</p>",
- "portal": {
-  "path": [
-   "Machines virtuelles",
-   "VM1"
-  ],
-  "title": "VM1 | Propriétés",
-  "menu": [
-   "Vue d'ensemble",
-   "*Propriétés"
-  ],
-  "rows": [
-   [
-    "*ID de ressource",
-    "/subscriptions/<Sub2>/resourceGroups/RG2/…/VM1"
-   ],
-   [
-    "Région",
-    "Inchangée"
-   ]
-  ]
- },
- "keep": "Déplacer change l'ID de ressource, jamais la région."
+ }
 },
 {
  "id": "D3-007",
  "dom": 3,
  "type": "cmd",
  "stem": "<p>Vous disposez d'un modèle ARM au format JSON nommé template.json. Vous devez le convertir en fichier Bicep.</p><p>Comment devez-vous compléter la commande ? Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p>",
- "tpl": "az {0} {1} --file template.json",
  "rows": [
   {
    "o": [
@@ -371,64 +294,14 @@ AZ.questions.push(
    ]
   ]
  },
- "keep": "decompile = JSON vers Bicep ; build = Bicep vers JSON."
-},
-{
- "id": "D3-008",
- "dom": 3,
- "type": "single",
- "stem": "<p>Vous créez un registre de conteneurs Azure nommé ACR1. Les images doivent être répliquées automatiquement dans les régions France Central et Europe Ouest, au moindre coût.</p><p>Quel niveau de service devez-vous choisir pour ACR1 ?</p>",
- "opts": [
-  "De base",
-  "Premium",
-  "Standard",
-  "N'importe quel niveau"
- ],
- "ans": 1,
- "expl": "<p>Azure Container Registry a trois niveaux : <b>De base</b>, <b>Standard</b> et <b>Premium</b>. Seul <b>Premium</b> propose la <b>géoréplication</b> (un même registre répliqué dans plusieurs régions), ainsi que les points de terminaison privés et les clés gérées par le client.</p><p>Premium est donc le niveau le moins cher qui répond au besoin.</p>",
- "portal": {
-  "path": [
-   "Registres de conteneurs",
-   "ACR1"
-  ],
-  "title": "ACR1 | Géoréplications",
-  "menu": [
-   "Vue d'ensemble",
-   "*Géoréplications"
-  ],
-  "rows": [
-   [
-    "*Niveau",
-    "Premium (requis)"
-   ],
-   [
-    "Régions",
-    "France Central, West Europe"
-   ]
-  ],
-  "btn": "+ Ajouter"
- },
- "keep": "Géoréplication ACR, points de terminaison privés = Premium."
+ "keep": "decompile = JSON vers Bicep ; build = Bicep vers JSON.",
+ "tpl": "az {0} {1} --file template.json"
 },
 {
  "id": "D3-009",
  "dom": 3,
  "type": "order",
  "stem": "<p>Vous devez configurer le domaine personnalisé www.contoso.com pour l'application web WebApp1, avec un certificat TLS gratuit géré par App Service. WebApp1 s'exécute dans un plan de niveau Standard.</p><p>Quelles quatre actions devez-vous effectuer dans l'ordre ? Pour répondre, déplacez les actions appropriées de la liste des actions vers la zone de réponse et classez-les dans le bon ordre.</p>",
- "acts": [
-  "Ajouter et valider le domaine personnalisé dans WebApp1",
-  "Passer le plan App Service au niveau Gratuit",
-  "Créer les enregistrements CNAME et TXT chez le fournisseur DNS",
-  "Ajouter la liaison TLS/SSL au domaine personnalisé",
-  "Créer un enregistrement MX pour www.contoso.com",
-  "Créer un certificat managé App Service pour www.contoso.com"
- ],
- "seq": [
-  2,
-  0,
-  5,
-  3
- ],
  "expl": "<p>Ordre logique pour un domaine personnalisé avec un certificat managé :</p><ol><li>Créer chez le fournisseur DNS le <b>CNAME</b> (www → webapp1.azurewebsites.net) et le <b>TXT</b> asuid.www (ID de vérification).</li><li><b>Ajouter et valider</b> le domaine dans WebApp1.</li><li>Créer le <b>certificat managé App Service</b> (gratuit) pour ce domaine.</li><li>Ajouter la <b>liaison TLS/SSL</b>.</li></ol><p>Le niveau Gratuit ne prend pas en charge les domaines personnalisés (le plan Standard le fait). Un enregistrement MX sert au courrier.</p>",
  "portal": {
   "path": [
@@ -453,13 +326,55 @@ AZ.questions.push(
   ],
   "btn": "+ Ajouter un domaine personnalisé"
  },
- "keep": "Domaine personnalisé : DNS (CNAME + TXT), ajout, certificat, liaison."
+ "keep": "Domaine personnalisé : DNS (CNAME + TXT), ajout, certificat, liaison.",
+ "acts": [
+  "Ajouter et valider le domaine personnalisé dans WebApp1",
+  "Passer le plan App Service au niveau Gratuit",
+  "Créer les enregistrements CNAME et TXT chez le fournisseur DNS",
+  "Ajouter la liaison TLS/SSL au domaine personnalisé",
+  "Créer un enregistrement MX pour www.contoso.com",
+  "Créer un certificat managé App Service pour www.contoso.com"
+ ],
+ "seq": [
+  2,
+  0,
+  5,
+  3
+ ]
 },
 {
  "id": "D3-010",
  "dom": 3,
  "type": "screen",
  "stem": "<p>Vous devez déployer une application web dans un conteneur Docker basé sur Linux. L'application doit pouvoir effectuer un scale-out automatique et utiliser des emplacements de déploiement. La solution doit minimiser les coûts.</p><p>Comment devez-vous configurer l'application web ? Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p>",
+ "expl": "<ul><li><b>Publier : Conteneur</b>, puisqu'on déploie une image Docker. (La pile d'exécution, comme .NET ou Node, ne concerne que le mode Code.)</li><li><b>Linux</b>, puisque l'image est basée sur Linux.</li><li><b>Standard S1</b> : c'est le niveau le moins cher qui propose la mise à l'échelle automatique et les emplacements de déploiement. De base n'a ni l'un ni l'autre ; Premium les a aussi, mais coûte plus.</li></ul>",
+ "portal": {
+  "path": [
+   "App Services",
+   "Créer"
+  ],
+  "title": "Créer une application web",
+  "menu": [
+   "*Informations de base",
+   "Conteneur"
+  ],
+  "rows": [
+   [
+    "*Publier",
+    "Conteneur"
+   ],
+   [
+    "*Système d'exploitation",
+    "Linux"
+   ],
+   [
+    "*Plan tarifaire",
+    "Standard S1"
+   ]
+  ],
+  "btn": "Vérifier + créer"
+ },
+ "keep": "Mise à l'échelle auto + emplacements = Standard minimum. Image Docker = Publier : Conteneur.",
  "win": {
   "title": "Créer une application web",
   "sub": "Notions de base",
@@ -508,71 +423,6 @@ AZ.questions.push(
     "a": 2
    }
   ]
- },
- "expl": "<ul><li><b>Publier : Conteneur</b>, puisqu'on déploie une image Docker. (La pile d'exécution, comme .NET ou Node, ne concerne que le mode Code.)</li><li><b>Linux</b>, puisque l'image est basée sur Linux.</li><li><b>Standard S1</b> : c'est le niveau le moins cher qui propose la mise à l'échelle automatique et les emplacements de déploiement. De base n'a ni l'un ni l'autre ; Premium les a aussi, mais coûte plus.</li></ul>",
- "portal": {
-  "path": [
-   "App Services",
-   "Créer"
-  ],
-  "title": "Créer une application web",
-  "menu": [
-   "*Informations de base",
-   "Conteneur"
-  ],
-  "rows": [
-   [
-    "*Publier",
-    "Conteneur"
-   ],
-   [
-    "*Système d'exploitation",
-    "Linux"
-   ],
-   [
-    "*Plan tarifaire",
-    "Standard S1"
-   ]
-  ],
-  "btn": "Vérifier + créer"
- },
- "keep": "Mise à l'échelle auto + emplacements = Standard minimum. Image Docker = Publier : Conteneur."
-},
-{
- "id": "D3-011",
- "dom": 3,
- "type": "single",
- "stem": "<p>Les nouvelles machines virtuelles de votre abonnement doivent chiffrer aussi leur disque temporaire et leurs caches de disque, sans rien installer dans le système d'exploitation.</p><p>Que devez-vous faire en premier ?</p>",
- "opts": [
-  "Créer un coffre de clés et une clé gérée par le client",
-  "Activer Azure Disk Encryption sur chaque VM",
-  "Enregistrer la fonctionnalité EncryptionAtHost",
-  "Convertir les disques en SSD Premium v2 chiffrés"
- ],
- "ans": 2,
- "expl": "<p>Le <b>chiffrement sur l'hôte</b> (encryption at host) chiffre aussi le <b>disque temporaire</b> et les <b>caches</b> de disque, sur l'hôte physique, sans agent ni BitLocker dans la VM.</p><p>Avant de l'activer sur une VM, il faut <b>enregistrer la fonctionnalité</b> EncryptionAtHost sur l'abonnement (<code>Register-AzProviderFeature -FeatureName EncryptionAtHost</code>).</p><p><b>Azure Disk Encryption</b> chiffre à l'intérieur de l'OS (BitLocker ou DM-Crypt) : ce n'est pas ce qui est demandé. Le type de disque n'a pas d'importance.</p>",
- "portal": {
-  "path": [
-   "Abonnements",
-   "Sub1"
-  ],
-  "title": "Sub1 | Fonctionnalités en préversion",
-  "menu": [
-   "Fournisseurs de ressources",
-   "*Fonctionnalités en préversion"
-  ],
-  "rows": [
-   [
-    "*EncryptionAtHost",
-    "Inscrire"
-   ],
-   [
-    "Ensuite",
-    "VM > Disques > Chiffrement sur l'hôte : Oui"
-   ]
-  ],
-  "btn": "Inscrire"
- },
- "keep": "Disque temporaire et caches chiffrés sans agent = chiffrement sur l'hôte (fonctionnalité à enregistrer)."
+ }
 }
 );
