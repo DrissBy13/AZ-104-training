@@ -11,7 +11,10 @@ const EXAM_MIN = 100, PASS = 700;
 const KEY = "az104-training-etat-v1", SEEN_KEY = "az104-training-vus-v1", LANG_KEY = "az104-lang";
 const DOMS = TX.doms;
 /* Nombre de questions indépendantes tirées par domaine en mode examen (poids officiels) */
-const EXAM_MIX = {1:11,2:8,3:11,4:8,5:7};
+const EXAM_MIX = {1:9,2:7,3:10,4:8,5:6};
+/* Part maximale de QCM (choix unique ou multiple) dans la partie principale de l'examen blanc */
+const EXAM_MCQ = 0.2, EXAM_CASES = 2;
+const isMcq = q => q.type==="single"||q.type==="multi";
 const YN = LANG === "en" ? ["Yes","No"] : ["Oui","Non"];
 const L = "ABCDEFGH";
 const SERIE_NOTE = LANG === "en"
@@ -108,14 +111,19 @@ const scoreOf=id=>score(byId(id),S.ans[id]);
 function prepOrders(ids){const o={};ids.forEach(id=>{const q=byId(id);if(q.type==="order")o[id]=shuffle(q.acts.map((_,i)=>i));});return o;}
 function startExam(){
   const main=[];
-  [1,2,3,4,5].forEach(d=>main.push(...pickLeastSeen(AZ.questions.filter(q=>q.dom===d).map(q=>q.id),EXAM_MIX[d])));
+  [1,2,3,4,5].forEach(d=>{
+    const n=EXAM_MIX[d],qs=AZ.questions.filter(q=>q.dom===d),nm=Math.round(n*EXAM_MCQ);
+    const other=pickLeastSeen(qs.filter(q=>!isMcq(q)).map(q=>q.id),n-nm);
+    main.push(...other,...pickLeastSeen(qs.filter(isMcq).map(q=>q.id),n-other.length));
+  });
   const sections=[{key:"main",name:"secMain",review:true,back:true}],lists={main:shuffle(main)};
   if(AZ.series.length){const s=pickSet(AZ.series,x=>x.items.map((_,i)=>`${x.id}-${i+1}`));sections.push({key:"yn",name:"secYn",review:false,back:false});lists.yn=s.items.map((_,i)=>`${s.id}-${i+1}`);}
-  if(AZ.cases.length){const c=pickSet(AZ.cases,x=>x.questions.map(q=>q.id));sections.push({key:"case",name:"secCase",arg:c.id,review:true,back:true});lists.case=c.questions.map(q=>q.id);}
+  pickSets(AZ.cases,x=>x.questions.map(q=>q.id),EXAM_CASES).forEach((c,i)=>{const k="case"+i;sections.push({key:k,name:"secCase",arg:c.id,review:true,back:true});lists[k]=c.questions.map(q=>q.id);});
   begin("exam",sections,lists,Date.now()+EXAM_MIN*60000);
 }
 /* Choisit la série ou l'étude de cas la moins vue */
 function pickSet(arr,idsOf){const sm=seenMap();const w=x=>idsOf(x).reduce((n,id)=>n+(sm[id]||0),0);return shuffle(arr).sort((a,b)=>w(a)-w(b))[0];}
+function pickSets(arr,idsOf,n){const sm=seenMap();const w=x=>idsOf(x).reduce((t,id)=>t+(sm[id]||0),0);return shuffle(arr).sort((a,b)=>w(a)-w(b)).slice(0,n);}
 function startPractice(doms,n,withCases){
   let pool=AZ.questions.filter(q=>doms.includes(q.dom)).map(q=>q.id);
   if(withCases) pool=pool.concat(AZ.cases.flatMap(c=>c.questions.filter(q=>doms.includes(q.dom)).map(q=>q.id)));
@@ -334,7 +342,7 @@ function descr(q,a,isIdeal){
 function renderSecIntro(){
   const sec=SEC(),n=list().length,name=secName(sec);
   setHead(name,`${name}  (0/${n})`,0,false);
-  const txt={main:S.mode==="practice"?TX.introPractice(n):TX.introMain(n),yn:TX.introYn(n),case:TX.introCase(n)}[sec.key];
+  const txt={main:S.mode==="practice"?TX.introPractice(n):TX.introMain(n),yn:TX.introYn(n),case:TX.introCase(n)}[sec.key.startsWith("case")?"case":sec.key];
   $("#main").innerHTML=`<div class="panel"><p class="note" style="margin:0 0 6px;text-transform:uppercase;letter-spacing:.06em">${TX.sectionOf(S.sec+1,S.sections.length)}</p><h1>${name}</h1>${txt}</div>`;
   const f=$("#foot");f.hidden=false;f.innerHTML=`<div class="g"><button type="button" class="btn" id="quit">${TX.quit}</button></div><div class="g"><button type="button" class="btn pri" id="go">${TX.startSection}</button></div>`;
   $("#go").onclick=()=>{S.view="q";S.idx=0;ui={tab:0,pick:null};save();render();};

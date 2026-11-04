@@ -206,6 +206,21 @@ function lengthBias(lang, AZ) {
 }
 for (const l of LANGS) lengthBias(l, banks[l]);
 
+/* Part des QCM : les questions à choix unique ou multiple ne doivent pas dépasser MCQ_MAX des questions
+ * de chaque domaine (questions indépendantes et questions d'études de cas). Les domaines de MCQ_PENDING
+ * ne sont pas encore traités : simple avertissement. */
+const MCQ_MAX = 0.25, MCQ_PENDING = new Set([1, 2, 3, 5]);
+const mcqStats = {};
+for (const l of LANGS) {
+  const all = [...banks[l].questions, ...banks[l].cases.flatMap(c => c.questions || [])];
+  for (const d of [1, 2, 3, 4, 5]) {
+    const qs = all.filter(q => q.dom === d), m = qs.filter(q => ["single", "multi"].includes(q.type)).length;
+    mcqStats[`${l}|${d}`] = { n: qs.length, m };
+    if (qs.length && m / qs.length > MCQ_MAX)
+      (MCQ_PENDING.has(d) ? warnings : errors).push(`[${l}] domaine ${d} : ${Math.round(100 * m / qs.length)} % de QCM (${m} sur ${qs.length}, maximum ${100 * MCQ_MAX} %)`);
+  }
+}
+
 /* Bilan */
 const AZ = banks[ref];
 const count = d => AZ.questions.filter(q => q.dom === d).length;
@@ -223,13 +238,14 @@ console.log("  Par format : " + Object.entries(byType).map(([k, v]) => `${k} ${v
 const withPortal = all.filter(q => q.portal).length + AZ.series.reduce((n, s) => n + s.items.filter(i => i.portal).length, 0);
 const withKeep = all.filter(q => q.keep).length + AZ.series.reduce((n, s) => n + s.items.filter(i => i.keep).length, 0);
 console.log(`  Vues du portail : ${withPortal} · « À retenir » : ${withKeep}`);
+console.log("  Part des QCM par domaine : " + [1, 2, 3, 4, 5].map(d => { const st = mcqStats[`fr|${d}`]; return `D${d} ${st.n ? Math.round(100 * st.m / st.n) : 0} %`; }).join(" · "));
 console.log("  Biais de longueur (QCM où la bonne réponse est la seule plus longue / la seule plus courte) :");
 [1, 2, 3, 4, 5].forEach(d => console.log(`    Domaine ${d}${BIAS_PENDING.has(d) ? " (à corriger)" : ""} : ` + LANGS.map(l => {
   const st = biasStats[`${l}|${d}`] || { n: 0, longest: 0, shortest: 0 };
   return `${l} ${st.n ? Math.round(100 * st.longest / st.n) : 0} % / ${st.n ? Math.round(100 * st.shortest / st.n) : 0} %`;
 }).join(" · ")));
 if (warnings.length) {
-  console.warn(`\n⚠ ${warnings.length} avertissement(s) de biais de longueur (domaines pas encore corrigés)`);
+  console.warn(`\n⚠ ${warnings.length} avertissement(s) (domaines pas encore traités)`);
   if (process.argv.includes("--details")) warnings.forEach(w => console.warn("  - " + w));
   else console.warn("  (node tools/validate.js --details pour la liste)");
 }

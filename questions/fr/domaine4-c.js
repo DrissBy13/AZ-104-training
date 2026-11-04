@@ -6,15 +6,15 @@ AZ.questions.push(
  "type": "dragdrop",
  "stem": "<p>Vous devez choisir le service de répartition de charge adapté à chaque besoin.</p><p>Pour répondre, faites glisser le service approprié vers chaque besoin. Chaque service peut être utilisé une fois, plusieurs fois ou pas du tout.</p>",
  "srcLabel": "Services",
+ "tgtHead": [
+  "Besoin",
+  "Service"
+ ],
  "srcs": [
   "Azure Load Balancer",
   "Application Gateway",
   "Traffic Manager",
   "Azure Front Door"
- ],
- "tgtHead": [
-  "Besoin",
-  "Service"
  ],
  "tgts": [
   {
@@ -66,20 +66,6 @@ AZ.questions.push(
  "dom": 4,
  "type": "order",
  "stem": "<p>Vous devez répartir le trafic HTTP entre VM1 et VM2 avec un équilibreur de charge public Standard nouvellement créé, LB1.</p><p>Quelles quatre actions devez-vous effectuer dans l'ordre ?</p><p>Pour répondre, déplacez les actions appropriées de la liste vers la zone de réponse et placez-les dans le bon ordre.</p>",
- "acts": [
-  "Créer une configuration d'adresse IP frontale avec une adresse IP publique Standard",
-  "Créer un pool principal contenant VM1 et VM2",
-  "Créer une sonde d'intégrité HTTP sur le port 80",
-  "Créer une règle d'équilibrage de charge port 80 qui utilise le front-end, le pool et la sonde",
-  "Créer une passerelle NAT",
-  "Créer un appairage"
- ],
- "seq": [
-  0,
-  1,
-  2,
-  3
- ],
  "expl": "<p>Un équilibreur se compose d'une <b>adresse frontale</b> (où arrive le trafic), d'un <b>pool principal</b> (vers où il est réparti), d'une <b>sonde d'intégrité</b> (quelles instances sont saines) et d'une <b>règle</b> qui relie les trois pour un protocole et un port. La règle a besoin des trois autres éléments, d'où l'ordre.</p><p>N'oubliez pas un <b>NSG</b> qui autorise le port 80 : avec le SKU Standard, le trafic entrant est refusé par défaut.</p>",
  "portal": {
   "path": [
@@ -101,144 +87,21 @@ AZ.questions.push(
   ],
   "btn": "+ Ajouter"
  },
- "keep": "Front-end → pool → sonde → règle (qui relie les trois)."
-},
-{
- "id": "D4-067",
- "dom": 4,
- "type": "single",
- "stem": "<p>LB2, un équilibreur public Standard, répartit le port 443 vers VM3 et VM4. VM4 est arrêtée pour maintenance.</p><p>Comment LB2 sait-il qu'il ne doit plus envoyer de trafic à VM4 ?</p>",
- "opts": [
-  "Grâce à la sonde d'intégrité",
-  "Grâce à la règle NAT entrante",
-  "Il continue d'envoyer du trafic à VM4",
-  "Grâce à la persistance de session"
+ "keep": "Front-end → pool → sonde → règle (qui relie les trois).",
+ "acts": [
+  "Créer une configuration d'adresse IP frontale avec une adresse IP publique Standard",
+  "Créer un pool principal contenant VM1 et VM2",
+  "Créer une sonde d'intégrité HTTP sur le port 80",
+  "Créer une règle d'équilibrage de charge port 80 qui utilise le front-end, le pool et la sonde",
+  "Créer une passerelle NAT",
+  "Créer un appairage"
  ],
- "ans": 0,
- "expl": "<p>La <b>sonde d'intégrité</b> interroge régulièrement chaque instance (TCP, HTTP ou HTTPS). Après un nombre d'échecs, l'instance est retirée de la répartition jusqu'à ce qu'elle réponde de nouveau.</p>",
- "portal": {
-  "path": [
-   "Équilibreurs de charge",
-   "LB2"
-  ],
-  "title": "LB2 | Sondes d'intégrité",
-  "menu": [
-   "*Sondes d'intégrité"
-  ],
-  "rows": [
-   [
-    "VM3",
-    "Saine"
-   ],
-   [
-    "*VM4",
-    "Non saine (retirée)"
-   ]
-  ]
- },
- "keep": "Instance retirée de la répartition = sonde d'intégrité en échec."
-},
-{
- "id": "D4-068",
- "dom": 4,
- "type": "single",
- "stem": "<p>Une application web stocke la session de l'utilisateur en mémoire sur chaque VM. Derrière un équilibreur de charge Standard, un utilisateur doit toujours retomber sur la même VM.</p><p>Que devez-vous configurer dans la règle d'équilibrage ?</p>",
- "opts": [
-  "Une adresse IP flottante sur la règle",
-  "La persistance « Adresse IP du client »",
-  "Les ports HA (haute disponibilité)",
-  "Une règle sortante avec SNAT fixe"
- ],
- "ans": 1,
- "expl": "<p>La <b>persistance de session</b> (affinité) peut être <b>Aucune</b> (hachage à 5 tuples, par défaut), <b>Adresse IP du client</b> (2 tuples : source et destination) ou <b>Adresse IP et protocole du client</b> (3 tuples). Avec l'adresse IP du client, les requêtes d'un même client vont vers la même VM.</p>",
- "portal": {
-  "path": [
-   "Équilibreurs de charge",
-   "LB1"
-  ],
-  "title": "Modifier la règle d'équilibrage de charge",
-  "rows": [
-   [
-    "*Persistance de session",
-    "Adresse IP du client"
-   ]
-  ],
-  "btn": "Enregistrer"
- },
- "keep": "Toujours la même VM = persistance « Adresse IP du client »."
-},
-{
- "id": "D4-069",
- "dom": 4,
- "type": "single",
- "stem": "<p>Vous devez permettre aux administrateurs de se connecter en RDP à chacune des trois VM d'un pool principal, par l'adresse publique de l'équilibreur LB3, sur les ports 50001, 50002 et 50003.</p><p>Que devez-vous créer ?</p>",
- "opts": [
-  "Des sondes d'intégrité sur les ports",
-  "Des règles d'équilibrage de charge",
-  "Des règles NAT entrantes",
-  "Des règles sortantes sur le pool"
- ],
- "ans": 2,
- "expl": "<p>Une <b>règle NAT entrante</b> redirige un port de l'adresse frontale vers un port d'une VM précise (par exemple 50001 → VM1:3389). Une règle d'équilibrage, elle, <b>répartit</b> le trafic entre toutes les VM du pool.</p><p>En production, Azure Bastion est une meilleure solution pour RDP.</p>",
- "portal": {
-  "path": [
-   "Équilibreurs de charge",
-   "LB3"
-  ],
-  "title": "LB3 | Règles NAT entrantes",
-  "menu": [
-   "*Règles NAT entrantes"
-  ],
-  "rows": [
-   [
-    "*50001 → VM1:3389",
-    ""
-   ],
-   [
-    "50002 → VM2:3389",
-    ""
-   ],
-   [
-    "50003 → VM3:3389",
-    ""
-   ]
-  ],
-  "btn": "+ Ajouter"
- },
- "keep": "Un port de l'équilibreur vers une VM précise = règle NAT entrante."
-},
-{
- "id": "D4-070",
- "dom": 4,
- "type": "single",
- "stem": "<p>Vous créez un équilibreur de charge <b>interne</b> devant deux appliances virtuelles réseau, qui doivent recevoir tout le trafic TCP et UDP sur tous les ports.</p><p>Quelle option de la règle d'équilibrage devez-vous activer ?</p>",
- "opts": [
-  "L'adresse IP flottante seule",
-  "Une règle NAT entrante par port",
-  "La persistance de session",
-  "Les ports HA (haute disponibilité)"
- ],
- "ans": 3,
- "expl": "<p>Une règle <b>ports HA</b> (protocole « Tous », port 0) sur un équilibreur <b>interne Standard</b> répartit tous les flux TCP et UDP sur tous les ports. C'est le modèle classique pour mettre des NVA en haute disponibilité.</p>",
- "portal": {
-  "path": [
-   "Équilibreurs de charge",
-   "LB-NVA"
-  ],
-  "title": "Ajouter une règle d'équilibrage de charge",
-  "rows": [
-   [
-    "Type",
-    "Interne · Standard"
-   ],
-   [
-    "*Ports HA",
-    "Activé (tous protocoles, port 0)"
-   ]
-  ],
-  "btn": "Enregistrer"
- },
- "keep": "Tout le trafic vers des NVA = ports HA sur un LB interne Standard."
+ "seq": [
+  0,
+  1,
+  2,
+  3
+ ]
 },
 {
  "id": "D4-071",
@@ -282,115 +145,6 @@ AZ.questions.push(
   ]
  },
  "keep": "Standard : zones, un VNet par pool, sécurisé par défaut."
-},
-{
- "id": "D4-072",
- "dom": 4,
- "type": "single",
- "stem": "<p>Les VM du pool principal d'un équilibreur public Standard n'ont pas d'adresse IP publique ni de passerelle NAT. Elles doivent sortir sur Internet par l'adresse de l'équilibreur, avec un nombre de ports SNAT contrôlé.</p><p>Que devez-vous configurer ?</p>",
- "opts": [
-  "Une règle sortante sur l'équilibreur",
-  "Une sonde d'intégrité TCP sur le pool",
-  "Les ports HA sur la règle d'équilibrage",
-  "Une règle NAT entrante par VM du pool"
- ],
- "ans": 0,
- "expl": "<p>Les <b>règles sortantes</b> d'un équilibreur public Standard définissent la traduction SNAT du trafic sortant du pool : adresses frontales utilisées et nombre de ports alloués par instance. La <b>passerelle NAT</b> reste la méthode recommandée pour la sortie Internet, si elle est possible.</p>",
- "portal": {
-  "path": [
-   "Équilibreurs de charge",
-   "LB1"
-  ],
-  "title": "LB1 | Règles de trafic sortant",
-  "menu": [
-   "*Règles de trafic sortant"
-  ],
-  "rows": [
-   [
-    "*outbound-1",
-    "Front-end public · ports SNAT par instance"
-   ]
-  ],
-  "btn": "+ Ajouter"
- },
- "keep": "Sortie par l'adresse du LB avec SNAT contrôlé = règle sortante."
-},
-{
- "id": "D4-073",
- "dom": 4,
- "type": "single",
- "stem": "<p>Une application web dans une région doit être exposée en HTTPS avec un certificat, router selon le chemin d'URL vers deux pools de VM, et être protégée contre l'injection SQL.</p><p>Que devez-vous déployer ?</p>",
- "opts": [
-  "Une passerelle NAT et un NSG",
-  "Application Gateway v2 avec WAF",
-  "Traffic Manager avec deux profils",
-  "Azure Load Balancer Standard"
- ],
- "ans": 1,
- "expl": "<p><b>Application Gateway</b> est un répartiteur de couche 7 : terminaison TLS, <b>routage par chemin</b> (/images/*, /api/*), routage multisite par nom d'hôte, réécriture d'en-têtes. Le niveau <b>WAF</b> ajoute un pare-feu d'applications web (règles OWASP contre l'injection SQL, le XSS…).</p><p>Load Balancer travaille en couche 4 et ne lit pas les URL.</p>",
- "portal": {
-  "path": [
-   "Passerelles d'application",
-   "Créer"
-  ],
-  "title": "Créer une passerelle d'application",
-  "rows": [
-   [
-    "*Niveau",
-    "WAF V2"
-   ],
-   [
-    "Routage",
-    "Par chemin (/images, /api)"
-   ],
-   [
-    "Écouteur",
-    "HTTPS + certificat"
-   ]
-  ],
-  "btn": "Vérifier + créer"
- },
- "keep": "HTTPS + chemin d'URL + WAF dans une région = Application Gateway v2 WAF."
-},
-{
- "id": "D4-074",
- "dom": 4,
- "type": "single",
- "stem": "<p>Une seule Application Gateway doit héberger trois sites : www.contoso.com, www.fabrikam.com et www.tailspin.com, chacun avec son pool de serveurs.</p><p>Que devez-vous configurer ?</p>",
- "opts": [
-  "Trois Application Gateway, une par site",
-  "Trois adresses IP frontales privées et une règle",
-  "Trois écouteurs multisites et trois règles",
-  "Trois sondes d'intégrité et un écouteur de base"
- ],
- "ans": 2,
- "expl": "<p>Un <b>écouteur multisite</b> filtre les requêtes selon le nom d'hôte (en-tête Host). Chaque écouteur est associé à une <b>règle de routage</b> qui envoie vers le bon pool principal. Une seule passerelle peut ainsi héberger plusieurs sites sur la même adresse IP.</p>",
- "portal": {
-  "path": [
-   "Passerelles d'application",
-   "AG1"
-  ],
-  "title": "AG1 | Écouteurs",
-  "menu": [
-   "*Écouteurs",
-   "Règles"
-  ],
-  "rows": [
-   [
-    "*lst-contoso",
-    "Multisite · www.contoso.com"
-   ],
-   [
-    "lst-fabrikam",
-    "Multisite · www.fabrikam.com"
-   ],
-   [
-    "lst-tailspin",
-    "Multisite · www.tailspin.com"
-   ]
-  ]
- },
- "keep": "Plusieurs sites sur une passerelle = écouteurs multisites + règles."
 },
 {
  "id": "D4-075",
@@ -457,122 +211,21 @@ AZ.questions.push(
  "keep": "Écouteur (entrée) → règle → pool + paramètres de back-end (sortie)."
 },
 {
- "id": "D4-076",
- "dom": 4,
- "type": "single",
- "stem": "<p>Application Gateway AG2 doit rediriger automatiquement toutes les requêtes HTTP (port 80) vers HTTPS (port 443).</p><p>Que devez-vous configurer ?</p>",
- "opts": [
-  "Une sonde d'intégrité HTTPS sur le pool principal",
-  "Une règle NAT entrante du port 80 vers le port 443",
-  "Une passerelle NAT sur le sous-réseau de la passerelle",
-  "Un écouteur HTTP avec une règle de redirection"
- ],
- "ans": 3,
- "expl": "<p>Application Gateway gère les <b>redirections</b> : un écouteur sur le port 80, et une règle qui redirige vers l'écouteur HTTPS (redirection permanente 301). On peut aussi rediriger vers une URL externe.</p>",
- "portal": {
-  "path": [
-   "Passerelles d'application",
-   "AG2"
-  ],
-  "title": "Ajouter une règle de routage",
-  "rows": [
-   [
-    "Écouteur",
-    "HTTP · 80"
-   ],
-   [
-    "*Type de cible",
-    "Redirection → écouteur HTTPS (301)"
-   ]
-  ],
-  "btn": "Ajouter"
- },
- "keep": "HTTP → HTTPS = écouteur 80 + règle de redirection."
-},
-{
- "id": "D4-077",
- "dom": 4,
- "type": "single",
- "stem": "<p>Vous déployez Application Gateway v2 dans VNet1.</p><p>Quelle exigence de sous-réseau devez-vous respecter ?</p>",
- "opts": [
-  "Un sous-réseau dédié aux Application Gateway",
-  "Le même sous-réseau que les VM du pool principal",
-  "Le sous-réseau GatewaySubnet, d'au moins /27",
-  "Le sous-réseau AzureBastionSubnet, en /26"
- ],
- "ans": 0,
- "expl": "<p>Application Gateway exige un <b>sous-réseau dédié</b> (on peut y mettre plusieurs Application Gateway, mais aucune autre ressource). Pour la v2, un /24 est recommandé pour la mise à l'échelle automatique. Son nom est libre ; ce n'est surtout pas le GatewaySubnet, réservé aux passerelles VPN et ExpressRoute.</p>",
- "portal": {
-  "path": [
-   "Réseaux virtuels",
-   "VNet1"
-  ],
-  "title": "VNet1 | Sous-réseaux",
-  "menu": [
-   "*Sous-réseaux"
-  ],
-  "rows": [
-   [
-    "*snet-appgw",
-    "/24 · dédié à Application Gateway"
-   ]
-  ]
- },
- "keep": "Application Gateway = sous-réseau dédié (nom libre, /24 recommandé en v2)."
-},
-{
- "id": "D4-078",
- "dom": 4,
- "type": "single",
- "stem": "<p>Une application est déployée dans France Central (principale) et dans West Europe (secours). Tant que France Central fonctionne, tout le trafic doit y aller. Les clients utilisent plusieurs protocoles, pas seulement HTTP.</p><p>Quelle solution et quelle méthode de routage devez-vous utiliser ?</p>",
- "opts": [
-  "Traffic Manager avec la méthode Pondérée à 50/50",
-  "Traffic Manager avec la méthode Priorité",
-  "Un équilibreur de charge interne avec deux pools",
-  "Application Gateway avec un routage par chemin"
- ],
- "ans": 1,
- "expl": "<p><b>Traffic Manager</b> répartit par <b>DNS</b>, donc pour n'importe quel protocole. La méthode <b>Priorité</b> envoie tout vers le point de terminaison de priorité 1 tant qu'il est sain, et bascule vers le suivant en cas de panne (détectée par la surveillance des points de terminaison).</p>",
- "portal": {
-  "path": [
-   "Profils Traffic Manager",
-   "Créer"
-  ],
-  "title": "Créer un profil Traffic Manager",
-  "rows": [
-   [
-    "*Méthode de routage",
-    "Priorité"
-   ],
-   [
-    "Priorité 1",
-    "France Central"
-   ],
-   [
-    "Priorité 2",
-    "West Europe"
-   ]
-  ],
-  "btn": "Créer"
- },
- "keep": "Principal/secours, tout protocole = Traffic Manager Priorité."
-},
-{
  "id": "D4-079",
  "dom": 4,
  "type": "dragdrop",
  "stem": "<p>Vous devez choisir la méthode de routage Traffic Manager adaptée à chaque besoin.</p><p>Pour répondre, faites glisser la méthode appropriée vers chaque besoin. Chaque méthode peut être utilisée une fois, plusieurs fois ou pas du tout.</p>",
  "srcLabel": "Méthodes",
+ "tgtHead": [
+  "Besoin",
+  "Méthode"
+ ],
  "srcs": [
   "Priorité",
   "Pondérée",
   "Performances",
   "Géographique",
   "Sous-réseau"
- ],
- "tgtHead": [
-  "Besoin",
-  "Méthode"
  ],
  "tgts": [
   {
@@ -621,86 +274,19 @@ AZ.questions.push(
  "keep": "Latence = Performances ; % = Pondérée ; souveraineté = Géographique ; secours = Priorité."
 },
 {
- "id": "D4-080",
- "dom": 4,
- "type": "single",
- "stem": "<p>Les utilisateurs du monde entier accèdent à un site web hébergé dans deux régions. Vous voulez un point d'entrée HTTP mondial unique, avec mise en cache du contenu statique, accélération du trafic dynamique et WAF.</p><p>Que devez-vous utiliser ?</p>",
- "opts": [
-  "Traffic Manager",
-  "Application Gateway",
-  "Azure Front Door",
-  "Azure Load Balancer"
- ],
- "ans": 2,
- "expl": "<p><b>Azure Front Door</b> est un point d'entrée mondial de couche 7 sur le réseau périphérique de Microsoft : routage vers l'origine la plus rapide, basculement, mise en cache (CDN), terminaison TLS et WAF.</p><p>Traffic Manager ne fait que du DNS, sans cache ni WAF. Application Gateway est régional.</p>",
- "portal": {
-  "path": [
-   "Front Door et CDN",
-   "Créer"
-  ],
-  "title": "Créer un profil Front Door",
-  "rows": [
-   [
-    "*Niveau",
-    "Standard / Premium"
-   ],
-   [
-    "Fonctions",
-    "Cache, accélération, WAF"
-   ]
-  ],
-  "btn": "Vérifier + créer"
- },
- "keep": "Point d'entrée HTTP mondial + cache + WAF = Front Door."
-},
-{
- "id": "D4-081",
- "dom": 4,
- "type": "single",
- "stem": "<p>Vous devez filtrer de manière centralisée tout le trafic sortant de plusieurs réseaux virtuels vers Internet, en autorisant seulement certains noms de domaine (FQDN), avec des journaux.</p><p>Que devez-vous déployer ?</p>",
- "opts": [
-  "Application Gateway avec WAF dans chaque spoke",
-  "Un NSG avec des règles de FQDN sur chaque spoke",
-  "Une passerelle NAT par réseau virtuel, avec journaux",
-  "Pare-feu Azure dans le hub, règles FQDN et UDR"
- ],
- "ans": 3,
- "expl": "<p>Le <b>Pare-feu Azure</b> est un pare-feu managé avec état. Ses <b>règles d'application</b> filtrent par FQDN (HTTP/HTTPS) ; ses <b>règles de réseau</b> par adresse et port ; ses <b>règles DNAT</b> publient des services. On le place dans le hub et on dirige le trafic des spokes vers lui avec des itinéraires 0.0.0.0/0.</p><p>Les NSG ne filtrent pas par nom de domaine.</p>",
- "portal": {
-  "path": [
-   "Stratégies de pare-feu",
-   "FWP-Hub"
-  ],
-  "title": "FWP-Hub | Règles d'application",
-  "menu": [
-   "Règles DNAT",
-   "Règles de réseau",
-   "*Règles d'application"
-  ],
-  "rows": [
-   [
-    "*Allow-Update",
-    "*.windowsupdate.com · HTTPS"
-   ]
-  ],
-  "btn": "+ Ajouter une collection"
- },
- "keep": "Filtrage par FQDN centralisé = Pare-feu Azure + UDR dans les spokes."
-},
-{
  "id": "D4-082",
  "dom": 4,
  "type": "dragdrop",
  "stem": "<p>Vous configurez des règles dans une stratégie de Pare-feu Azure.</p><p>Pour répondre, faites glisser le type de règle approprié vers chaque besoin. Chaque type peut être utilisé une fois, plusieurs fois ou pas du tout.</p>",
  "srcLabel": "Types de règles",
+ "tgtHead": [
+  "Besoin",
+  "Type de règle"
+ ],
  "srcs": [
   "Règle DNAT",
   "Règle de réseau",
   "Règle d'application"
- ],
- "tgtHead": [
-  "Besoin",
-  "Type de règle"
  ],
  "tgts": [
   {
@@ -744,243 +330,6 @@ AZ.questions.push(
   ]
  },
  "keep": "Entrant publié = DNAT ; IP/port = réseau ; FQDN = application."
-},
-{
- "id": "D4-083",
- "dom": 4,
- "type": "single",
- "stem": "<p>Une base Azure SQL Database doit être accessible depuis Subnet1 de VNet1 par une adresse IP privée, et depuis le site local par le VPN.</p><p>Que devez-vous configurer ?</p>",
- "opts": [
-  "Un point de terminaison privé et la zone privatelink.database",
-  "Une passerelle NAT sur Subnet1 avec une adresse IP publique fixe",
-  "Un point de terminaison de service Microsoft.Sql sur Subnet1",
-  "Une règle de pare-feu SQL avec l'adresse publique du site"
- ],
- "ans": 0,
- "expl": "<p>Le <b>point de terminaison privé</b> donne au serveur SQL une <b>adresse privée</b> dans VNet1, joignable aussi depuis le site local par le VPN (avec une résolution DNS adaptée). Le point de terminaison de service ne fonctionne pas depuis le site local. Une règle de pare-feu IP passerait par Internet.</p>",
- "portal": {
-  "path": [
-   "Serveurs SQL",
-   "sql1"
-  ],
-  "title": "Créer un point de terminaison privé",
-  "rows": [
-   [
-    "Sous-ressource cible",
-    "sqlServer"
-   ],
-   [
-    "*Sous-réseau",
-    "VNet1/Subnet1"
-   ],
-   [
-    "Zone DNS privée",
-    "privatelink.database.windows.net"
-   ]
-  ],
-  "btn": "Vérifier + créer"
- },
- "keep": "IP privée joignable aussi depuis le site local = point de terminaison privé."
-},
-{
- "id": "D4-084",
- "dom": 4,
- "type": "single",
- "stem": "<p>Vous avez créé un point de terminaison privé pour storage90 dans VNet1, sans intégration DNS. Les VM de VNet1 résolvent toujours storage90.blob.core.windows.net vers l'adresse publique.</p><p>Que devez-vous faire ?</p>",
- "opts": [
-  "Redémarrer le compte de stockage pour publier la nouvelle adresse",
-  "Créer et lier la zone privatelink.blob avec l'enregistrement A",
-  "Passer le compte de stockage en SKU Premium (ZRS)",
-  "Ajouter un point de terminaison de service sur le sous-réseau"
- ],
- "ans": 1,
- "expl": "<p>Le nom public est un alias (CNAME) vers <code>storage90.privatelink.blob.core.windows.net</code>. Pour qu'il se résolve vers l'adresse privée, il faut la <b>zone DNS privée privatelink</b> correspondante, <b>liée</b> au réseau virtuel, avec un enregistrement A (créé automatiquement via un groupe de zones DNS si on choisit l'intégration).</p>",
- "portal": {
-  "path": [
-   "Zones DNS privées",
-   "privatelink.blob.core.windows.net"
-  ],
-  "title": "Liens de réseau virtuel",
-  "menu": [
-   "Jeux d'enregistrements",
-   "*Liens de réseau virtuel"
-  ],
-  "rows": [
-   [
-    "*VNet1",
-    "Lié"
-   ],
-   [
-    "A",
-    "storage90 → 10.0.1.5"
-   ]
-  ]
- },
- "keep": "Point de terminaison privé = zone privatelink liée + enregistrement A."
-},
-{
- "id": "D4-085",
- "dom": 4,
- "type": "single",
- "stem": "<p>Vous devez exposer de façon privée un service hébergé derrière un équilibreur de charge Standard interne de votre abonnement, pour que des clients d'autres locataires y accèdent par un point de terminaison privé dans leurs propres réseaux.</p><p>Que devez-vous créer ?</p>",
- "opts": [
-  "Un appairage mondial avec chaque client",
-  "Une adresse IP publique sur l'équilibreur",
-  "Un service Private Link",
-  "Une passerelle VPN par client"
- ],
- "ans": 2,
- "expl": "<p>Un <b>service Private Link</b>, placé devant un équilibreur interne Standard, permet à des consommateurs (même dans d'autres locataires) de créer un <b>point de terminaison privé</b> vers votre service, sans appairage ni exposition publique, et même avec des espaces d'adressage qui se chevauchent.</p>",
- "portal": {
-  "path": [
-   "Private Link",
-   "Créer un service Private Link"
-  ],
-  "title": "Créer un service Private Link",
-  "rows": [
-   [
-    "*Équilibreur de charge",
-    "LB interne Standard"
-   ],
-   [
-    "Visibilité",
-    "Tout le monde avec l'alias"
-   ]
-  ],
-  "btn": "Vérifier + créer"
- },
- "keep": "Exposer son service à d'autres locataires = service Private Link."
-},
-{
- "id": "D4-086",
- "dom": 4,
- "type": "single",
- "stem": "<p>Une VM a deux interfaces réseau. Vous voulez ajouter une troisième interface réseau.</p><p>Quelle condition doit être remplie ?</p>",
- "opts": [
-  "La VM doit avoir une adresse IP publique sur chaque interface",
-  "La VM doit être dans un groupe à haute disponibilité",
-  "Les interfaces doivent être dans des réseaux virtuels différents",
-  "La taille doit accepter 3 interfaces, et la VM être libérée"
- ],
- "ans": 3,
- "expl": "<p>Le nombre maximal d'interfaces réseau dépend de la <b>taille</b> de la VM. On ajoute ou retire une interface secondaire quand la VM est <b>arrêtée (libérée)</b>. Toutes les interfaces d'une VM doivent être dans le <b>même réseau virtuel</b> (dans des sous-réseaux identiques ou différents).</p>",
- "portal": {
-  "path": [
-   "Machines virtuelles",
-   "VM1"
-  ],
-  "title": "VM1 | Mise en réseau",
-  "menu": [
-   "*Mise en réseau"
-  ],
-  "rows": [
-   [
-    "État",
-    "Arrêtée (libérée)"
-   ],
-   [
-    "*Joindre une interface réseau",
-    "Taille : 3 cartes maximum"
-   ]
-  ],
-  "btn": "Joindre"
- },
- "keep": "Ajouter une carte : taille qui le permet + VM libérée + même VNet."
-},
-{
- "id": "D4-087",
- "dom": 4,
- "type": "single",
- "stem": "<p>Vous voulez déplacer une interface réseau de VM6 vers VM7.</p><p>Quelle affirmation est vraie ?</p>",
- "opts": [
-  "Seule une interface secondaire peut être détachée (VM libérée)",
-  "Il faut d'abord supprimer VM6 pour libérer toutes ses interfaces",
-  "Une interface réseau ne peut jamais changer de VM",
-  "Toute interface réseau peut être déplacée VM démarrée"
- ],
- "ans": 0,
- "expl": "<p>Une VM a toujours une interface <b>principale</b>, qu'on ne peut pas détacher. Une interface <b>secondaire</b> peut être détachée (VM arrêtée et libérée) puis attachée à une autre VM du <b>même réseau virtuel</b> et de la même région.</p>",
- "portal": {
-  "path": [
-   "Machines virtuelles",
-   "VM6"
-  ],
-  "title": "VM6 | Mise en réseau",
-  "menu": [
-   "*Mise en réseau"
-  ],
-  "rows": [
-   [
-    "vm6-nic1",
-    "Principale (non détachable)"
-   ],
-   [
-    "*vm6-nic2",
-    "Secondaire · Détacher"
-   ]
-  ]
- },
- "keep": "Carte principale non détachable ; secondaire = VM libérée + même VNet."
-},
-{
- "id": "D4-088",
- "dom": 4,
- "type": "single",
- "stem": "<p>Les ressources Azure de Subnet-Web doivent être joignables depuis Internet, mais les adresses IP de Subnet-DB ne doivent jamais avoir de sortie Internet par défaut, sans dépendre de NSG.</p><p>Quelle propriété du sous-réseau Subnet-DB devez-vous activer ?</p>",
- "opts": [
-  "Les stratégies réseau des points de terminaison privés",
-  "Sous-réseau privé (pas d'accès sortant par défaut)",
-  "La délégation du sous-réseau à un service managé",
-  "Les points de terminaison de service du sous-réseau"
- ],
- "ans": 1,
- "expl": "<p>L'option <b>sous-réseau privé</b> (defaultOutboundAccess = false) désactive l'<b>accès sortant par défaut</b> : les VM n'ont plus de sortie Internet implicite. Il faut alors une méthode explicite (passerelle NAT, adresse publique, équilibreur, pare-feu). Microsoft retire l'accès sortant par défaut pour les nouveaux réseaux virtuels.</p>",
- "portal": {
-  "path": [
-   "Réseaux virtuels",
-   "VNet1",
-   "Subnet-DB"
-  ],
-  "title": "Modifier le sous-réseau",
-  "rows": [
-   [
-    "*Sous-réseau privé",
-    "Activé (pas d'accès sortant par défaut)"
-   ]
-  ],
-  "btn": "Enregistrer"
- },
- "keep": "Aucune sortie Internet implicite = sous-réseau privé."
-},
-{
- "id": "D4-089",
- "dom": 4,
- "type": "single",
- "stem": "<p>Vous déployez des groupes de conteneurs ACI dans Subnet-ACI. Le déploiement échoue car le sous-réseau n'est pas configuré pour ce service.</p><p>Que devez-vous configurer sur Subnet-ACI ?</p>",
- "opts": [
-  "Un groupe de sécurité d'application dédié",
-  "Une table de routage vers le service ACI",
-  "Une délégation à Microsoft.ContainerInstance",
-  "Un point de terminaison de service Microsoft.Storage"
- ],
- "ans": 2,
- "expl": "<p>La <b>délégation de sous-réseau</b> autorise un service PaaS à créer ses ressources dans un sous-réseau (ACI, App Service pour l'intégration au réseau virtuel, Azure SQL Managed Instance, Container Apps…). Un sous-réseau délégué est réservé à ce service.</p>",
- "portal": {
-  "path": [
-   "Réseaux virtuels",
-   "VNet1",
-   "Subnet-ACI"
-  ],
-  "title": "Modifier le sous-réseau",
-  "rows": [
-   [
-    "*Déléguer le sous-réseau à un service",
-    "Microsoft.ContainerInstance/containerGroups"
-   ]
-  ],
-  "btn": "Enregistrer"
- },
- "keep": "Service PaaS dans un sous-réseau = délégation."
 },
 {
  "id": "D4-090",
@@ -1042,42 +391,6 @@ AZ.questions.push(
  "keep": "Additionner les sous-réseaux (y compris spéciaux) puis éviter les chevauchements."
 },
 {
- "id": "D4-091",
- "dom": 4,
- "type": "single",
- "stem": "<p>VM8 dans VNet1 reçoit l'adresse 10.0.1.4. Vous voulez lui ajouter une seconde adresse IP privée 10.0.1.10 sur la même interface réseau.</p><p>Que devez-vous faire ?</p>",
- "opts": [
-  "Créer un second réseau virtuel",
-  "Créer une seconde interface réseau obligatoirement",
-  "Modifier l'adresse dans le système d'exploitation uniquement",
-  "Ajouter une configuration IP secondaire à l'interface réseau"
- ],
- "ans": 3,
- "expl": "<p>Une interface réseau peut avoir plusieurs <b>configurations IP</b>, chacune avec une adresse privée (et éventuellement publique). Il faut ensuite configurer l'adresse secondaire dans le système d'exploitation, car le DHCP d'Azure ne fournit que l'adresse principale.</p>",
- "portal": {
-  "path": [
-   "Interfaces réseau",
-   "vm8-nic"
-  ],
-  "title": "vm8-nic | Configurations IP",
-  "menu": [
-   "*Configurations IP"
-  ],
-  "rows": [
-   [
-    "ipconfig1",
-    "10.0.1.4 · Principale"
-   ],
-   [
-    "*ipconfig2",
-    "10.0.1.10 · Secondaire"
-   ]
-  ],
-  "btn": "+ Ajouter"
- },
- "keep": "Plusieurs IP sur une carte = configurations IP secondaires (+ OS)."
-},
-{
  "id": "D4-092",
  "dom": 4,
  "type": "yngrid",
@@ -1121,227 +434,27 @@ AZ.questions.push(
  "keep": "NSG : plusieurs associations, même région, avec état."
 },
 {
- "id": "D4-093",
- "dom": 4,
- "type": "single",
- "stem": "<p>Une règle de NSG doit autoriser le trafic des sondes d'intégrité de l'équilibreur de charge, même si une règle personnalisée refuse tout le trafic entrant en priorité 4000.</p><p>Quelle source devez-vous utiliser dans une règle d'autorisation de priorité inférieure à 4000 ?</p>",
- "opts": [
-  "L'étiquette AzureLoadBalancer",
-  "L'adresse 169.254.169.254",
-  "L'étiquette de service Internet",
-  "L'étiquette VirtualNetwork"
- ],
- "ans": 0,
- "expl": "<p>Les sondes d'intégrité viennent de l'adresse <b>168.63.129.16</b>, représentée par l'étiquette de service <b>AzureLoadBalancer</b>. La règle par défaut AllowAzureLoadBalancerInBound (65001) les autorise, mais une règle de refus personnalisée la court-circuite : il faut donc une règle explicite plus prioritaire.</p>",
- "portal": {
-  "path": [
-   "Groupes de sécurité réseau",
-   "NSG1"
-  ],
-  "title": "Règles de trafic entrant",
-  "rows": [
-   [
-    "*3900",
-    "AzureLoadBalancer · Autoriser"
-   ],
-   [
-    "4000",
-    "Any · Refuser"
-   ]
-  ]
- },
- "keep": "Sondes de l'équilibreur = étiquette AzureLoadBalancer (168.63.129.16)."
-},
-{
- "id": "D4-094",
- "dom": 4,
- "type": "single",
- "stem": "<p>Vous voulez voir toutes les règles de sécurité appliquées à l'interface réseau de VM9, en combinant le NSG du sous-réseau et celui de l'interface, avec les règles par défaut.</p><p>Que devez-vous consulter ?</p>",
- "opts": [
-  "Le journal d'activité du NSG du sous-réseau",
-  "Les règles de sécurité effectives",
-  "Les métriques réseau de la VM",
-  "Les itinéraires effectifs de l'interface"
- ],
- "ans": 1,
- "expl": "<p>Les <b>règles de sécurité effectives</b> (dans l'interface réseau ou dans Network Watcher) affichent la combinaison des NSG du sous-réseau et de l'interface, avec les étiquettes de service développées en plages d'adresses.</p>",
- "portal": {
-  "path": [
-   "Interfaces réseau",
-   "vm9-nic"
-  ],
-  "title": "vm9-nic | Règles de sécurité effectives",
-  "menu": [
-   "Itinéraires effectifs",
-   "*Règles de sécurité effectives"
-  ],
-  "rows": [
-   [
-    "NSG du sous-réseau",
-    "Règles combinées"
-   ],
-   [
-    "NSG de l'interface",
-    "Règles combinées"
-   ]
-  ]
- },
- "keep": "Toutes les règles NSG appliquées = règles de sécurité effectives."
-},
-{
- "id": "D4-095",
- "dom": 4,
- "type": "single",
- "stem": "<p>Vous devez capturer le trafic réseau de VM10 pendant 10 minutes pour l'analyser avec Wireshark.</p><p>Que devez-vous utiliser ?</p>",
- "opts": [
-  "Le moniteur de connexion de Network Watcher",
-  "Les journaux de flux du réseau virtuel",
-  "La capture de paquets de Network Watcher",
-  "La vérification du flux IP sur la VM"
- ],
- "ans": 2,
- "expl": "<p>La <b>capture de paquets</b> de Network Watcher enregistre le trafic d'une VM (avec filtres et durée) dans un fichier .cap stocké dans un compte de stockage ou sur la VM, à ouvrir avec Wireshark. Elle utilise l'extension Network Watcher Agent.</p><p>Les journaux de flux n'enregistrent que des métadonnées de flux, pas le contenu des paquets.</p>",
- "portal": {
-  "path": [
-   "Network Watcher"
-  ],
-  "title": "Capture de paquets › Ajouter",
-  "menu": [
-   "*Capture de paquets"
-  ],
-  "rows": [
-   [
-    "Cible",
-    "VM10"
-   ],
-   [
-    "Durée",
-    "600 s"
-   ],
-   [
-    "*Sortie",
-    "Fichier .cap (stockage)"
-   ]
-  ],
-  "btn": "Démarrer"
- },
- "keep": "Contenu des paquets (Wireshark) = capture de paquets."
-},
-{
- "id": "D4-096",
- "dom": 4,
- "type": "single",
- "stem": "<p>Vous voulez surveiller en continu la latence et la disponibilité de la connexion entre VM11 (Azure) et un serveur du site local, avec des alertes en cas de dégradation.</p><p>Quel outil devez-vous utiliser ?</p>",
- "opts": [
-  "Une capture de paquets planifiée",
-  "La vérification du flux IP",
-  "Le tronçon suivant (Next hop)",
-  "Le moniteur de connexion"
- ],
- "ans": 3,
- "expl": "<p>Le <b>moniteur de connexion</b> teste régulièrement des connexions entre sources (VM Azure, machines locales avec l'agent) et destinations, enregistre latence et pertes, et permet des <b>alertes</b> Azure Monitor.</p><p>Les autres outils font des tests ponctuels.</p>",
- "portal": {
-  "path": [
-   "Network Watcher"
-  ],
-  "title": "Moniteur de connexion › Créer",
-  "menu": [
-   "*Moniteur de connexion"
-  ],
-  "rows": [
-   [
-    "Source",
-    "VM11"
-   ],
-   [
-    "Destination",
-    "Serveur local"
-   ],
-   [
-    "*Alertes",
-    "Activées"
-   ]
-  ],
-  "btn": "Créer"
- },
- "keep": "Surveillance continue + alertes = moniteur de connexion."
-},
-{
- "id": "D4-097",
- "dom": 4,
- "type": "single",
- "stem": "<p>Vous voulez visualiser les ressources réseau d'un réseau virtuel (sous-réseaux, interfaces, NSG, passerelles) et leurs relations sous forme de schéma.</p><p>Quelle fonctionnalité devez-vous utiliser ?</p>",
- "opts": [
-  "La topologie de Network Watcher",
-  "La capture de paquets du VNet",
-  "Le journal d'activité du VNet",
-  "Azure Advisor, onglet Réseau"
- ],
- "ans": 0,
- "expl": "<p>La <b>topologie</b> de Network Watcher génère un schéma interactif des ressources réseau et de leurs liens, sur un ou plusieurs abonnements et régions.</p>",
- "portal": {
-  "path": [
-   "Network Watcher"
-  ],
-  "title": "Network Watcher | Topologie",
-  "menu": [
-   "*Topologie"
-  ],
-  "rows": [
-   [
-    "VNet1",
-    "Sous-réseaux · cartes · NSG · passerelles"
-   ]
-  ]
- },
- "keep": "Schéma des ressources réseau = topologie."
-},
-{
- "id": "D4-098",
- "dom": 4,
- "type": "single",
- "stem": "<p>Les outils de Network Watcher ne sont pas disponibles pour un réseau virtuel situé en Norway East.</p><p>Que devez-vous vérifier ?</p>",
- "opts": [
-  "Que les VM du réseau ont une adresse IP publique",
-  "Que Network Watcher est activé dans Norway East",
-  "Que le réseau virtuel a une passerelle VPN",
-  "Que le réseau virtuel est appairé à un hub"
- ],
- "ans": 1,
- "expl": "<p><b>Network Watcher</b> est un service <b>régional</b> : une instance est créée par région (automatiquement à la création du premier réseau virtuel, dans le groupe de ressources NetworkWatcherRG). Si elle a été supprimée ou désactivée, il faut l'activer dans cette région.</p>",
- "portal": {
-  "path": [
-   "Network Watcher"
-  ],
-  "title": "Network Watcher | Vue d'ensemble",
-  "rows": [
-   [
-    "France Central",
-    "Activé"
-   ],
-   [
-    "*Norway East",
-    "Désactivé"
-   ]
-  ]
- },
- "keep": "Network Watcher est régional (une instance par région)."
-},
-{
  "id": "D4-099",
  "dom": 4,
- "type": "multi",
- "pick": 2,
- "stem": "<p>Vous déployez un VPN site à site entre VNet1 et le site de Bordeaux. Vous devez fournir à l'équipe réseau de Bordeaux les informations nécessaires à la configuration de leur pare-feu.</p><p>Quelles <b>deux</b> informations devez-vous leur transmettre ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
- "opts": [
-  "L'adresse IP privée de chaque VM de VNet1",
-  "L'adresse IP publique de la passerelle VPN",
-  "Le nom du groupe de ressources de VNet1",
-  "La clé partagée de la connexion"
- ],
- "ans": [
-  1,
-  3
+ "type": "yngrid",
+ "stem": "<p>Vous déployez un VPN site à site entre VNet1 et le site de Bordeaux. Vous devez fournir à l'équipe réseau de Bordeaux les informations nécessaires à la configuration de leur pare-feu.</p><p>Pour chacune des informations suivantes, sélectionnez Oui si vous devez la transmettre à l'équipe de Bordeaux. Sinon, sélectionnez Non.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
+ "rows": [
+  {
+   "l": "L'adresse IP privée de chaque VM de VNet1",
+   "a": 1
+  },
+  {
+   "l": "L'adresse IP publique de la passerelle VPN",
+   "a": 0
+  },
+  {
+   "l": "Le nom du groupe de ressources de VNet1",
+   "a": 1
+  },
+  {
+   "l": "La clé partagée de la connexion",
+   "a": 0
+  }
  ],
  "expl": "<ul><li><b>Adresse publique de la passerelle Azure : oui</b>, c'est l'extrémité du tunnel côté Azure.</li><li><b>Clé partagée : oui</b>, elle doit être identique des deux côtés.</li><li>Ils ont aussi besoin de l'<b>espace d'adressage</b> du réseau virtuel (pour les sélecteurs de trafic), mais pas de l'adresse de chaque VM ni du nom du groupe de ressources.</li></ul>",
  "portal": {
@@ -1370,18 +483,25 @@ AZ.questions.push(
 {
  "id": "D4-100",
  "dom": 4,
- "type": "multi",
- "pick": 2,
- "stem": "<p>Les VM de VNet-Spoke doivent sortir sur Internet uniquement par le Pare-feu Azure de VNet-Hub (adresse privée 10.0.0.4).</p><p>Quelles <b>deux</b> actions devez-vous effectuer ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
- "opts": [
-  "Créer dans la stratégie du pare-feu les règles qui autorisent le trafic",
-  "Activer « Utiliser la passerelle distante » sur l'appairage du spoke vers le hub",
-  "Associer aux sous-réseaux du spoke une UDR 0.0.0.0/0 → 10.0.0.4",
-  "Créer une passerelle NAT dans le spoke, associée à ses sous-réseaux"
- ],
- "ans": [
-  0,
-  2
+ "type": "yngrid",
+ "stem": "<p>Les VM de VNet-Spoke doivent sortir sur Internet uniquement par le Pare-feu Azure de VNet-Hub (adresse privée 10.0.0.4).</p><p>Pour chacune des actions suivantes, sélectionnez Oui si elle fait partie de la solution. Sinon, sélectionnez Non.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
+ "rows": [
+  {
+   "l": "Créer dans la stratégie du pare-feu les règles qui autorisent le trafic",
+   "a": 0
+  },
+  {
+   "l": "Activer « Utiliser la passerelle distante » sur l'appairage du spoke vers le hub",
+   "a": 1
+  },
+  {
+   "l": "Associer aux sous-réseaux du spoke une UDR 0.0.0.0/0 → 10.0.0.4",
+   "a": 0
+  },
+  {
+   "l": "Créer une passerelle NAT dans le spoke, associée à ses sous-réseaux",
+   "a": 1
+  }
  ],
  "expl": "<ul><li><b>Itinéraire 0.0.0.0/0 vers le pare-feu : oui</b>, il force le trafic Internet vers le hub (l'appairage doit être connecté).</li><li><b>Règles du pare-feu : oui</b>, le Pare-feu Azure refuse tout par défaut.</li><li>« Utiliser la passerelle distante » concerne une passerelle VPN. Une passerelle NAT dans le spoke ferait sortir le trafic sans passer par le pare-feu.</li></ul>",
  "portal": {
@@ -1409,18 +529,25 @@ AZ.questions.push(
 {
  "id": "D4-101",
  "dom": 4,
- "type": "multi",
- "pick": 2,
- "stem": "<p>Vous déployez Azure Bastion dans VNet1.</p><p>Quelles <b>deux</b> conditions sont requises ?</p><p>Chaque réponse correcte présente une partie de la solution.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
- "opts": [
-  "Un sous-réseau AzureBastionSubnet de taille /26 ou plus",
-  "Une passerelle VPN dans le GatewaySubnet du même réseau",
-  "Une adresse IP publique Standard sur chaque VM cible",
-  "Une adresse IP publique Standard pour Bastion"
- ],
- "ans": [
-  0,
-  3
+ "type": "yngrid",
+ "stem": "<p>Vous déployez Azure Bastion dans VNet1.</p><p>Pour chacune des propositions suivantes, sélectionnez Oui s'il s'agit d'une condition requise. Sinon, sélectionnez Non.</p><p>REMARQUE : chaque sélection correcte vaut un point.</p>",
+ "rows": [
+  {
+   "l": "Un sous-réseau AzureBastionSubnet de taille /26 ou plus",
+   "a": 0
+  },
+  {
+   "l": "Une passerelle VPN dans le GatewaySubnet du même réseau",
+   "a": 1
+  },
+  {
+   "l": "Une adresse IP publique Standard sur chaque VM cible",
+   "a": 1
+  },
+  {
+   "l": "Une adresse IP publique Standard pour Bastion",
+   "a": 0
+  }
  ],
  "expl": "<ul><li><b>AzureBastionSubnet /26 : oui.</b></li><li><b>Adresse IP publique Standard : oui</b>, pour Bastion lui-même (le SKU Développeur n'en a pas besoin).</li><li>Les VM n'ont <b>pas</b> besoin d'adresse publique : c'est tout l'intérêt de Bastion. Aucune passerelle VPN n'est nécessaire.</li></ul>",
  "portal": {
@@ -1452,7 +579,6 @@ AZ.questions.push(
  "dom": 4,
  "type": "cmd",
  "stem": "<p>Vous devez créer un réseau virtuel avec un sous-réseau, avec Azure CLI.</p><p>Comment devez-vous compléter la commande ?</p><p>Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p>",
- "tpl": "az network vnet create --resource-group RG1 --name VNet6 {0} 10.6.0.0/16 --subnet-name Subnet1 {1} 10.6.1.0/24",
  "rows": [
   {
    "l": "Espace d'adressage",
@@ -1490,14 +616,14 @@ AZ.questions.push(
    ]
   ]
  },
- "keep": "az network vnet create --address-prefixes … --subnet-prefixes …"
+ "keep": "az network vnet create --address-prefixes … --subnet-prefixes …",
+ "tpl": "az network vnet create --resource-group RG1 --name VNet6 {0} 10.6.0.0/16 --subnet-name Subnet1 {1} 10.6.1.0/24"
 },
 {
  "id": "D4-103",
  "dom": 4,
  "type": "cmd",
  "stem": "<p>Vous devez créer l'appairage de VNet1 vers VNet2, avec l'accès au réseau virtuel autorisé, avec Azure CLI.</p><p>Comment devez-vous compléter la commande ?</p><p>Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p>",
- "tpl": "az network vnet {0} create --resource-group RG1 --name VNet1-vers-VNet2 --vnet-name VNet1 {1} VNet2 --allow-vnet-access",
  "rows": [
   {
    "l": "Sous-groupe",
@@ -1535,14 +661,14 @@ AZ.questions.push(
    ]
   ]
  },
- "keep": "az network vnet peering create --remote-vnet (dans les deux sens)."
+ "keep": "az network vnet peering create --remote-vnet (dans les deux sens).",
+ "tpl": "az network vnet {0} create --resource-group RG1 --name VNet1-vers-VNet2 --vnet-name VNet1 {1} VNet2 --allow-vnet-access"
 },
 {
  "id": "D4-104",
  "dom": 4,
  "type": "cmd",
  "stem": "<p>Vous devez ajouter au NSG NSG5 une règle qui autorise HTTPS entrant depuis Internet, avec Azure PowerShell. $nsg contient NSG5.</p><p>Comment devez-vous compléter la commande ?</p><p>Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p>",
- "tpl": "$nsg | {0} -Name Allow-HTTPS -Access Allow -Protocol Tcp -Direction {1} -Priority 200 -SourceAddressPrefix Internet -SourcePortRange * -DestinationAddressPrefix * -DestinationPortRange 443 | Set-AzNetworkSecurityGroup",
  "rows": [
   {
    "l": "Cmdlet",
@@ -1580,14 +706,14 @@ AZ.questions.push(
    ]
   ]
  },
- "keep": "Add-…RuleConfig puis Set-AzNetworkSecurityGroup."
+ "keep": "Add-…RuleConfig puis Set-AzNetworkSecurityGroup.",
+ "tpl": "$nsg | {0} -Name Allow-HTTPS -Access Allow -Protocol Tcp -Direction {1} -Priority 200 -SourceAddressPrefix Internet -SourcePortRange * -DestinationAddressPrefix * -DestinationPortRange 443 | Set-AzNetworkSecurityGroup"
 },
 {
  "id": "D4-105",
  "dom": 4,
  "type": "cmd",
  "stem": "<p>Vous devez créer un itinéraire qui envoie 0.0.0.0/0 vers le pare-feu 10.0.0.4 dans la table RT5, avec Azure CLI.</p><p>Comment devez-vous compléter la commande ?</p><p>Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p>",
- "tpl": "az network route-table route create --resource-group RG1 --route-table-name RT5 --name Vers-FW --address-prefix 0.0.0.0/0 --next-hop-type {0} {1} 10.0.0.4",
  "rows": [
   {
    "l": "Type de saut suivant",
@@ -1625,13 +751,33 @@ AZ.questions.push(
    ]
   ]
  },
- "keep": "Route vers une NVA = VirtualAppliance + --next-hop-ip-address."
+ "keep": "Route vers une NVA = VirtualAppliance + --next-hop-ip-address.",
+ "tpl": "az network route-table route create --resource-group RG1 --route-table-name RT5 --name Vers-FW --address-prefix 0.0.0.0/0 --next-hop-type {0} {1} 10.0.0.4"
 },
 {
  "id": "D4-106",
  "dom": 4,
  "type": "screen",
  "stem": "<p>Vous créez une règle de sécurité de trafic entrant dans NSG6. Seuls les serveurs du groupe de sécurité d'application ASG-Admin doivent pouvoir joindre les VM de ASG-Web en SSH. La règle doit passer avant une règle de refus de priorité 500.</p><p>Comment devez-vous configurer la règle ?</p><p>Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p>",
+ "expl": "<ul><li>Source et destination : <b>groupes de sécurité d'application</b> ASG-Admin vers ASG-Web.</li><li>Service <b>SSH</b> (TCP 22), action <b>Autoriser</b>.</li><li>Priorité <b>100</b> : un numéro plus petit que 500 passe avant la règle de refus. 600 et 4096 seraient évalués après le refus.</li></ul>",
+ "portal": {
+  "path": [
+   "Groupes de sécurité réseau",
+   "NSG6"
+  ],
+  "title": "Règles de trafic entrant",
+  "rows": [
+   [
+    "*100 · SSH",
+    "ASG-Admin → ASG-Web · Autoriser"
+   ],
+   [
+    "500",
+    "Refuser"
+   ]
+  ]
+ },
+ "keep": "Exception par rôle = ASG source/destination + numéro plus petit.",
  "win": {
   "title": "Ajouter une règle de sécurité de trafic entrant",
   "sub": "NSG6",
@@ -1706,32 +852,40 @@ AZ.questions.push(
     "a": 0
    }
   ]
- },
- "expl": "<ul><li>Source et destination : <b>groupes de sécurité d'application</b> ASG-Admin vers ASG-Web.</li><li>Service <b>SSH</b> (TCP 22), action <b>Autoriser</b>.</li><li>Priorité <b>100</b> : un numéro plus petit que 500 passe avant la règle de refus. 600 et 4096 seraient évalués après le refus.</li></ul>",
- "portal": {
-  "path": [
-   "Groupes de sécurité réseau",
-   "NSG6"
-  ],
-  "title": "Règles de trafic entrant",
-  "rows": [
-   [
-    "*100 · SSH",
-    "ASG-Admin → ASG-Web · Autoriser"
-   ],
-   [
-    "500",
-    "Refuser"
-   ]
-  ]
- },
- "keep": "Exception par rôle = ASG source/destination + numéro plus petit."
+ }
 },
 {
  "id": "D4-107",
  "dom": 4,
  "type": "screen",
  "stem": "<p>Vous configurez l'appairage du spoke VNet-S3 vers le hub VNet-Hub, qui possède une passerelle VPN vers le site local. VNet-S3 doit joindre le site local par cette passerelle et recevoir le trafic transféré par le pare-feu du hub.</p><p>Comment devez-vous configurer les options du lien de VNet-S3 vers VNet-Hub ?</p><p>Pour répondre, sélectionnez les options appropriées dans la zone de réponse.</p>",
+ "expl": "<ul><li><b>Accès</b> : nécessaire pour communiquer.</li><li><b>Recevoir le trafic transféré</b> : accepte le trafic qui transite par le pare-feu du hub.</li><li><b>Transit de la passerelle de VNet-S3 : non</b>, VNet-S3 n'a pas de passerelle.</li><li><b>Utiliser la passerelle distante : oui</b>, pour joindre le site local par la passerelle du hub (qui doit, de son côté, autoriser le transit).</li></ul>",
+ "portal": {
+  "path": [
+   "Réseaux virtuels",
+   "VNet-S3"
+  ],
+  "title": "VNet-S3 | Peerings",
+  "rows": [
+   [
+    "Accès",
+    "Oui"
+   ],
+   [
+    "Trafic transféré",
+    "Oui"
+   ],
+   [
+    "*Utiliser la passerelle distante",
+    "Oui"
+   ],
+   [
+    "Transit de passerelle",
+    "Non"
+   ]
+  ]
+ },
+ "keep": "Spoke : accès + trafic transféré + passerelle distante.",
  "win": {
   "title": "Ajouter un appairage",
   "sub": "VNet-S3 | Appairages",
@@ -1762,40 +916,33 @@ AZ.questions.push(
     "a": true
    }
   ]
- },
- "expl": "<ul><li><b>Accès</b> : nécessaire pour communiquer.</li><li><b>Recevoir le trafic transféré</b> : accepte le trafic qui transite par le pare-feu du hub.</li><li><b>Transit de la passerelle de VNet-S3 : non</b>, VNet-S3 n'a pas de passerelle.</li><li><b>Utiliser la passerelle distante : oui</b>, pour joindre le site local par la passerelle du hub (qui doit, de son côté, autoriser le transit).</li></ul>",
- "portal": {
-  "path": [
-   "Réseaux virtuels",
-   "VNet-S3"
-  ],
-  "title": "VNet-S3 | Peerings",
-  "rows": [
-   [
-    "Accès",
-    "Oui"
-   ],
-   [
-    "Trafic transféré",
-    "Oui"
-   ],
-   [
-    "*Utiliser la passerelle distante",
-    "Oui"
-   ],
-   [
-    "Transit de passerelle",
-    "Non"
-   ]
-  ]
- },
- "keep": "Spoke : accès + trafic transféré + passerelle distante."
+ }
 },
 {
  "id": "D4-108",
  "dom": 4,
  "type": "hotspot",
  "stem": "<p>Vous devez associer la table de routage RT6 au sous-réseau Subnet-App.</p><p>Dans RT6, quelle option devez-vous sélectionner ?</p><p>Pour répondre, sélectionnez l'option appropriée dans la zone de réponse.</p>",
+ "ans": "Sous-réseaux",
+ "expl": "<p><b>Sous-réseaux</b> permet d'associer ou de dissocier la table à des sous-réseaux. <b>Itinéraires</b> sert à ajouter les itinéraires. <b>Configuration</b> contient l'option de propagation des itinéraires de passerelle.</p>",
+ "portal": {
+  "path": [
+   "Tables de routage",
+   "RT6"
+  ],
+  "title": "RT6 | Sous-réseaux",
+  "menu": [
+   "Itinéraires",
+   "*Sous-réseaux"
+  ],
+  "rows": [
+   [
+    "*Subnet-App",
+    "+ Associer"
+   ]
+  ]
+ },
+ "keep": "Associer une table = blade Sous-réseaux.",
  "win": {
   "title": "RT6 | Table de routage",
   "nav": [
@@ -1825,33 +972,32 @@ AZ.questions.push(
     ]
    }
   ]
- },
- "ans": "Sous-réseaux",
- "expl": "<p><b>Sous-réseaux</b> permet d'associer ou de dissocier la table à des sous-réseaux. <b>Itinéraires</b> sert à ajouter les itinéraires. <b>Configuration</b> contient l'option de propagation des itinéraires de passerelle.</p>",
- "portal": {
-  "path": [
-   "Tables de routage",
-   "RT6"
-  ],
-  "title": "RT6 | Sous-réseaux",
-  "menu": [
-   "Itinéraires",
-   "*Sous-réseaux"
-  ],
-  "rows": [
-   [
-    "*Subnet-App",
-    "+ Associer"
-   ]
-  ]
- },
- "keep": "Associer une table = blade Sous-réseaux."
+ }
 },
 {
  "id": "D4-109",
  "dom": 4,
  "type": "hotspot",
  "stem": "<p>Vous devez vérifier si le trafic de VM12 vers 8.8.8.8 passe par le Pare-feu Azure ou sort directement.</p><p>Dans Network Watcher, quel outil devez-vous sélectionner ?</p><p>Pour répondre, sélectionnez l'option appropriée dans la zone de réponse.</p>",
+ "ans": "Tronçon suivant",
+ "expl": "<p><b>Tronçon suivant</b> indique, pour une VM et une destination, le type de saut suivant (Internet, Appliance virtuelle, Passerelle…), son adresse et la table de routage utilisée. Si le saut suivant est l'adresse du pare-feu, le trafic passe par lui.</p>",
+ "portal": {
+  "path": [
+   "Network Watcher"
+  ],
+  "title": "Tronçon suivant",
+  "menu": [
+   "*Tronçon suivant"
+  ],
+  "rows": [
+   [
+    "VM12 → 8.8.8.8",
+    "*Appliance virtuelle · 10.0.0.4"
+   ]
+  ],
+  "btn": "Tronçon suivant"
+ },
+ "keep": "Par où passe le trafic = Tronçon suivant.",
  "win": {
   "title": "Network Watcher",
   "nav": [
@@ -1882,338 +1028,6 @@ AZ.questions.push(
     ]
    }
   ]
- },
- "ans": "Tronçon suivant",
- "expl": "<p><b>Tronçon suivant</b> indique, pour une VM et une destination, le type de saut suivant (Internet, Appliance virtuelle, Passerelle…), son adresse et la table de routage utilisée. Si le saut suivant est l'adresse du pare-feu, le trafic passe par lui.</p>",
- "portal": {
-  "path": [
-   "Network Watcher"
-  ],
-  "title": "Tronçon suivant",
-  "menu": [
-   "*Tronçon suivant"
-  ],
-  "rows": [
-   [
-    "VM12 → 8.8.8.8",
-    "*Appliance virtuelle · 10.0.0.4"
-   ]
-  ],
-  "btn": "Tronçon suivant"
- },
- "keep": "Par où passe le trafic = Tronçon suivant."
-},
-{
- "id": "D4-110",
- "dom": 4,
- "type": "single",
- "stem": "<p>Deux VM de VNet1 dans des sous-réseaux différents n'arrivent pas à communiquer. Aucun NSG ni table de routage n'est configuré.</p><p>Quelle est la cause la plus probable ?</p>",
- "opts": [
-  "Il faut un appairage entre les deux sous-réseaux",
-  "Il faut une passerelle VPN entre les sous-réseaux",
-  "Le pare-feu du système d'exploitation des VM",
-  "Les sous-réseaux d'un VNet sont isolés par défaut"
- ],
- "ans": 2,
- "expl": "<p>Par défaut, tous les sous-réseaux d'un réseau virtuel communiquent grâce à l'itinéraire système du réseau virtuel. Sans NSG ni UDR, la cause probable est le <b>pare-feu du système d'exploitation</b> : par exemple, le pare-feu Windows bloque le ping (ICMP) par défaut.</p>",
- "portal": {
-  "path": [
-   "Machines virtuelles",
-   "VM1"
-  ],
-  "title": "Pare-feu Windows",
-  "rows": [
-   [
-    "*ICMP entrant",
-    "Bloqué par défaut"
-   ]
-  ]
- },
- "keep": "Sous-réseaux d'un VNet communiquent par défaut ; penser au pare-feu de l'OS."
-},
-{
- "id": "D4-111",
- "dom": 4,
- "type": "single",
- "stem": "<p>Vous voulez que les VM d'un pool d'équilibreur de charge interne puissent recevoir le trafic adressé directement à l'adresse frontale (par exemple pour un cluster SQL Always On).</p><p>Quelle option de la règle d'équilibrage devez-vous activer ?</p>",
- "opts": [
-  "Une sonde HTTP sur le port d'écoute",
-  "Une règle sortante sur le même pool",
-  "La persistance de session (IP client)",
-  "L'adresse IP flottante sur la règle"
- ],
- "ans": 3,
- "expl": "<p>L'<b>adresse IP flottante</b> (Direct Server Return) transmet le paquet sans traduire l'adresse de destination : la VM voit l'adresse frontale et doit l'avoir configurée en bouclage. C'est requis pour les écouteurs de groupes de disponibilité SQL Server.</p>",
- "portal": {
-  "path": [
-   "Équilibreurs de charge",
-   "LB-SQL"
-  ],
-  "title": "Modifier la règle d'équilibrage de charge",
-  "rows": [
-   [
-    "*Adresse IP flottante",
-    "Activée"
-   ]
-  ],
-  "btn": "Enregistrer"
- },
- "keep": "SQL Always On derrière un LB = IP flottante."
-},
-{
- "id": "D4-112",
- "dom": 4,
- "type": "single",
- "stem": "<p>Une Application Gateway renvoie l'erreur 502 (Bad Gateway) pour toutes les requêtes. Les VM du pool fonctionnent quand on les interroge directement.</p><p>Que devez-vous vérifier en premier ?</p>",
- "opts": [
-  "L'intégrité du back-end (sonde, NSG, ports, certificats)",
-  "Le niveau d'accès du compte de stockage des journaux",
-  "Les règles DNAT du pare-feu placé devant la passerelle",
-  "La passerelle VPN et les itinéraires vers le site local"
- ],
- "ans": 0,
- "expl": "<p>Une erreur <b>502</b> signifie qu'Application Gateway ne peut pas joindre un back-end sain. La page <b>Intégrité du back-end</b> indique pourquoi : sonde qui échoue (chemin ou code attendu), NSG qui bloque, port ou nom d'hôte incorrect, certificat du back-end non approuvé en HTTPS.</p>",
- "portal": {
-  "path": [
-   "Passerelles d'application",
-   "AG1"
-  ],
-  "title": "AG1 | Intégrité du back-end",
-  "menu": [
-   "*Intégrité du back-end"
-  ],
-  "rows": [
-   [
-    "*10.0.2.4",
-    "Non sain · sonde : code 404"
-   ]
-  ]
- },
- "keep": "Erreur 502 = vérifier l'intégrité du back-end."
-},
-{
- "id": "D4-113",
- "dom": 4,
- "type": "single",
- "stem": "<p>Vous ajoutez un NSG au sous-réseau d'Application Gateway v2. Ensuite, la passerelle cesse de fonctionner.</p><p>Quelle règle entrante devez-vous autoriser ?</p>",
- "opts": [
-  "Le port 3389 depuis l'étiquette Internet",
-  "Les ports 65200-65535 depuis GatewayManager",
-  "Le port 1433 depuis l'étiquette AzureCloud",
-  "Le port 22 depuis l'étiquette VirtualNetwork"
- ],
- "ans": 1,
- "expl": "<p>Application Gateway v2 a besoin que les ports <b>65200 à 65535</b> soient ouverts en entrée depuis l'étiquette <b>GatewayManager</b> (communication avec l'infrastructure Azure). Il faut aussi autoriser AzureLoadBalancer et le trafic client sur les ports des écouteurs.</p>",
- "portal": {
-  "path": [
-   "Groupes de sécurité réseau",
-   "NSG-AppGW"
-  ],
-  "title": "Règles de trafic entrant",
-  "rows": [
-   [
-    "*100",
-    "GatewayManager · 65200-65535 · Autoriser"
-   ],
-   [
-    "110",
-    "AzureLoadBalancer · Autoriser"
-   ]
-  ]
- },
- "keep": "NSG sur le sous-réseau AppGW v2 = GatewayManager 65200-65535."
-},
-{
- "id": "D4-114",
- "dom": 4,
- "type": "single",
- "stem": "<p>Une passerelle VPN de SKU VpnGw1 n'offre plus assez de bande passante pour le trafic avec le site local.</p><p>Que pouvez-vous faire ?</p>",
- "opts": [
-  "Ajouter une seconde passerelle VPN dans le même réseau virtuel",
-  "Créer un second GatewaySubnet et y déployer une passerelle",
-  "Redimensionner la passerelle vers VpnGw2 (même génération)",
-  "Augmenter la taille des VM qui échangent avec le site local"
- ],
- "ans": 2,
- "expl": "<p>On peut <b>redimensionner</b> une passerelle vers un SKU supérieur (VpnGw1 → VpnGw2 → VpnGw3…, ou vers les versions AZ redondantes interzone). Un réseau virtuel n'a qu'une passerelle VPN et un seul GatewaySubnet.</p>",
- "portal": {
-  "path": [
-   "Passerelles de réseau virtuel",
-   "VNet1-GW"
-  ],
-  "title": "VNet1-GW | Configuration",
-  "menu": [
-   "*Configuration"
-  ],
-  "rows": [
-   [
-    "*SKU",
-    "VpnGw1 → VpnGw2"
-   ]
-  ],
-  "btn": "Enregistrer"
- },
- "keep": "Plus de bande passante VPN = redimensionner le SKU."
-},
-{
- "id": "D4-115",
- "dom": 4,
- "type": "single",
- "stem": "<p>Votre passerelle VPN doit résister à la panne d'une zone de disponibilité.</p><p>Quel SKU devez-vous choisir ?</p>",
- "opts": [
-  "De base, en mode actif-actif",
-  "Standard, avec deux instances",
-  "VpnGw2, en mode actif-actif sur deux sites",
-  "Un SKU AZ, par exemple VpnGw2AZ"
- ],
- "ans": 3,
- "expl": "<p>Les SKU se terminant par <b>AZ</b> (VpnGw1AZ à VpnGw5AZ) déploient les instances de la passerelle dans plusieurs zones de disponibilité. Microsoft fait évoluer les SKU non-AZ vers les SKU AZ dans les régions qui ont des zones.</p>",
- "portal": {
-  "path": [
-   "Passerelles de réseau virtuel",
-   "Créer"
-  ],
-  "title": "Créer une passerelle de réseau virtuel",
-  "rows": [
-   [
-    "*SKU",
-    "VpnGw2AZ"
-   ],
-   [
-    "Zones",
-    "Redondant interzone"
-   ]
-  ],
-  "btn": "Vérifier + créer"
- },
- "keep": "Passerelle résistante aux pannes de zone = SKU AZ."
-},
-{
- "id": "D4-116",
- "dom": 4,
- "type": "single",
- "stem": "<p>Votre organisation a 30 agences, plusieurs régions Azure et des utilisateurs nomades. Vous voulez une architecture réseau managée qui interconnecte automatiquement tout cela (VPN, ExpressRoute, réseaux virtuels).</p><p>Que devez-vous recommander ?</p>",
- "opts": [
-  "Azure Virtual WAN",
-  "Une passerelle NAT par région",
-  "Azure Bastion dans un hub",
-  "Un appairage entre chaque paire de VNets"
- ],
- "ans": 0,
- "expl": "<p><b>Azure Virtual WAN</b> fournit des hubs virtuels managés qui interconnectent sites VPN, circuits ExpressRoute, utilisateurs point à site et réseaux virtuels, avec le routage transitif automatique entre eux.</p>",
- "portal": {
-  "path": [
-   "Virtual WAN",
-   "Créer"
-  ],
-  "title": "Créer un WAN",
-  "rows": [
-   [
-    "*Type",
-    "Standard"
-   ],
-   [
-    "Hubs",
-    "VPN, ExpressRoute, P2S, VNets"
-   ]
-  ],
-  "btn": "Vérifier + créer"
- },
- "keep": "Beaucoup de sites + régions + nomades, managé = Virtual WAN."
-},
-{
- "id": "D4-117",
- "dom": 4,
- "type": "single",
- "stem": "<p>Le trafic entre VNet1 et le site local passe par le VPN site à site. Une VM du site local ne peut pas joindre une VM de VNet1, mais l'inverse fonctionne.</p><p>Quelle cause est la plus probable ?</p>",
- "opts": [
-  "L'appairage n'est pas transitif vers le site local",
-  "Un NSG qui bloque le trafic entrant venant du site",
-  "Le DNS fourni par Azure ne résout pas les noms du site",
-  "La VM de VNet1 n'a pas d'adresse IP publique"
- ],
- "ans": 1,
- "expl": "<p>Le tunnel fonctionne (l'inverse passe). Le trafic <b>entrant</b> est donc filtré : par un NSG (si les règles par défaut ont été remplacées, ou si une règle de refus plus prioritaire existe) ou par le pare-feu de la VM ou du site local. Vérification du flux IP le confirmera.</p><p>La règle par défaut AllowVnetInBound inclut normalement les plages du site local connues par la passerelle.</p>",
- "portal": {
-  "path": [
-   "Network Watcher"
-  ],
-  "title": "Vérification du flux IP",
-  "rows": [
-   [
-    "*Entrant 192.168.1.10 → VM",
-    "Refusé · règle Deny-All"
-   ]
-  ]
- },
- "keep": "Un sens marche, pas l'autre = filtrage entrant (NSG ou pare-feu)."
-},
-{
- "id": "D4-118",
- "dom": 4,
- "type": "single",
- "stem": "<p>Vous voulez limiter les adresses IP publiques des interfaces réseau dans tout l'abonnement : aucune VM ne doit pouvoir recevoir d'adresse IP publique.</p><p>Quelle solution est la plus adaptée ?</p>",
- "opts": [
-  "Un NSG qui refuse tout le trafic entrant sur chaque sous-réseau",
-  "Une table de routage 0.0.0.0/0 → Aucun sur chaque sous-réseau",
-  "Une stratégie Azure Policy qui refuse les IP publiques des interfaces",
-  "Une passerelle NAT sur chaque sous-réseau de l'abonnement, sans IP entrante"
- ],
- "ans": 2,
- "expl": "<p><b>Azure Policy</b> (par exemple la stratégie intégrée « Les interfaces réseau ne doivent pas avoir d'adresses IP publiques », effet Deny) empêche la configuration elle-même. Un NSG filtre le trafic mais n'empêche pas d'attribuer une adresse.</p>",
- "portal": {
-  "path": [
-   "Stratégie",
-   "Affecter une stratégie"
-  ],
-  "title": "Affecter une stratégie",
-  "rows": [
-   [
-    "*Définition",
-    "Les interfaces réseau ne doivent pas avoir d'adresses IP publiques"
-   ],
-   [
-    "Effet",
-    "Deny"
-   ]
-  ],
-  "btn": "Vérifier + créer"
- },
- "keep": "Interdire une configuration = Azure Policy (Deny)."
-},
-{
- "id": "D4-119",
- "dom": 4,
- "type": "single",
- "stem": "<p>Une VM de VNet1 doit résoudre les noms des VM de VNet2, appairé, sans DNS personnalisé.</p><p>Quelle solution est la plus simple ?</p>",
- "opts": [
-  "Un fichier hosts tenu à jour sur chaque VM",
-  "Le DNS fourni par Azure, qui suffit entre VNets appairés",
-  "Une zone DNS publique avec un enregistrement par VM",
-  "Une zone DNS privée liée aux deux réseaux virtuels"
- ],
- "ans": 3,
- "expl": "<p>Le DNS fourni par Azure ne résout les noms courts qu'à l'intérieur d'un même réseau virtuel. Une <b>zone DNS privée</b> liée aux deux réseaux, avec l'<b>inscription automatique</b> activée sur chacun (un réseau ne peut avoir qu'une zone d'inscription), permet aux VM de se résoudre mutuellement.</p>",
- "portal": {
-  "path": [
-   "Zones DNS privées",
-   "corp.local"
-  ],
-  "title": "Liens de réseau virtuel",
-  "menu": [
-   "*Liens de réseau virtuel"
-  ],
-  "rows": [
-   [
-    "*VNet1",
-    "Inscription automatique"
-   ],
-   [
-    "*VNet2",
-    "Inscription automatique"
-   ]
-  ]
- },
- "keep": "Résolution entre VNets = zone privée liée aux deux."
+ }
 }
 );
