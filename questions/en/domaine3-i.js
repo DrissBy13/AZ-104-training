@@ -86,7 +86,7 @@ AZ.questions.push(
   {
    "l": "10% / 90%:",
    "o": [
-    "Multiple revisions and weights",
+    "Multiple revisions mode with traffic weights",
     "Azure Front Door in front of two apps",
     "Two environments behind a load balancer",
     "Single revision mode with two images"
@@ -108,7 +108,7 @@ AZ.questions.push(
    "o": [
     "A plain-text environment variable",
     "A tag on the app",
-    "An app secret",
+    "A container app secret",
     "A container command argument"
    ],
    "a": 2
@@ -136,7 +136,7 @@ AZ.questions.push(
   "rows": [
    [
     "*10% / 90%",
-    "Multiple revisions and weights"
+    "Multiple revisions mode with traffic weights"
    ],
    [
     "Scaling",
@@ -144,7 +144,7 @@ AZ.questions.push(
    ],
    [
     "Connection string",
-    "An app secret"
+    "A container app secret"
    ],
    [
     "Ingress",
@@ -186,7 +186,7 @@ AZ.questions.push(
     "Anonymous read access on acrpart",
     "AcrPull on the whole acrpart registry",
     "acrpart's admin account",
-    "A token and a scope map"
+    "A registry token and a scope map"
    ],
    "a": 3
   },
@@ -221,7 +221,7 @@ AZ.questions.push(
    ],
    [
     "Partner",
-    "A token and a scope map"
+    "A registry token and a scope map"
    ],
    [
     "app-web rebuild",
@@ -253,7 +253,7 @@ AZ.questions.push(
     "A NAT gateway on the subnet",
     "Access restrictions on the VPN IP",
     "Virtual network integration",
-    "A private endpoint"
+    "A private endpoint on the app"
    ],
    "a": 3
   },
@@ -294,7 +294,7 @@ AZ.questions.push(
    ],
    [
     "User access",
-    "A private endpoint"
+    "A private endpoint on the app"
    ],
    [
     "On-premises server",
@@ -414,7 +414,7 @@ AZ.questions.push(
   {
    "l": "90-day logs:",
    "o": [
-    "A diagnostic setting",
+    "A diagnostic setting to Log Analytics",
     "The Kudu console with an export",
     "File system logs of the app",
     "The app's log stream"
@@ -452,7 +452,7 @@ AZ.questions.push(
    ],
    [
     "90-day logs",
-    "A diagnostic setting"
+    "A diagnostic setting to Log Analytics"
    ],
    [
     "Failed instance",
@@ -471,7 +471,7 @@ AZ.questions.push(
   {
    "l": "Hourly backups with the database:",
    "o": [
-    "Custom backups",
+    "Custom backups to a storage account",
     "Azure Backup for the plan's VMs",
     "An App Service plan snapshot",
     "Automatic backups alone"
@@ -483,7 +483,7 @@ AZ.questions.push(
    "o": [
     "Export only an app template",
     "A deployment slot in West Europe",
-    "Cloning the app",
+    "Cloning the app to another plan",
     "Geo-replication of the App Service plan"
    ],
    "a": 2
@@ -511,11 +511,11 @@ AZ.questions.push(
   "rows": [
    [
     "*Hourly backups with the database",
-    "Custom backups"
+    "Custom backups to a storage account"
    ],
    [
     "Copy in West Europe",
-    "Cloning the app"
+    "Cloning the app to another plan"
    ],
    [
     "Deleted app",
@@ -534,7 +534,7 @@ AZ.questions.push(
   {
    "l": "Boot screen:",
    "o": [
-    "Boot diagnostics",
+    "Boot diagnostics (screenshot)",
     "Azure Advisor recommendations",
     "Network Watcher topology",
     "VM-Rdp's activity log"
@@ -555,7 +555,7 @@ AZ.questions.push(
    "l": "Disk repair:",
    "o": [
     "Redeploy the VM to another host",
-    "az vm repair",
+    "az vm repair (repair VM)",
     "Reapply the VM configuration",
     "Resize the VM to restart it"
    ],
@@ -584,7 +584,7 @@ AZ.questions.push(
   "rows": [
    [
     "*Boot screen",
-    "Boot diagnostics"
+    "Boot diagnostics (screenshot)"
    ],
    [
     "SAC prompt",
@@ -592,7 +592,7 @@ AZ.questions.push(
    ],
    [
     "Disk repair",
-    "az vm repair"
+    "az vm repair (repair VM)"
    ],
    [
     "VM-Nfs",
@@ -622,7 +622,7 @@ AZ.questions.push(
    "l": "Patches:",
    "o": [
     "A monthly Custom Script extension",
-    "Azure Update Manager",
+    "Azure Update Manager, periodic assessment",
     "A monthly backup policy",
     "Each VM's auto-shutdown"
    ],
@@ -643,7 +643,7 @@ AZ.questions.push(
    "o": [
     "A permanent NSG rule for the admin",
     "A public IP on each production VM",
-    "Just-in-time (JIT) access",
+    "Defender just-in-time (JIT) access",
     "Azure Bastion Basic with a shared link"
    ],
    "a": 2
@@ -665,7 +665,7 @@ AZ.questions.push(
    ],
    [
     "Patches",
-    "Azure Update Manager"
+    "Azure Update Manager, periodic assessment"
    ],
    [
     "Platform updates",
@@ -673,7 +673,7 @@ AZ.questions.push(
    ],
    [
     "RDP on request",
-    "Just-in-time (JIT) access"
+    "Defender just-in-time (JIT) access"
    ]
   ]
  },

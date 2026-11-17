@@ -29,7 +29,7 @@ AZ.questions.push(
   {
    "l": "GitHub without a stored password:",
    "o": [
-    "Federated identity (OIDC)",
+    "GitHub Actions with a federated identity",
     "A SAS token for the app's storage account",
     "FTP credentials stored as a GitHub secret",
     "Publish profile stored as a GitHub secret"
@@ -67,7 +67,7 @@ AZ.questions.push(
    ],
    [
     "GitHub without a stored password",
-    "Federated identity (OIDC)"
+    "GitHub Actions with a federated identity"
    ],
    [
     "Staging connection string",
@@ -175,7 +175,7 @@ AZ.questions.push(
    "o": [
     "A triggered WebJob on a separate plan",
     "An ACI instance scheduled by Logic Apps",
-    "A Container Apps job",
+    "A scheduled Container Apps job",
     "A VM with Task Scheduler"
    ],
    "a": 2
@@ -217,7 +217,7 @@ AZ.questions.push(
    ],
    [
     "Workload 2",
-    "A Container Apps job"
+    "A scheduled Container Apps job"
    ],
    [
     "Workload 3",
@@ -242,7 +242,7 @@ AZ.questions.push(
    "o": [
     "Azure Disk Encryption on the OS disk",
     "A dedicated host with controlled maintenance",
-    "Trusted Launch",
+    "Trusted Launch (Secure Boot, vTPM)",
     "Microsoft Antimalware with scheduled scans"
    ],
    "a": 2
@@ -261,7 +261,7 @@ AZ.questions.push(
    "l": "Contoso keys, automatic rotation:",
    "o": [
     "A platform-managed key, double encryption",
-    "Disk encryption set",
+    "A disk encryption set (customer key)",
     "An encryption scope on the account",
     "Azure Disk Encryption with a KEK"
    ],
@@ -290,7 +290,7 @@ AZ.questions.push(
   "rows": [
    [
     "*Rootkits, boot integrity",
-    "Trusted Launch"
+    "Trusted Launch (Secure Boot, vTPM)"
    ],
    [
     "Temp disks and caches, agentless",
@@ -298,7 +298,7 @@ AZ.questions.push(
    ],
    [
     "Contoso keys, automatic rotation",
-    "Disk encryption set"
+    "A disk encryption set (customer key)"
    ],
    [
     "In-memory encryption",
@@ -350,7 +350,7 @@ AZ.questions.push(
     "Replace the OS disk with a new empty disk",
     "Shrink the disk, then expand it again",
     "Expand live from the portal",
-    "Deallocate, then expand"
+    "Deallocate the VM, then expand the disk"
    ],
    "a": 3
   }
@@ -379,7 +379,7 @@ AZ.questions.push(
    ],
    [
     "Disk-OS to 256 GiB",
-    "Deallocate, then expand"
+    "Deallocate the VM, then expand the disk"
    ]
   ]
  },
@@ -426,7 +426,7 @@ AZ.questions.push(
    "o": [
     "Registry admin user credentials",
     "Anonymous pull access enabled",
-    "Managed identity + AcrPull",
+    "Managed identity with the AcrPull role",
     "Registry password as a secure variable"
    ],
    "a": 2
@@ -456,7 +456,7 @@ AZ.questions.push(
    ],
    [
     "Image pull",
-    "Managed identity + AcrPull"
+    "Managed identity with the AcrPull role"
    ]
   ]
  },
@@ -482,7 +482,7 @@ AZ.questions.push(
    "l": "No Internet access:",
    "o": [
     "The AcrPull role granted to clusters only",
-    "Private endpoint",
+    "Private endpoint, public access off",
     "Disable the registry admin user",
     "An NSG on the AKS node subnet"
    ],
@@ -493,7 +493,7 @@ AZ.questions.push(
    "o": [
     "An Azure policy on images",
     "A registry webhook on the push event",
-    "ACR task",
+    "An ACR task tracking the base image",
     "A content lock on the base image"
    ],
    "a": 2
@@ -525,11 +525,11 @@ AZ.questions.push(
    ],
    [
     "No Internet access",
-    "Private endpoint"
+    "Private endpoint, public access off"
    ],
    [
     "Automatic rebuild",
-    "ACR task"
+    "An ACR task tracking the base image"
    ],
    [
     "Push limited to data/*",
@@ -635,7 +635,7 @@ AZ.questions.push(
   {
    "l": "Application health:",
    "o": [
-    "Application Health",
+    "The Application Health extension",
     "Automatic repairs, on their own",
     "Boot diagnostics on every instance",
     "A metric alert on average CPU"
@@ -679,7 +679,7 @@ AZ.questions.push(
    ],
    [
     "Application health",
-    "Application Health"
+    "The Application Health extension"
    ],
    [
     "Instance 3",

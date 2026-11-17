@@ -9,7 +9,7 @@ AZ.questions.push(
   {
    "l": "Web tier:",
    "o": [
-    "At least two zones",
+    "At least two availability zones",
     "A 4-VM availability set",
     "A proximity placement group",
     "A single zone, two fault domains"
@@ -22,7 +22,7 @@ AZ.questions.push(
     "One VM in each zone of the region",
     "A Spot VM with Standard disks",
     "Two VMs in an availability set",
-    "A single Premium SSD VM"
+    "A single VM with Premium SSD disks"
    ],
    "a": 3
   },
@@ -49,11 +49,11 @@ AZ.questions.push(
   "rows": [
    [
     "*Web tier",
-    "At least two zones"
+    "At least two availability zones"
    ],
    [
     "Batch tier",
-    "A single Premium SSD VM"
+    "A single VM with Premium SSD disks"
    ],
    [
     "Database tier",
@@ -83,7 +83,7 @@ AZ.questions.push(
    "l": "Workload B:",
    "o": [
     "Enable on-demand bursting on the P20",
-    "The P40 performance tier",
+    "The P40 performance tier on the disk",
     "Grow the disk to 2 TiB during close",
     "Switch to Ultra Disk during close"
    ],
@@ -116,7 +116,7 @@ AZ.questions.push(
    ],
    [
     "Workload B",
-    "The P40 performance tier"
+    "The P40 performance tier on the disk"
    ],
    [
     "Workload C, compatible disk type",
@@ -158,7 +158,7 @@ AZ.questions.push(
     "A shared Azure Backup backup",
     "Reader access to the disk for the auditor",
     "An Azure Files share holding the copied VHD",
-    "An export SAS URL"
+    "An export SAS URL for the disk"
    ],
    "a": 3
   },
@@ -193,7 +193,7 @@ AZ.questions.push(
    ],
    [
     "Copy for the auditor",
-    "An export SAS URL"
+    "An export SAS URL for the disk"
    ],
    [
     "Backups before updates",
@@ -222,7 +222,7 @@ AZ.questions.push(
   {
    "l": "Windows script password:",
    "o": [
-    "In the protected settings",
+    "In the extension's protected settings",
     "In the extension's public settings",
     "In an encrypted VM tag",
     "In the downloaded file name"
@@ -256,7 +256,7 @@ AZ.questions.push(
    ],
    [
     "Windows script password",
-    "In the protected settings"
+    "In the extension's protected settings"
    ],
    [
     "ipconfig on VM-12",
@@ -286,7 +286,7 @@ AZ.questions.push(
    "l": "Failed instance:",
    "o": [
     "Instance overprovisioning",
-    "Automatic repairs",
+    "Automatic instance repairs",
     "Scale-in protection",
     "An autoscale rule on the probe"
    ],
@@ -319,7 +319,7 @@ AZ.questions.push(
    ],
    [
     "Failed instance",
-    "Automatic repairs"
+    "Automatic instance repairs"
    ],
    [
     "Spot VMs",
@@ -361,7 +361,7 @@ AZ.questions.push(
     "An encrypted template variable",
     "A template output marked secure",
     "A default value in the template",
-    "A Key Vault reference"
+    "A Key Vault reference (parameters)"
    ],
    "a": 3
   },
@@ -396,7 +396,7 @@ AZ.questions.push(
    ],
    [
     "Password",
-    "A Key Vault reference"
+    "A Key Vault reference (parameters)"
    ],
    [
     "Diagnostic account",
@@ -448,7 +448,7 @@ AZ.questions.push(
     "A Delete lock on the group",
     "A management group for the resources",
     "A Deny policy on RG-Shared",
-    "A deployment stack (deny settings)"
+    "A deployment stack with deny settings"
    ],
    "a": 3
   }
@@ -477,7 +477,7 @@ AZ.questions.push(
    ],
    [
     "Unit management",
-    "A deployment stack (deny settings)"
+    "A deployment stack with deny settings"
    ]
   ]
  },
@@ -523,7 +523,7 @@ AZ.questions.push(
    "l": "Reusing storage.bicep:",
    "o": [
     "A template spec per project",
-    "A Bicep registry module",
+    "A module published in a Bicep registry",
     "Copy the content into each project",
     "An exported ARM template, decompiled"
    ],
@@ -554,7 +554,7 @@ AZ.questions.push(
    ],
    [
     "Reusing storage.bicep",
-    "A Bicep registry module"
+    "A module published in a Bicep registry"
    ]
   ]
  },
@@ -648,7 +648,7 @@ AZ.questions.push(
    "o": [
     "Duplicate them in a key vault",
     "Put them in connection strings",
-    "Slot setting",
+    "A deployment slot setting",
     "Set them in each slot's web.config"
    ],
    "a": 2
@@ -659,7 +659,7 @@ AZ.questions.push(
     "A staging restart before swapping",
     "Auto swap to production",
     "A direct swap, then a test",
-    "Swap with preview"
+    "Multi-phase swap with preview"
    ],
    "a": 3
   },
@@ -696,11 +696,11 @@ AZ.questions.push(
   "rows": [
    [
     "*ApiUrl and Feature_X",
-    "Slot setting"
+    "A deployment slot setting"
    ],
    [
     "Warm-up and validation",
-    "Swap with preview"
+    "Multi-phase swap with preview"
    ],
    [
     "90 / 10",

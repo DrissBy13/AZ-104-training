@@ -32,7 +32,7 @@ AZ.questions.push(
     "Une règle de pare-feu SQL pour l'IP d'ACI",
     "Une IP publique sur le groupe de conteneurs",
     "Un point de terminaison de service sur ACI",
-    "Un sous-réseau délégué de VNet-Data"
+    "Un sous-réseau délégué dans VNet-Data"
    ],
    "a": 3
   },
@@ -67,7 +67,7 @@ AZ.questions.push(
    ],
    [
     "Accès à la base",
-    "Un sous-réseau délégué de VNet-Data"
+    "Un sous-réseau délégué dans VNet-Data"
    ],
    [
     "Tirage de l'image",
@@ -86,7 +86,7 @@ AZ.questions.push(
   {
    "l": "10 % / 90 % :",
    "o": [
-    "Révisions multiples et poids",
+    "Mode révisions multiples avec poids de trafic",
     "Azure Front Door devant deux applications",
     "Deux environnements derrière un équilibreur",
     "Le mode à révision unique avec deux images"
@@ -108,7 +108,7 @@ AZ.questions.push(
    "o": [
     "Une variable d'environnement en clair",
     "Une étiquette sur l'application",
-    "Un secret de l'application",
+    "Un secret de l'application conteneur",
     "Un argument de la commande du conteneur"
    ],
    "a": 2
@@ -136,7 +136,7 @@ AZ.questions.push(
   "rows": [
    [
     "*10 % / 90 %",
-    "Révisions multiples et poids"
+    "Mode révisions multiples avec poids de trafic"
    ],
    [
     "Mise à l'échelle",
@@ -144,7 +144,7 @@ AZ.questions.push(
    ],
    [
     "Chaîne de connexion",
-    "Un secret de l'application"
+    "Un secret de l'application conteneur"
    ],
    [
     "Entrée",
@@ -186,7 +186,7 @@ AZ.questions.push(
     "L'accès anonyme en lecture sur acrpart",
     "Le rôle AcrPull sur tout le registre acrpart",
     "Le compte administrateur de acrpart",
-    "Un jeton et une carte d'étendue"
+    "Un jeton de registre et une carte d'étendue"
    ],
    "a": 3
   },
@@ -221,7 +221,7 @@ AZ.questions.push(
    ],
    [
     "Partenaire",
-    "Un jeton et une carte d'étendue"
+    "Un jeton de registre et une carte d'étendue"
    ],
    [
     "Reconstruction de app-web",
@@ -253,7 +253,7 @@ AZ.questions.push(
     "Une passerelle NAT sur le sous-réseau",
     "Des restrictions d'accès sur l'IP du VPN",
     "L'intégration au réseau virtuel",
-    "Un point de terminaison privé"
+    "Un point de terminaison privé sur l'application"
    ],
    "a": 3
   },
@@ -294,7 +294,7 @@ AZ.questions.push(
    ],
    [
     "Accès des utilisateurs",
-    "Un point de terminaison privé"
+    "Un point de terminaison privé sur l'application"
    ],
    [
     "Serveur local",
@@ -397,7 +397,7 @@ AZ.questions.push(
     "Les recommandations d'Azure Advisor",
     "Le flux de journaux de l'application",
     "La console Kudu (outils avancés)",
-    "Diagnostiquer et résoudre"
+    "Diagnostiquer et résoudre les problèmes"
    ],
    "a": 3
   },
@@ -414,7 +414,7 @@ AZ.questions.push(
   {
    "l": "Journaux sur 90 jours :",
    "o": [
-    "Un paramètre de diagnostic",
+    "Un paramètre de diagnostic vers Log Analytics",
     "La console Kudu avec un export",
     "Les journaux du système de fichiers",
     "Le flux de journaux de l'application"
@@ -444,7 +444,7 @@ AZ.questions.push(
   "rows": [
    [
     "*Analyse guidée",
-    "Diagnostiquer et résoudre"
+    "Diagnostiquer et résoudre les problèmes"
    ],
    [
     "Sortie console en direct",
@@ -452,7 +452,7 @@ AZ.questions.push(
    ],
    [
     "Journaux sur 90 jours",
-    "Un paramètre de diagnostic"
+    "Un paramètre de diagnostic vers Log Analytics"
    ],
    [
     "Instance défaillante",
@@ -471,7 +471,7 @@ AZ.questions.push(
   {
    "l": "Sauvegardes horaires avec la base :",
    "o": [
-    "Des sauvegardes personnalisées",
+    "Des sauvegardes personnalisées vers un compte",
     "Azure Backup pour les VM du plan",
     "Un instantané du plan App Service",
     "Les sauvegardes automatiques seules"
@@ -483,7 +483,7 @@ AZ.questions.push(
    "o": [
     "Exporter un modèle de l'application seulement",
     "Un emplacement de déploiement en West Europe",
-    "Le clonage de l'application",
+    "Le clonage de l'application vers un autre plan",
     "Une géoréplication du plan App Service"
    ],
    "a": 2
@@ -511,11 +511,11 @@ AZ.questions.push(
   "rows": [
    [
     "*Sauvegardes horaires avec la base",
-    "Des sauvegardes personnalisées"
+    "Des sauvegardes personnalisées vers un compte"
    ],
    [
     "Copie en West Europe",
-    "Le clonage de l'application"
+    "Le clonage de l'application vers un autre plan"
    ],
    [
     "Application supprimée",
@@ -534,7 +534,7 @@ AZ.questions.push(
   {
    "l": "Écran de démarrage :",
    "o": [
-    "Les diagnostics de démarrage",
+    "Les diagnostics de démarrage (capture d'écran)",
     "Les recommandations d'Azure Advisor",
     "La topologie de Network Watcher",
     "Le journal d'activité de VM-Rdp"
@@ -555,7 +555,7 @@ AZ.questions.push(
    "l": "Réparation du disque :",
    "o": [
     "Redéployer la VM sur un autre hôte",
-    "az vm repair",
+    "az vm repair (VM de réparation)",
     "Réappliquer la configuration de la VM",
     "Redimensionner la VM pour la redémarrer"
    ],
@@ -584,7 +584,7 @@ AZ.questions.push(
   "rows": [
    [
     "*Écran de démarrage",
-    "Les diagnostics de démarrage"
+    "Les diagnostics de démarrage (capture d'écran)"
    ],
    [
     "Invite SAC",
@@ -592,7 +592,7 @@ AZ.questions.push(
    ],
    [
     "Réparation du disque",
-    "az vm repair"
+    "az vm repair (VM de réparation)"
    ],
    [
     "VM-Nfs",
@@ -622,7 +622,7 @@ AZ.questions.push(
    "l": "Correctifs :",
    "o": [
     "Une extension Custom Script mensuelle",
-    "Azure Update Manager",
+    "Azure Update Manager, évaluation périodique",
     "Une stratégie de sauvegarde mensuelle",
     "L'arrêt automatique de chaque VM"
    ],
@@ -643,7 +643,7 @@ AZ.questions.push(
    "o": [
     "Une règle NSG permanente pour l'administrateur",
     "Une IP publique sur chaque VM de production",
-    "L'accès juste-à-temps (JIT)",
+    "L'accès juste-à-temps (JIT) de Defender",
     "Azure Bastion Basic avec un lien partagé"
    ],
    "a": 2
@@ -665,7 +665,7 @@ AZ.questions.push(
    ],
    [
     "Correctifs",
-    "Azure Update Manager"
+    "Azure Update Manager, évaluation périodique"
    ],
    [
     "Mises à jour de la plateforme",
@@ -673,7 +673,7 @@ AZ.questions.push(
    ],
    [
     "RDP sur demande",
-    "L'accès juste-à-temps (JIT)"
+    "L'accès juste-à-temps (JIT) de Defender"
    ]
   ]
  },

@@ -29,7 +29,7 @@ AZ.questions.push(
   {
    "l": "GitHub sans mot de passe stocké :",
    "o": [
-    "Identité fédérée (OIDC)",
+    "GitHub Actions avec une identité fédérée",
     "Un jeton SAS du compte de stockage de l'appli",
     "Identifiants FTP stockés en secret GitHub",
     "Profil de publication stocké en secret GitHub"
@@ -67,7 +67,7 @@ AZ.questions.push(
    ],
    [
     "GitHub sans mot de passe stocké",
-    "Identité fédérée (OIDC)"
+    "GitHub Actions avec une identité fédérée"
    ],
    [
     "Chaîne de connexion de préproduction",
@@ -175,7 +175,7 @@ AZ.questions.push(
    "o": [
     "Un WebJob déclenché sur un plan séparé",
     "Une instance ACI planifiée par Logic Apps",
-    "Un travail Container Apps",
+    "Un travail Container Apps planifié",
     "Une VM avec le Planificateur de tâches"
    ],
    "a": 2
@@ -217,7 +217,7 @@ AZ.questions.push(
    ],
    [
     "Traitement 2",
-    "Un travail Container Apps"
+    "Un travail Container Apps planifié"
    ],
    [
     "Traitement 3",
@@ -242,7 +242,7 @@ AZ.questions.push(
    "o": [
     "Azure Disk Encryption sur le disque OS",
     "Un hôte dédié avec maintenance contrôlée",
-    "Lancement fiable",
+    "Lancement fiable (démarrage sécurisé, vTPM)",
     "Microsoft Antimalware avec analyse planifiée"
    ],
    "a": 2
@@ -261,7 +261,7 @@ AZ.questions.push(
    "l": "Clés Contoso, rotation automatique :",
    "o": [
     "Une clé gérée par la plateforme, double chiffrement",
-    "Jeu de chiffrement de disque",
+    "Un jeu de chiffrement de disque (clé client)",
     "Une étendue de chiffrement sur le compte",
     "Azure Disk Encryption avec une clé KEK"
    ],
@@ -290,7 +290,7 @@ AZ.questions.push(
   "rows": [
    [
     "*Rootkits, intégrité du démarrage",
-    "Lancement fiable"
+    "Lancement fiable (démarrage sécurisé, vTPM)"
    ],
    [
     "Disques temporaires et caches, sans agent",
@@ -298,7 +298,7 @@ AZ.questions.push(
    ],
    [
     "Clés Contoso, rotation automatique",
-    "Jeu de chiffrement de disque"
+    "Un jeu de chiffrement de disque (clé client)"
    ],
    [
     "Chiffrement en mémoire",
@@ -350,7 +350,7 @@ AZ.questions.push(
     "Remplacer le disque OS par un nouveau disque vide",
     "Réduire le disque, puis le réagrandir",
     "Agrandir à chaud depuis le portail",
-    "Libérer, puis agrandir"
+    "Libérer la VM, puis agrandir le disque"
    ],
    "a": 3
   }
@@ -379,7 +379,7 @@ AZ.questions.push(
    ],
    [
     "Disk-OS à 256 Gio",
-    "Libérer, puis agrandir"
+    "Libérer la VM, puis agrandir le disque"
    ]
   ]
  },
@@ -426,7 +426,7 @@ AZ.questions.push(
    "o": [
     "Utilisateur administrateur du registre",
     "Accès anonyme en extraction activé",
-    "Identité managée + AcrPull",
+    "Identité managée avec le rôle AcrPull",
     "Mot de passe du registre en variable sécurisée"
    ],
    "a": 2
@@ -456,7 +456,7 @@ AZ.questions.push(
    ],
    [
     "Extraction de l'image",
-    "Identité managée + AcrPull"
+    "Identité managée avec le rôle AcrPull"
    ]
   ]
  },
@@ -482,7 +482,7 @@ AZ.questions.push(
    "l": "Pas d'accès Internet :",
    "o": [
     "Le rôle AcrPull accordé aux seuls clusters",
-    "Point de terminaison privé",
+    "Point de terminaison privé, accès public coupé",
     "Désactiver l'utilisateur administrateur",
     "Un NSG sur le sous-réseau des nœuds AKS"
    ],
@@ -493,7 +493,7 @@ AZ.questions.push(
    "o": [
     "Une stratégie Azure sur les images",
     "Un webhook du registre sur l'événement push",
-    "Tâche ACR",
+    "Une tâche ACR suivant l'image de base",
     "Un verrou de contenu sur l'image de base"
    ],
    "a": 2
@@ -525,11 +525,11 @@ AZ.questions.push(
    ],
    [
     "Pas d'accès Internet",
-    "Point de terminaison privé"
+    "Point de terminaison privé, accès public coupé"
    ],
    [
     "Reconstruction automatique",
-    "Tâche ACR"
+    "Une tâche ACR suivant l'image de base"
    ],
    [
     "Envoi limité à data/*",
@@ -635,7 +635,7 @@ AZ.questions.push(
   {
    "l": "Santé de l'application :",
    "o": [
-    "Intégrité de l'application",
+    "L'extension Intégrité de l'application",
     "La réparation automatique, seule",
     "Diagnostics de démarrage sur chaque instance",
     "Une alerte de métrique sur l'UC moyenne"
@@ -679,7 +679,7 @@ AZ.questions.push(
    ],
    [
     "Santé de l'application",
-    "Intégrité de l'application"
+    "L'extension Intégrité de l'application"
    ],
    [
     "Instance 3",

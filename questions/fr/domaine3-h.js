@@ -9,7 +9,7 @@ AZ.questions.push(
   {
    "l": "Couche Web :",
    "o": [
-    "Au moins deux zones",
+    "Au moins deux zones de disponibilité",
     "Un groupe à haute disponibilité de 4 VM",
     "Un groupe de placement de proximité",
     "Une seule zone, deux domaines d'erreur"
@@ -22,7 +22,7 @@ AZ.questions.push(
     "Une VM dans chaque zone de la région",
     "Une VM Spot avec des disques Standard",
     "Deux VM dans un groupe à haute disponibilité",
-    "Une VM seule en SSD Premium"
+    "Une VM seule avec des disques SSD Premium"
    ],
    "a": 3
   },
@@ -49,11 +49,11 @@ AZ.questions.push(
   "rows": [
    [
     "*Couche Web",
-    "Au moins deux zones"
+    "Au moins deux zones de disponibilité"
    ],
    [
     "Couche Batch",
-    "Une VM seule en SSD Premium"
+    "Une VM seule avec des disques SSD Premium"
    ],
    [
     "Couche base de données",
@@ -83,7 +83,7 @@ AZ.questions.push(
    "l": "Charge B :",
    "o": [
     "Activer le bursting à la demande du P20",
-    "Le niveau de performance P40",
+    "Le niveau de performance P40 sur le disque",
     "Agrandir le disque à 2 Tio pendant la clôture",
     "Passer en disque Ultra pendant la clôture"
    ],
@@ -116,7 +116,7 @@ AZ.questions.push(
    ],
    [
     "Charge B",
-    "Le niveau de performance P40"
+    "Le niveau de performance P40 sur le disque"
    ],
    [
     "Charge C, type de disque compatible",
@@ -158,7 +158,7 @@ AZ.questions.push(
     "Une sauvegarde Azure Backup partagée",
     "Un accès Lecteur au disque pour l'auditeur",
     "Un partage Azure Files contenant le VHD copié",
-    "Une URL SAS d'exportation"
+    "Une URL SAS d'exportation du disque"
    ],
    "a": 3
   },
@@ -193,7 +193,7 @@ AZ.questions.push(
    ],
    [
     "Copie pour l'auditeur",
-    "Une URL SAS d'exportation"
+    "Une URL SAS d'exportation du disque"
    ],
    [
     "Sauvegardes avant mise à jour",
@@ -222,7 +222,7 @@ AZ.questions.push(
   {
    "l": "Mot de passe du script Windows :",
    "o": [
-    "Dans les paramètres protégés",
+    "Dans les paramètres protégés de l'extension",
     "Dans les paramètres publics de l'extension",
     "Dans une étiquette de la VM, chiffrée",
     "Dans le nom du fichier téléchargé"
@@ -256,7 +256,7 @@ AZ.questions.push(
    ],
    [
     "Mot de passe du script Windows",
-    "Dans les paramètres protégés"
+    "Dans les paramètres protégés de l'extension"
    ],
    [
     "ipconfig sur VM-12",
@@ -286,7 +286,7 @@ AZ.questions.push(
    "l": "Instance défaillante :",
    "o": [
     "Le surprovisionnement des instances",
-    "Les réparations automatiques",
+    "Les réparations automatiques des instances",
     "La protection contre la diminution",
     "Une règle de mise à l'échelle sur la sonde"
    ],
@@ -319,7 +319,7 @@ AZ.questions.push(
    ],
    [
     "Instance défaillante",
-    "Les réparations automatiques"
+    "Les réparations automatiques des instances"
    ],
    [
     "VM Spot",
@@ -361,7 +361,7 @@ AZ.questions.push(
     "Une variable chiffrée du modèle",
     "Une sortie du modèle, marquée secure",
     "Une valeur par défaut dans le modèle",
-    "Une référence Key Vault"
+    "Une référence Key Vault (paramètres)"
    ],
    "a": 3
   },
@@ -396,7 +396,7 @@ AZ.questions.push(
    ],
    [
     "Mot de passe",
-    "Une référence Key Vault"
+    "Une référence Key Vault (paramètres)"
    ],
    [
     "Compte de diagnostic",
@@ -448,7 +448,7 @@ AZ.questions.push(
     "Un verrou Suppression impossible sur le groupe",
     "Un groupe d'administration dédié aux ressources",
     "Une stratégie Deny sur RG-Shared",
-    "Une pile de déploiement (refus)"
+    "Une pile de déploiement avec paramètres de refus"
    ],
    "a": 3
   }
@@ -477,7 +477,7 @@ AZ.questions.push(
    ],
    [
     "Gestion en ensemble",
-    "Une pile de déploiement (refus)"
+    "Une pile de déploiement avec paramètres de refus"
    ]
   ]
  },
@@ -523,7 +523,7 @@ AZ.questions.push(
    "l": "Réutilisation de storage.bicep :",
    "o": [
     "Une spécification de modèle par projet",
-    "Un module d'un registre Bicep",
+    "Un module publié dans un registre Bicep",
     "Copier le contenu dans chaque projet",
     "Un modèle ARM exporté, puis décompilé"
    ],
@@ -554,7 +554,7 @@ AZ.questions.push(
    ],
    [
     "Réutilisation de storage.bicep",
-    "Un module d'un registre Bicep"
+    "Un module publié dans un registre Bicep"
    ]
   ]
  },
@@ -648,7 +648,7 @@ AZ.questions.push(
    "o": [
     "Les dupliquer dans un coffre de clés",
     "Les placer dans des chaînes de connexion",
-    "Paramètre d'emplacement",
+    "Un paramètre d'emplacement de déploiement",
     "Les définir dans web.config de chaque emplacement"
    ],
    "a": 2
@@ -659,7 +659,7 @@ AZ.questions.push(
     "Un redémarrage de staging avant permutation",
     "Permutation automatique vers production",
     "Une permutation directe, puis un test",
-    "Permutation avec aperçu"
+    "Permutation en plusieurs phases, avec aperçu"
    ],
    "a": 3
   },
@@ -696,11 +696,11 @@ AZ.questions.push(
   "rows": [
    [
     "*ApiUrl et Feature_X",
-    "Paramètre d'emplacement"
+    "Un paramètre d'emplacement de déploiement"
    ],
    [
     "Préchauffage et validation",
-    "Permutation avec aperçu"
+    "Permutation en plusieurs phases, avec aperçu"
    ],
    [
     "90 / 10",

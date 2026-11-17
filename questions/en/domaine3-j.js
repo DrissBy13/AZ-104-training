@@ -116,7 +116,7 @@ AZ.questions.push(
   {
    "l": "Monthly rebuild:",
    "o": [
-    "Azure VM Image Builder",
+    "Azure VM Image Builder, scheduled",
     "A manual monthly capture of a VM",
     "Azure Update Manager on the gallery",
     "A Custom Script extension on the image"
@@ -148,7 +148,7 @@ AZ.questions.push(
    ],
    [
     "Monthly rebuild",
-    "Azure VM Image Builder"
+    "Azure VM Image Builder, scheduled"
    ]
   ]
  },
@@ -175,7 +175,7 @@ AZ.questions.push(
    "o": [
     "A proximity placement group",
     "A large isolated VM size",
-    "An Azure dedicated host",
+    "An Azure dedicated host for these VMs",
     "An availability set"
    ],
    "a": 2
@@ -207,7 +207,7 @@ AZ.questions.push(
    ],
    [
     "Licensing team",
-    "An Azure dedicated host"
+    "An Azure dedicated host for these VMs"
    ],
    [
     "Web team",
@@ -334,7 +334,7 @@ AZ.questions.push(
    "o": [
     "Enable the site's Always On option",
     "Enable ARR session affinity",
-    "Disable ARR affinity",
+    "Disable ARR session affinity",
     "Move the plan to Isolated v2"
    ],
    "a": 2
@@ -352,7 +352,7 @@ AZ.questions.push(
   {
    "l": "Memory leaks:",
    "o": [
-    "Auto-heal",
+    "Auto-heal on memory usage",
     "A scheduled nightly restart",
     "Health check on memory",
     "An autoscale rule on memory"
@@ -376,7 +376,7 @@ AZ.questions.push(
    ],
    [
     "Sessions",
-    "Disable ARR affinity"
+    "Disable ARR session affinity"
    ],
    [
     "Slow first request",
@@ -384,7 +384,7 @@ AZ.questions.push(
    ],
    [
     "Memory leaks",
-    "Auto-heal"
+    "Auto-heal on memory usage"
    ]
   ]
  },
@@ -402,7 +402,7 @@ AZ.questions.push(
     "An Azure Kubernetes Service cluster",
     "Consumption only, with large sizes",
     "An App Service Environment v3",
-    "Workload profiles"
+    "Dedicated workload profiles"
    ],
    "a": 3
   },
@@ -431,7 +431,7 @@ AZ.questions.push(
    "o": [
     "Possible by switching cae-test to internal",
     "Possible with a peering to VNet-Apps",
-    "Not possible after creation",
+    "Not possible after the environment is created",
     "Possible in cae-test's network settings"
    ],
    "a": 2
@@ -449,7 +449,7 @@ AZ.questions.push(
   "rows": [
    [
     "*Environment type",
-    "Workload profiles"
+    "Dedicated workload profiles"
    ],
    [
     "Network",
@@ -461,7 +461,7 @@ AZ.questions.push(
    ],
    [
     "cae-test",
-    "Not possible after creation"
+    "Not possible after the environment is created"
    ]
   ]
  },
@@ -506,7 +506,7 @@ AZ.questions.push(
   {
    "l": "Private linked template:",
    "o": [
-    "templateLink + URI with SAS",
+    "templateLink + blob URI with a SAS token",
     "A local path to the linked file",
     "A nested template copied into the main one",
     "templateLink with a URI without a token"
@@ -538,7 +538,7 @@ AZ.questions.push(
    ],
    [
     "Private linked template",
-    "templateLink + URI with SAS"
+    "templateLink + blob URI with a SAS token"
    ]
   ]
  },
@@ -641,7 +641,7 @@ AZ.questions.push(
    "l": "Two sizes in VMSS-Batch:",
    "o": [
     "Possible only in Uniform orchestration",
-    "Possible in Flexible mode",
+    "Possible: Flexible accepts several sizes",
     "Not possible: one size per scale set",
     "Possible only with a dedicated host"
    ],
@@ -684,7 +684,7 @@ AZ.questions.push(
    ],
    [
     "Two sizes in VMSS-Batch",
-    "Possible in Flexible mode"
+    "Possible: Flexible accepts several sizes"
    ],
    [
     "7 PM - 11 PM",
@@ -708,7 +708,7 @@ AZ.questions.push(
    "l": "VM-1:",
    "o": [
     "Restart VM-1 to rerun the extension",
-    "Change forceUpdateTag",
+    "Change the forceUpdateTag value",
     "Redeploy VM-1 to another host",
     "Delete and recreate the storage account"
    ],
@@ -720,7 +720,7 @@ AZ.questions.push(
     "Add the extension on a second NIC",
     "Use cloud-init on this Windows VM",
     "Add a second extension of the same type",
-    "Not possible: one per VM"
+    "Not possible: one extension per VM"
    ],
    "a": 3
   },
@@ -738,7 +738,7 @@ AZ.questions.push(
    "l": "VM-3:",
    "o": [
     "The Windows diagnostics extension",
-    "The Azure Monitor agent (DCR)",
+    "The Azure Monitor agent with a DCR",
     "The Dependency agent, alone",
     "The Log Analytics agent, still present"
    ],
@@ -757,11 +757,11 @@ AZ.questions.push(
   "rows": [
    [
     "*VM-1",
-    "Change forceUpdateTag"
+    "Change the forceUpdateTag value"
    ],
    [
     "VM-2",
-    "Not possible: one per VM"
+    "Not possible: one extension per VM"
    ],
    [
     "Configuration baseline",
@@ -769,7 +769,7 @@ AZ.questions.push(
    ],
    [
     "VM-3",
-    "The Azure Monitor agent (DCR)"
+    "The Azure Monitor agent with a DCR"
    ]
   ]
  },

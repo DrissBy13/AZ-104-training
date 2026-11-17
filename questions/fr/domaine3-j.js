@@ -116,7 +116,7 @@ AZ.questions.push(
   {
    "l": "Reconstruction mensuelle :",
    "o": [
-    "Azure VM Image Builder",
+    "Azure VM Image Builder, planifié",
     "Une capture manuelle mensuelle d'une VM",
     "Azure Update Manager sur la galerie",
     "Une extension Custom Script sur l'image"
@@ -148,7 +148,7 @@ AZ.questions.push(
    ],
    [
     "Reconstruction mensuelle",
-    "Azure VM Image Builder"
+    "Azure VM Image Builder, planifié"
    ]
   ]
  },
@@ -175,7 +175,7 @@ AZ.questions.push(
    "o": [
     "Un groupe de placement de proximité",
     "Une VM isolée de grande taille",
-    "Un hôte dédié Azure",
+    "Un hôte dédié Azure pour ces VM",
     "Un groupe à haute disponibilité"
    ],
    "a": 2
@@ -207,7 +207,7 @@ AZ.questions.push(
    ],
    [
     "Équipe Licences",
-    "Un hôte dédié Azure"
+    "Un hôte dédié Azure pour ces VM"
    ],
    [
     "Équipe Web",
@@ -334,7 +334,7 @@ AZ.questions.push(
    "o": [
     "Activer l'option Always On du site",
     "Activer l'affinité de session ARR",
-    "Désactiver l'affinité ARR",
+    "Désactiver l'affinité de session ARR",
     "Passer le plan au niveau Isolé v2"
    ],
    "a": 2
@@ -352,7 +352,7 @@ AZ.questions.push(
   {
    "l": "Fuites de mémoire :",
    "o": [
-    "La réparation automatique",
+    "La réparation automatique sur la mémoire",
     "Un redémarrage planifié chaque nuit",
     "Le contrôle d'intégrité sur la mémoire",
     "Une règle de mise à l'échelle sur la mémoire"
@@ -376,7 +376,7 @@ AZ.questions.push(
    ],
    [
     "Sessions",
-    "Désactiver l'affinité ARR"
+    "Désactiver l'affinité de session ARR"
    ],
    [
     "Première requête lente",
@@ -384,7 +384,7 @@ AZ.questions.push(
    ],
    [
     "Fuites de mémoire",
-    "La réparation automatique"
+    "La réparation automatique sur la mémoire"
    ]
   ]
  },
@@ -402,7 +402,7 @@ AZ.questions.push(
     "Un cluster Azure Kubernetes Service",
     "Consommation seule, avec de grandes tailles",
     "Un App Service Environment v3",
-    "Profils de charge de travail"
+    "Des profils de charge de travail dédiés"
    ],
    "a": 3
   },
@@ -431,7 +431,7 @@ AZ.questions.push(
    "o": [
     "Possible en passant cae-test en mode interne",
     "Possible avec un peering vers VNet-Apps",
-    "Impossible après la création",
+    "Impossible après la création de l'environnement",
     "Possible dans les paramètres réseau de cae-test"
    ],
    "a": 2
@@ -449,7 +449,7 @@ AZ.questions.push(
   "rows": [
    [
     "*Type d'environnement",
-    "Profils de charge de travail"
+    "Des profils de charge de travail dédiés"
    ],
    [
     "Réseau",
@@ -461,7 +461,7 @@ AZ.questions.push(
    ],
    [
     "cae-test",
-    "Impossible après la création"
+    "Impossible après la création de l'environnement"
    ]
   ]
  },
@@ -506,7 +506,7 @@ AZ.questions.push(
   {
    "l": "Modèle lié privé :",
    "o": [
-    "templateLink + URI avec SAS",
+    "templateLink + URI du blob avec un jeton SAS",
     "Un chemin local vers le fichier lié",
     "Un modèle imbriqué copié dans le principal",
     "templateLink avec un URI sans jeton"
@@ -538,7 +538,7 @@ AZ.questions.push(
    ],
    [
     "Modèle lié privé",
-    "templateLink + URI avec SAS"
+    "templateLink + URI du blob avec un jeton SAS"
    ]
   ]
  },
@@ -641,7 +641,7 @@ AZ.questions.push(
    "l": "Deux tailles dans VMSS-Batch :",
    "o": [
     "Possible uniquement en orchestration Uniforme",
-    "Possible en mode Flexible",
+    "Possible : Flexible accepte plusieurs tailles",
     "Impossible : une seule taille par groupe",
     "Possible seulement avec un hôte dédié"
    ],
@@ -684,7 +684,7 @@ AZ.questions.push(
    ],
    [
     "Deux tailles dans VMSS-Batch",
-    "Possible en mode Flexible"
+    "Possible : Flexible accepte plusieurs tailles"
    ],
    [
     "19 h - 23 h",
@@ -708,7 +708,7 @@ AZ.questions.push(
    "l": "VM-1 :",
    "o": [
     "Redémarrer VM-1 pour relancer l'extension",
-    "Changer forceUpdateTag",
+    "Changer la valeur de forceUpdateTag",
     "Redéployer VM-1 sur un autre hôte",
     "Supprimer puis recréer le compte de stockage"
    ],
@@ -720,7 +720,7 @@ AZ.questions.push(
     "Ajouter l'extension sur une seconde carte réseau",
     "Passer par cloud-init sur cette VM Windows",
     "Ajouter une seconde extension du même type",
-    "Impossible : une seule par VM"
+    "Impossible : une seule extension par VM"
    ],
    "a": 3
   },
@@ -738,7 +738,7 @@ AZ.questions.push(
    "l": "VM-3 :",
    "o": [
     "L'extension de diagnostic Windows",
-    "L'agent Azure Monitor (DCR)",
+    "L'agent Azure Monitor avec une DCR",
     "L'agent de dépendances, seul",
     "L'agent Log Analytics, encore présent"
    ],
@@ -757,11 +757,11 @@ AZ.questions.push(
   "rows": [
    [
     "*VM-1",
-    "Changer forceUpdateTag"
+    "Changer la valeur de forceUpdateTag"
    ],
    [
     "VM-2",
-    "Impossible : une seule par VM"
+    "Impossible : une seule extension par VM"
    ],
    [
     "Base de configuration",
@@ -769,7 +769,7 @@ AZ.questions.push(
    ],
    [
     "VM-3",
-    "L'agent Azure Monitor (DCR)"
+    "L'agent Azure Monitor avec une DCR"
    ]
   ]
  },
