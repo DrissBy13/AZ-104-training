@@ -19,32 +19,32 @@ AZ.questions.push(
   {
    "l": "Sur les sous-réseaux des spokes :",
    "o": [
-    "Rien : le hub rend les peerings transitifs",
-    "Une table de routage avec 0.0.0.0/0 vers VPNGW1",
     "Une table de routage avec l'autre spoke vers 10.0.1.4",
-    "Un NSG qui autorise 10.0.0.0/8"
+    "Un NSG qui autorise 10.0.0.0/8 entre les deux spokes",
+    "Une table de routage avec 0.0.0.0/0 vers VPNGW1",
+    "Rien : le hub rend les peerings transitifs entre spokes"
    ],
-   "a": 2
+   "a": 0
   },
   {
    "l": "Sur les peerings Spoke1 → Hub et Spoke2 → Hub :",
    "o": [
-    "Désactiver « Utiliser la passerelle distante »",
-    "Activer « Autoriser le trafic transféré »",
     "Activer « Autoriser le transit par passerelle »",
-    "Ne rien changer"
+    "Désactiver « Utiliser la passerelle distante »",
+    "Ne rien changer",
+    "Activer « Autoriser le trafic transféré »"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "Sur GatewaySubnet :",
    "o": [
-    "Une table de routage avec 0.0.0.0/0 vers 10.0.1.4",
+    "Désactiver la propagation des routes de passerelle sur GatewaySubnet",
     "Un NSG qui refuse 10.0.0.0/8",
-    "Une table de routage avec 10.1.0.0/16 et 10.2.0.0/16 vers 10.0.1.4",
-    "Désactiver la propagation des routes de passerelle"
+    "Une table de routage avec 0.0.0.0/0 vers 10.0.1.4 et la propagation BGP",
+    "Une table de routage avec 10.1.0.0/16 et 10.2.0.0/16 vers 10.0.1.4"
    ],
-   "a": 2
+   "a": 3
   }
  ],
  "expl": "<b>Spoke2 vers Lyon.</b> Le hub autorise déjà le transit par passerelle vers Spoke2 ; il manque l'autre moitié : « Utiliser la passerelle distante » sur le peering Spoke2 → Hub. Le transit par passerelle se configure côté hub, jamais côté spoke.<b>Spoke1 ↔ Spoke2.</b> Le peering n'est pas transitif : sans route, deux spokes ne se voient pas. Une route utilisateur vers l'autre spoke, avec 10.0.1.4 comme tronçon suivant (appliance virtuelle), fait passer le trafic par le pare-feu. 0.0.0.0/0 vers une passerelle VPN n'est pas un tronçon suivant valide ici et casserait l'accès Internet.<b>Trafic transféré.</b> Le paquet qui arrive dans Spoke2 a été relayé par le pare-feu du hub : il ne vient pas de VNet-Hub lui-même. Le peering côté spoke doit donc autoriser le trafic transféré, sinon il est abandonné.<b>GatewaySubnet.</b> Pour inspecter le trafic qui arrive de Lyon, on place sur GatewaySubnet des routes vers les préfixes des spokes, avec le pare-feu comme tronçon suivant. Une route 0.0.0.0/0 sur GatewaySubnet n'est pas prise en charge, et désactiver la propagation des routes casserait la connectivité de la passerelle.",
@@ -86,8 +86,8 @@ AZ.questions.push(
   {
    "l": "Un poste local 192.168.10.5 ouvre RDP vers VM1 :",
    "o": [
-    "Autorisé",
     "Bloqué par NSG-Sub",
+    "Autorisé",
     "Bloqué par NSG-NIC"
    ],
    "a": 2
@@ -96,28 +96,28 @@ AZ.questions.push(
    "l": "VM2 ouvre HTTPS vers VM1 :",
    "o": [
     "Autorisé",
-    "Bloqué par NSG-Sub",
-    "Bloqué par NSG-NIC"
+    "Bloqué par NSG-NIC",
+    "Bloqué par NSG-Sub"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "Un client Internet ouvre HTTP vers l'IP publique de VM1 :",
    "o": [
-    "Autorisé",
     "Bloqué par NSG-Sub",
-    "Bloqué par NSG-NIC"
+    "Bloqué par NSG-NIC",
+    "Autorisé"
    ],
-   "a": 0
+   "a": 2
   },
   {
    "l": "VM1 ouvre HTTPS vers un site Internet :",
    "o": [
-    "Autorisé",
+    "Bloqué par NSG-NIC",
     "Bloqué par NSG-Sub",
-    "Bloqué par NSG-NIC"
+    "Autorisé"
    ],
-   "a": 0
+   "a": 2
   }
  ],
  "expl": "<p>En entrée, le NSG du sous-réseau est évalué d'abord, puis celui de la carte réseau : le flux doit être autorisé par les deux.</p><b>RDP depuis 192.168.10.5.</b> NSG-Sub l'autorise (100), mais NSG-NIC le refuse (150, source Any) : bloqué par NSG-NIC.<b>HTTPS depuis VM2.</b> La balise VirtualNetwork comprend tout l'espace du réseau virtuel, donc 10.0.2.4. NSG-Sub refuse (200) avant même que la règle 100 de NSG-NIC soit évaluée : bloqué par NSG-Sub.<b>HTTP depuis Internet.</b> NSG-Sub (300) puis NSG-NIC (200) l'autorisent, et l'IP publique Standard n'accepte que ce que les NSG autorisent : autorisé.<b>Sortie de VM1.</b> En sortie, l'ordre s'inverse (carte puis sous-réseau), mais la règle par défaut AllowInternetOutBound s'applique dans les deux : autorisé.",
@@ -159,20 +159,20 @@ AZ.questions.push(
   {
    "l": "Dans NSG-App :",
    "o": [
-    "Autoriser la balise AzureLoadBalancer sur 8080, priorité inférieure à 4000",
-    "Autoriser Internet sur 8080, priorité 4100",
+    "Autoriser AzureLoadBalancer sur 8080, priorité inférieure à 4000",
+    "Autoriser la balise Internet sur le port de sonde 8080, priorité 4100",
     "Supprimer la règle 100",
-    "Autoriser VirtualNetwork sur 443, priorité 4100"
+    "Autoriser VirtualNetwork sur 443 et 8080, avec la priorité 4100"
    ],
    "a": 0
   },
   {
    "l": "Sortie Internet :",
    "o": [
-    "Une IP publique Standard sur chaque VM",
     "L'accès sortant par défaut d'Azure",
+    "Une règle d'équilibrage supplémentaire sur LB-Pub, avec SNAT implicite",
     "Une passerelle NAT avec des IP publiques sur Subnet-App",
-    "Une règle de trafic entrant supplémentaire sur LB-Pub"
+    "Une IP publique Standard sur chaque VM"
    ],
    "a": 2
   },
@@ -180,11 +180,11 @@ AZ.questions.push(
    "l": "Persistance de session de la règle 443 :",
    "o": [
     "Aucune",
-    "Adresse IP du client",
     "Port flottant activé",
-    "Délai d'inactivité de 30 minutes"
+    "Délai d'inactivité de 30 minutes",
+    "Adresse IP du client"
    ],
-   "a": 1
+   "a": 3
   }
  ],
  "expl": "<b>Sondes.</b> Les sondes proviennent de 168.63.129.16, représenté par la balise AzureLoadBalancer. La règle par défaut AllowAzureLoadBalancerInBound (65001) existe, mais la règle 4000 « Refuser tout » est évaluée avant elle. Il faut donc une règle d'autorisation avec un numéro de priorité plus petit que 4000. Une priorité 4100 serait évaluée trop tard.<b>Sortie.</b> Un équilibreur Standard ne donne aucun accès sortant sans règle de trafic sortant, et l'accès sortant par défaut n'offre ni IP fixe ni garantie (il est retiré pour les nouveaux réseaux). Une passerelle NAT donne une ou plusieurs IP fixes et 64 512 ports SNAT par IP publique : avec plusieurs IP, elle supporte largement 50 000 connexions. Une IP publique par VM multiplierait les adresses à déclarer.<b>Persistance.</b> L'affinité « Adresse IP du client » envoie toujours le même client vers la même VM. Le port flottant sert aux scénarios de type cluster SQL, pas à la persistance.",
@@ -199,7 +199,7 @@ AZ.questions.push(
   "rows": [
    [
     "*Dans NSG-App",
-    "Autoriser la balise AzureLoadBalancer sur 8080, priorité inférieure à 4000"
+    "Autoriser AzureLoadBalancer sur 8080, priorité inférieure à 4000"
    ],
    [
     "Sortie Internet",
@@ -232,31 +232,31 @@ AZ.questions.push(
   {
    "l": "Point à site, authentification :",
    "o": [
-    "Microsoft Entra ID",
+    "RADIUS avec NPS local",
     "Certificat Azure",
-    "RADIUS avec NPS local"
+    "Microsoft Entra ID"
    ],
-   "a": 0
+   "a": 2
   },
   {
    "l": "Haute disponibilité :",
    "o": [
-    "Une seconde passerelle VPN dans VNet-Hub",
     "Le mode actif-actif avec une seconde IP publique, et deux passerelles de réseau local",
-    "Passer en VpnGw1AZ en gardant une IP",
-    "Une seconde connexion vers la même passerelle de réseau local"
+    "Une seconde connexion de VPNGW1 vers la même passerelle de réseau local, avec la même IP",
+    "Une seconde passerelle VPN dans VNet-Hub, reliée au second pare-feu",
+    "Passer en VpnGw1AZ en gardant une IP"
    ],
-   "a": 1
+   "a": 0
   },
   {
    "l": "Routage :",
    "o": [
     "Des préfixes statiques sur chaque passerelle de réseau local",
-    "Une table de routage sur GatewaySubnet",
     "BGP sur VPNGW1 et sur les deux pare-feu",
-    "La propagation des routes dans le peering"
+    "La propagation des routes dans le peering",
+    "Une table de routage sur GatewaySubnet"
    ],
-   "a": 2
+   "a": 1
   }
  ],
  "expl": "<b>Entra ID.</b> L'authentification Microsoft Entra en point à site n'est prise en charge qu'avec le type de tunnel <b>OpenVPN</b>, et le client Azure VPN (Windows, macOS). IKEv2 et SSTP n'acceptent que les certificats ou RADIUS. L'accès conditionnel (MFA) s'applique alors à l'application Azure VPN.<b>Haute disponibilité.</b> Une passerelle a toujours deux instances, mais en actif-passif une bascule coupe le tunnel quelques dizaines de secondes. Le mode <b>actif-actif</b> (deux IP publiques) établit des tunnels depuis chaque instance ; avec deux pare-feu, on obtient un maillage complet de quatre tunnels. Chaque pare-feu est représenté par sa propre passerelle de réseau local. Une seule passerelle VPN par réseau virtuel est possible.<b>Routage.</b> Avec plusieurs tunnels actifs, BGP annonce et retire les routes automatiquement quand un lien tombe. Des préfixes statiques ne savent pas basculer.",
@@ -298,32 +298,32 @@ AZ.questions.push(
   {
    "l": "Pour corriger la résolution de stfab :",
    "o": [
-    "Créer une zone blob.core.windows.net sur DC1 et DC2",
     "Lier la zone privatelink.blob.core.windows.net à VNet-Hub",
-    "Activer l'inscription automatique sur la zone privatelink",
-    "Configurer VNet-Hub pour utiliser le DNS fourni par Azure"
-   ],
-   "a": 1
-  },
-  {
-   "l": "Pour le site local, en plus :",
-   "o": [
-    "Rien : les postes passent déjà par DC1 et DC2",
-    "Un fichier hosts sur chaque poste",
-    "Lier la zone privée à la passerelle de réseau local",
-    "Un redirecteur conditionnel vers 168.63.129.16 sur les DNS du site"
+    "Configurer VNet-Hub pour utiliser le DNS fourni par Azure",
+    "Créer une zone blob.core.windows.net sur DC1 et DC2",
+    "Activer l'inscription automatique sur la zone privatelink"
    ],
    "a": 0
   },
   {
+   "l": "Pour le site local, en plus :",
+   "o": [
+    "Un redirecteur conditionnel vers 168.63.129.16 sur les DNS du site",
+    "Lier la zone privée à la passerelle de réseau local",
+    "Rien : les postes passent déjà par DC1 et DC2",
+    "Un fichier hosts sur chaque poste"
+   ],
+   "a": 2
+  },
+  {
    "l": "Pour contoso.internal :",
    "o": [
-    "Créer un second lien avec inscription automatique",
-    "Désactiver l'inscription sur app.internal, puis l'activer sur le lien vers contoso.internal",
+    "Lier contoso.internal à VNet-Hub avec inscription, puis le peering transmet",
     "Ajouter les enregistrements A à la main",
-    "Lier contoso.internal à VNet-Hub avec inscription"
+    "Désactiver l'inscription vers app.internal, puis l'activer vers contoso.internal",
+    "Créer un second lien de VNet-App avec inscription automatique, en gardant le premier"
    ],
-   "a": 1
+   "a": 2
   }
  ],
  "expl": "<b>stfab.</b> DC1 et DC2 sont dans VNet-Hub et transfèrent vers 168.63.129.16 : ce résolveur Azure ne consulte que les zones privées liées au réseau de la VM qui pose la question, ici VNet-Hub. Il faut donc lier la zone privatelink à VNet-Hub. Une zone blob.core.windows.net sur les DC casserait la résolution de tous les autres comptes de stockage.<b>Site local.</b> Les postes interrogent déjà DC1 et DC2, qui résoudront correctement une fois la zone liée : rien d'autre à faire. 168.63.129.16 n'est pas joignable depuis le site local.<b>contoso.internal.</b> Un réseau virtuel ne peut avoir l'inscription automatique que vers <b>une seule</b> zone privée. Il faut la désactiver sur app.internal avant de l'activer vers contoso.internal.",
@@ -346,7 +346,7 @@ AZ.questions.push(
    ],
    [
     "Pour contoso.internal",
-    "Désactiver l'inscription sur app.internal, puis l'activer sur le lien vers contoso.internal"
+    "Désactiver l'inscription vers app.internal, puis l'activer vers contoso.internal"
    ]
   ]
  },
@@ -361,22 +361,22 @@ AZ.questions.push(
   {
    "l": "Accès d'AppGW1 au certificat :",
    "o": [
-    "Une identité attribuée par le système, Utilisateur des secrets Key Vault",
+    "Le certificat exporté en PFX et chargé",
+    "Une identité attribuée par le système, avec Utilisateur des secrets Key Vault",
     "Une identité attribuée par l'utilisateur, Utilisateur des secrets Key Vault",
-    "Une identité attribuée par l'utilisateur, stratégie d'accès Get",
-    "Le certificat exporté en PFX et chargé"
+    "Une identité attribuée par l'utilisateur, stratégie d'accès Get"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "Règle de routage :",
    "o": [
-    "Une règle de base vers le pool web",
-    "Deux écouteurs, un par pool",
-    "Une règle basée sur le chemin d'accès, /api/* vers le pool de l'API",
-    "Une règle de redirection vers l'API"
+    "Une règle de base vers le pool web, avec une réécriture vers l'API",
+    "Une règle basée sur le chemin, /api/* vers le pool de l'API",
+    "Une règle de redirection vers l'API",
+    "Deux écouteurs sur le même port 443, un par pool"
    ],
-   "a": 2
+   "a": 1
   },
   {
    "l": "Mode de la stratégie WAF :",
@@ -390,12 +390,12 @@ AZ.questions.push(
   {
    "l": "Sous-réseau d'AppGW1 :",
    "o": [
-    "Subnet-Web",
-    "AzureBastionSubnet",
+    "AzureBastionSubnet, qui a de la place",
     "Un nouveau sous-réseau dédié de 10.10.8.0/24",
-    "GatewaySubnet"
+    "Subnet-Web, à côté des VM web",
+    "GatewaySubnet, partagé avec une passerelle VPN"
    ],
-   "a": 2
+   "a": 1
   }
  ],
  "expl": "<b>Certificat.</b> Application Gateway ne prend en charge que les identités managées <b>attribuées par l'utilisateur</b> pour lire Key Vault. Avec le modèle RBAC, l'identité a besoin d'un rôle (Utilisateur des secrets Key Vault, car le certificat est lu comme un secret), pas d'une stratégie d'accès. AppGW1 vérifie ensuite le coffre toutes les 4 heures et récupère la nouvelle version : le renouvellement est automatique, contrairement à un PFX chargé.<b>Routage.</b> Un même nom d'hôte et deux back-ends selon le chemin : une règle basée sur le chemin d'accès, avec /api/* vers le pool de l'API et le reste vers le pool web.<b>WAF.</b> Seul le mode Prévention bloque ; Détection ne fait que journaliser.<b>Sous-réseau.</b> Application Gateway v2 exige un sous-réseau dédié, sans autre ressource ; Microsoft recommande /24 pour la mise à l'échelle. GatewaySubnet et AzureBastionSubnet sont réservés.",
@@ -414,7 +414,7 @@ AZ.questions.push(
    ],
    [
     "Règle de routage",
-    "Une règle basée sur le chemin d'accès, /api/* vers le pool de l'API"
+    "Une règle basée sur le chemin, /api/* vers le pool de l'API"
    ],
    [
     "Mode de la stratégie WAF",
@@ -437,40 +437,40 @@ AZ.questions.push(
   {
    "l": "Besoin 1 :",
    "o": [
-    "Une règle de réseau avec une balise de service",
+    "Une règle de réseau avec l'IP du site",
     "Une règle d'application avec un FQDN",
-    "Une règle DNAT",
-    "Une règle de réseau avec l'IP du site"
+    "Une règle de réseau avec une balise de service",
+    "Une règle DNAT"
    ],
    "a": 1
   },
   {
    "l": "Besoin 2 :",
    "o": [
-    "Une règle d'application",
-    "Une règle DNAT",
     "Une règle de réseau",
-    "Aucune : autorisé par défaut"
-   ],
-   "a": 2
-  },
-  {
-   "l": "Besoin 3 :",
-   "o": [
-    "Une règle DNAT",
+    "Aucune : autorisé par défaut",
     "Une règle d'application",
-    "Une règle de réseau entrante",
-    "Une IP publique sur VM-Web"
+    "Une règle DNAT"
    ],
    "a": 0
   },
   {
+   "l": "Besoin 3 :",
+   "o": [
+    "Une règle de réseau entrante",
+    "Une règle d'application",
+    "Une IP publique sur VM-Web",
+    "Une règle DNAT"
+   ],
+   "a": 3
+  },
+  {
    "l": "Besoin 4, prérequis :",
    "o": [
-    "Passer AzFW1 en Premium",
-    "Une règle d'application sur le port 1433",
-    "Activer le proxy DNS d'AzFW1 et le définir comme DNS des réseaux virtuels",
-    "Une zone DNS privée partenaire.com"
+    "Passer AzFW1 en Premium pour les FQDN des règles de réseau",
+    "Une règle d'application sur le port 1433 avec le FQDN",
+    "Activer le proxy DNS d'AzFW1 et en faire le DNS des réseaux",
+    "Une zone DNS privée partenaire.com liée à VNet-Hub, avec un A"
    ],
    "a": 2
   }
@@ -499,7 +499,7 @@ AZ.questions.push(
    ],
    [
     "Besoin 4, prérequis",
-    "Activer le proxy DNS d'AzFW1 et le définir comme DNS des réseaux virtuels"
+    "Activer le proxy DNS d'AzFW1 et en faire le DNS des réseaux"
    ]
   ]
  },
@@ -514,42 +514,42 @@ AZ.questions.push(
   {
    "l": "Incident A :",
    "o": [
-    "Tronçon suivant",
-    "Vérification du flux IP",
+    "Capture de paquets",
     "Moniteur de connexion",
-    "Capture de paquets"
+    "Vérification du flux IP",
+    "Tronçon suivant (Next hop)"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "Incident B :",
    "o": [
-    "Tronçon suivant",
     "Topologie",
+    "Tronçon suivant (Next hop)",
     "Vérification du flux IP",
     "Résolution des problèmes de VPN"
    ],
-   "a": 0
+   "a": 1
   },
   {
    "l": "Incident C :",
    "o": [
+    "Journaux de flux",
     "Résolution des problèmes de connexion",
     "Moniteur de connexion",
-    "Tronçon suivant",
-    "Journaux de flux"
+    "Tronçon suivant (Next hop)"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "Incident D :",
    "o": [
+    "Diagnostic des règles de sécurité effectives",
     "Journaux de flux de NSG",
-    "Journaux de flux de réseau virtuel",
     "Capture de paquets",
-    "Diagnostic des règles de sécurité"
+    "Journaux de flux de réseau virtuel"
    ],
-   "a": 1
+   "a": 3
   }
  ],
  "expl": "<b>A.</b> La vérification du flux IP teste un 5-tuple (IP, port, protocole, sens) et renvoie Autoriser ou Refuser avec le nom de la règle de NSG en cause.<b>B.</b> Le tronçon suivant donne le type (appliance virtuelle, peering, Aucun…) et l'ID de la table de routage utilisée : idéal après l'ajout d'une route utilisateur.<b>C.</b> Le moniteur de connexion mesure en continu la latence et les échecs entre une source et une destination, avec des seuils et des alertes. La résolution des problèmes de connexion ne fait qu'un test ponctuel.<b>D.</b> Les journaux de flux de <b>réseau virtuel</b> couvrent tout le réseau et alimentent Traffic Analytics. Les journaux de flux de NSG ne peuvent plus être créés depuis juin 2025 et seront retirés : Microsoft recommande la migration vers les journaux de flux de réseau virtuel.",
@@ -568,7 +568,7 @@ AZ.questions.push(
    ],
    [
     "Incident B",
-    "Tronçon suivant"
+    "Tronçon suivant (Next hop)"
    ],
    [
     "Incident C",
@@ -591,30 +591,30 @@ AZ.questions.push(
   {
    "l": "Cause de l'erreur d'association :",
    "o": [
+    "Il manque un équilibreur de charge",
     "NATGW1 n'a pas de zone",
     "L'IP publique De base de VM-Legacy",
-    "Subnet-Batch contient plus de 16 VM",
-    "Il manque un équilibreur de charge"
+    "Subnet-Batch contient plus de 16 VM"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "Échecs aux heures de pointe :",
    "o": [
     "Ajouter des adresses IP publiques à NATGW1",
-    "Créer une seconde passerelle NAT sur le même sous-réseau",
+    "Passer les VM en mise en réseau accélérée",
     "Augmenter le délai d'inactivité à 120 minutes",
-    "Passer les VM en mise en réseau accélérée"
+    "Créer une seconde passerelle NAT sur le même sous-réseau"
    ],
    "a": 0
   },
   {
    "l": "Trafic sortant initié par VM-Report :",
    "o": [
-    "Utilise l'IP publique de VM-Report",
+    "Est bloqué",
     "Utilise l'IP de NATGW1",
     "Est réparti entre les deux IP",
-    "Est bloqué"
+    "Utilise l'IP publique de VM-Report"
    ],
    "a": 1
   }
@@ -654,32 +654,32 @@ AZ.questions.push(
   {
    "l": "Pour stlogs :",
    "o": [
-    "Un point de terminaison privé dans Subnet-App",
-    "Un point de terminaison de service Microsoft.Storage sur Subnet-App et une règle de réseau virtuel sur stlogs",
-    "Une règle IP sur stlogs avec l'IP publique de Subnet-App",
+    "Un point de terminaison privé dans Subnet-App et une zone privatelink liée",
+    "Une règle IP sur stlogs avec l'adresse publique de sortie de Subnet-App, sans autre changement",
+    "Un point de terminaison de service Microsoft.Storage et une règle de réseau virtuel",
     "Une passerelle NAT"
-   ],
-   "a": 1
-  },
-  {
-   "l": "Pour sql-litware :",
-   "o": [
-    "Un point de terminaison de service Microsoft.Sql",
-    "Une règle de pare-feu avec l'IP publique du site",
-    "Un point de terminaison privé et une résolution DNS vers l'adresse privée",
-    "Le peering Microsoft d'ExpressRoute"
    ],
    "a": 2
   },
   {
-   "l": "Pour limiter les comptes joignables :",
+   "l": "Pour sql-litware :",
    "o": [
-    "Une stratégie de point de terminaison de service",
-    "Un NSG avec la balise Storage",
-    "Une règle de pare-feu sur stpartner",
-    "Azure Policy"
+    "Un point de terminaison privé et une résolution DNS vers l'adresse privée",
+    "Une règle de pare-feu du serveur avec l'adresse IP publique du site local",
+    "Un point de terminaison de service Microsoft.Sql sur Subnet-App et le site",
+    "Le peering Microsoft d'ExpressRoute"
    ],
    "a": 0
+  },
+  {
+   "l": "Pour limiter les comptes joignables :",
+   "o": [
+    "Une règle de pare-feu sur stpartner, qui appartient au partenaire",
+    "Une stratégie de point de terminaison de service",
+    "Azure Policy",
+    "Un NSG sortant avec la balise de service Storage.FranceCentral"
+   ],
+   "a": 1
   }
  ],
  "expl": "<b>stlogs.</b> Le point de terminaison de service garde le trafic sur le réseau Microsoft, sans IP privée pour le compte et sans frais de traitement des données ; la règle de réseau virtuel limite le compte à Subnet-App. Un point de terminaison privé donnerait une IP privée et est facturé au Go.<b>sql-litware.</b> Un point de terminaison de service n'est utilisable que depuis le réseau virtuel, pas depuis le site local. Le point de terminaison privé donne une IP privée joignable par ExpressRoute (peering privé), avec une résolution DNS adaptée.<b>Comptes joignables.</b> Une stratégie de point de terminaison de service limite, depuis un sous-réseau, les comptes de stockage joignables par le point de terminaison (par compte, groupe de ressources ou abonnement). La balise Storage d'un NSG couvre tous les comptes de la région, y compris stpartner.",
@@ -694,7 +694,7 @@ AZ.questions.push(
   "rows": [
    [
     "*Pour stlogs",
-    "Un point de terminaison de service Microsoft.Storage sur Subnet-App et une règle de réseau virtuel sur stlogs"
+    "Un point de terminaison de service Microsoft.Storage et une règle de réseau virtuel"
    ],
    [
     "Pour sql-litware",

@@ -19,32 +19,32 @@ AZ.questions.push(
   {
    "l": "On the spoke subnets:",
    "o": [
-    "Nothing: the hub makes peerings transitive",
-    "A route table with 0.0.0.0/0 to VPNGW1",
     "A route table with the other spoke to 10.0.1.4",
-    "An NSG allowing 10.0.0.0/8"
+    "An NSG allowing 10.0.0.0/8",
+    "A route table with 0.0.0.0/0 to VPNGW1",
+    "Nothing: the hub makes peerings transitive between spokes"
    ],
-   "a": 2
+   "a": 0
   },
   {
    "l": "On the Spoke1 → Hub and Spoke2 → Hub peerings:",
    "o": [
-    "Disable “Use remote gateways”",
-    "Enable “Allow forwarded traffic”",
     "Enable “Allow gateway transit”",
-    "Change nothing"
+    "Disable “Use remote gateways”",
+    "Change nothing on the spoke peerings",
+    "Enable “Allow forwarded traffic”"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "On GatewaySubnet:",
    "o": [
-    "A route table with 0.0.0.0/0 to 10.0.1.4",
+    "Disable gateway route propagation on GatewaySubnet",
     "An NSG denying 10.0.0.0/8",
-    "A route table with 10.1.0.0/16 and 10.2.0.0/16 to 10.0.1.4",
-    "Disable gateway route propagation"
+    "A route table with 0.0.0.0/0 to 10.0.1.4 and BGP propagation",
+    "A route table with 10.1.0.0/16 and 10.2.0.0/16 to 10.0.1.4"
    ],
-   "a": 2
+   "a": 3
   }
  ],
  "expl": "<b>Spoke2 to Lyon.</b> The hub already allows gateway transit to Spoke2; the other half is missing: “Use remote gateways” on the Spoke2 → Hub peering. Gateway transit is configured on the hub side, never on the spoke side.<b>Spoke1 ↔ Spoke2.</b> Peering isn't transitive: without routes, two spokes can't see each other. A user-defined route to the other spoke, with 10.0.1.4 as next hop (virtual appliance), sends traffic through the firewall. 0.0.0.0/0 to a VPN gateway isn't a valid next hop here and would break internet access.<b>Forwarded traffic.</b> A packet arriving in Spoke2 was relayed by the hub firewall: it doesn't come from VNet-Hub itself. The spoke-side peering must therefore allow forwarded traffic, or it's dropped.<b>GatewaySubnet.</b> To inspect traffic arriving from Lyon, put routes to the spoke prefixes on GatewaySubnet, with the firewall as next hop. A 0.0.0.0/0 route on GatewaySubnet isn't supported, and disabling route propagation would break the gateway's connectivity.",
@@ -86,8 +86,8 @@ AZ.questions.push(
   {
    "l": "An on-premises computer 192.168.10.5 opens RDP to VM1:",
    "o": [
-    "Allowed",
     "Blocked by NSG-Sub",
+    "Allowed",
     "Blocked by NSG-NIC"
    ],
    "a": 2
@@ -96,28 +96,28 @@ AZ.questions.push(
    "l": "VM2 opens HTTPS to VM1:",
    "o": [
     "Allowed",
-    "Blocked by NSG-Sub",
-    "Blocked by NSG-NIC"
+    "Blocked by NSG-NIC",
+    "Blocked by NSG-Sub"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "An internet client opens HTTP to VM1's public IP:",
    "o": [
-    "Allowed",
     "Blocked by NSG-Sub",
-    "Blocked by NSG-NIC"
+    "Blocked by NSG-NIC",
+    "Allowed"
    ],
-   "a": 0
+   "a": 2
   },
   {
    "l": "VM1 opens HTTPS to an internet site:",
    "o": [
-    "Allowed",
+    "Blocked by NSG-NIC",
     "Blocked by NSG-Sub",
-    "Blocked by NSG-NIC"
+    "Allowed"
    ],
-   "a": 0
+   "a": 2
   }
  ],
  "expl": "<p>Inbound, the subnet NSG is evaluated first, then the network interface NSG: the flow must be allowed by both.</p><b>RDP from 192.168.10.5.</b> NSG-Sub allows it (100), but NSG-NIC denies it (150, source Any): blocked by NSG-NIC.<b>HTTPS from VM2.</b> The VirtualNetwork tag covers the whole virtual network address space, so 10.0.2.4. NSG-Sub denies (200) before NSG-NIC rule 100 is even evaluated: blocked by NSG-Sub.<b>HTTP from the internet.</b> NSG-Sub (300) then NSG-NIC (200) allow it, and a Standard public IP accepts only what the NSGs allow: allowed.<b>VM1 outbound.</b> Outbound, the order is reversed (interface then subnet), but the default AllowInternetOutBound rule applies in both: allowed.",
@@ -159,20 +159,20 @@ AZ.questions.push(
   {
    "l": "In NSG-App:",
    "o": [
-    "Allow the AzureLoadBalancer tag on 8080, priority lower than 4000",
-    "Allow Internet on 8080, priority 4100",
+    "Allow AzureLoadBalancer on 8080, priority below 4000",
+    "Allow the Internet tag on probe port 8080, priority 4100",
     "Delete rule 100",
-    "Allow VirtualNetwork on 443, priority 4100"
+    "Allow VirtualNetwork on 443 and 8080, at priority 4100"
    ],
    "a": 0
   },
   {
    "l": "Internet outbound:",
    "o": [
-    "A Standard public IP on each VM",
     "Azure default outbound access",
+    "An extra load-balancing rule on LB-Pub, with implicit SNAT",
     "A NAT gateway with public IPs on Subnet-App",
-    "An extra inbound rule on LB-Pub"
+    "A Standard public IP on each VM, registered with the vendor"
    ],
    "a": 2
   },
@@ -180,11 +180,11 @@ AZ.questions.push(
    "l": "Rule 443 session persistence:",
    "o": [
     "None",
-    "Client IP",
     "Floating IP enabled",
-    "30-minute idle timeout"
+    "30-minute idle timeout",
+    "Client IP"
    ],
-   "a": 1
+   "a": 3
   }
  ],
  "expl": "<b>Probes.</b> Probes come from 168.63.129.16, represented by the AzureLoadBalancer tag. The default AllowAzureLoadBalancerInBound rule (65001) exists, but rule 4000 “Deny all” is evaluated before it. You therefore need an allow rule with a priority number lower than 4000. Priority 4100 would be evaluated too late.<b>Outbound.</b> A Standard load balancer provides no outbound access without an outbound rule, and default outbound access offers no fixed IP or guarantee (it's retired for new networks). A NAT gateway provides one or more fixed IPs and 64,512 SNAT ports per public IP: with several IPs, it easily supports 50,000 connections. A public IP per VM would multiply the addresses to register.<b>Persistence.</b> “Client IP” affinity always sends the same client to the same VM. Floating IP is for SQL cluster-type scenarios, not persistence.",
@@ -199,7 +199,7 @@ AZ.questions.push(
   "rows": [
    [
     "*In NSG-App",
-    "Allow the AzureLoadBalancer tag on 8080, priority lower than 4000"
+    "Allow AzureLoadBalancer on 8080, priority below 4000"
    ],
    [
     "Internet outbound",
@@ -232,31 +232,31 @@ AZ.questions.push(
   {
    "l": "Point-to-site, authentication:",
    "o": [
-    "Microsoft Entra ID",
+    "RADIUS with on-premises NPS",
     "Azure certificate",
-    "RADIUS with on-premises NPS"
+    "Microsoft Entra ID"
    ],
-   "a": 0
+   "a": 2
   },
   {
    "l": "High availability:",
    "o": [
-    "A second VPN gateway in VNet-Hub",
     "Active-active mode with a second public IP, and two local network gateways",
-    "Move to VpnGw1AZ keeping one IP",
-    "A second connection to the same local network gateway"
+    "A second VPNGW1 connection to the same local network gateway, with the same IP",
+    "A second VPN gateway in VNet-Hub, connected to the second firewall",
+    "Move to VpnGw1AZ keeping one IP"
    ],
-   "a": 1
+   "a": 0
   },
   {
    "l": "Routing:",
    "o": [
     "Static prefixes on each local network gateway",
-    "A route table on GatewaySubnet",
     "BGP on VPNGW1 and both firewalls",
-    "Route propagation in the peering"
+    "Route propagation in the peering",
+    "A route table on GatewaySubnet"
    ],
-   "a": 2
+   "a": 1
   }
  ],
  "expl": "<b>Entra ID.</b> Microsoft Entra authentication for point-to-site is supported only with the <b>OpenVPN</b> tunnel type and the Azure VPN Client (Windows, macOS). IKEv2 and SSTP only accept certificates or RADIUS. Conditional Access (MFA) then applies to the Azure VPN app.<b>High availability.</b> A gateway always has two instances, but in active-standby a failover drops the tunnel for tens of seconds. <b>Active-active</b> mode (two public IPs) establishes tunnels from each instance; with two firewalls, you get a full mesh of four tunnels. Each firewall is represented by its own local network gateway. Only one VPN gateway per virtual network is possible.<b>Routing.</b> With several active tunnels, BGP advertises and withdraws routes automatically when a link fails. Static prefixes can't fail over.",
@@ -298,32 +298,32 @@ AZ.questions.push(
   {
    "l": "To fix stfab resolution:",
    "o": [
-    "Create a blob.core.windows.net zone on DC1 and DC2",
-    "Link the privatelink.blob.core.windows.net zone to VNet-Hub",
-    "Enable auto-registration on the privatelink zone",
-    "Set VNet-Hub to use Azure-provided DNS"
-   ],
-   "a": 1
-  },
-  {
-   "l": "For the on-premises site, additionally:",
-   "o": [
-    "Nothing: computers already go through DC1 and DC2",
-    "A hosts file on each computer",
-    "Link the private zone to the local network gateway",
-    "A conditional forwarder to 168.63.129.16 on the site DNS servers"
+    "Link the privatelink.blob zone to VNet-Hub",
+    "Set VNet-Hub to use Azure-provided DNS",
+    "Create a blob.core.windows.net primary zone on DC1 and DC2",
+    "Enable auto-registration on the privatelink zone"
    ],
    "a": 0
   },
   {
+   "l": "For the on-premises site, additionally:",
+   "o": [
+    "A conditional forwarder to 168.63.129.16 on the site DNS servers",
+    "Link the private zone to the local network gateway",
+    "Nothing: computers already go through DC1 and DC2",
+    "A hosts file on each computer"
+   ],
+   "a": 2
+  },
+  {
    "l": "For contoso.internal:",
    "o": [
-    "Create a second link with auto-registration",
-    "Disable registration on app.internal, then enable it on the link to contoso.internal",
+    "Link contoso.internal to VNet-Hub with registration, and peering passes it on",
     "Add A records manually",
-    "Link contoso.internal to VNet-Hub with registration"
+    "Disable registration to app.internal, then enable it to contoso.internal",
+    "Create a second VNet-App link with auto-registration, keeping the first one"
    ],
-   "a": 1
+   "a": 2
   }
  ],
  "expl": "<b>stfab.</b> DC1 and DC2 are in VNet-Hub and forward to 168.63.129.16: that Azure resolver only uses private zones linked to the network of the VM asking, here VNet-Hub. So link the privatelink zone to VNet-Hub. A blob.core.windows.net zone on the DCs would break resolution of every other storage account.<b>On-premises.</b> Computers already query DC1 and DC2, which will resolve correctly once the zone is linked: nothing else to do. 168.63.129.16 isn't reachable from on-premises.<b>contoso.internal.</b> A virtual network can auto-register in <b>only one</b> private zone. Disable it on app.internal before enabling it for contoso.internal.",
@@ -338,7 +338,7 @@ AZ.questions.push(
   "rows": [
    [
     "*To fix stfab resolution",
-    "Link the privatelink.blob.core.windows.net zone to VNet-Hub"
+    "Link the privatelink.blob zone to VNet-Hub"
    ],
    [
     "For the on-premises site, additionally",
@@ -346,7 +346,7 @@ AZ.questions.push(
    ],
    [
     "For contoso.internal",
-    "Disable registration on app.internal, then enable it on the link to contoso.internal"
+    "Disable registration to app.internal, then enable it to contoso.internal"
    ]
   ]
  },
@@ -361,22 +361,22 @@ AZ.questions.push(
   {
    "l": "AppGW1 access to the certificate:",
    "o": [
+    "The certificate exported as PFX and uploaded",
     "A system-assigned identity, Key Vault Secrets User",
     "A user-assigned identity, Key Vault Secrets User",
-    "A user-assigned identity, Get access policy",
-    "The certificate exported as PFX and uploaded"
+    "A user-assigned identity, Get access policy"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "Routing rule:",
    "o": [
-    "A basic rule to the web pool",
-    "Two listeners, one per pool",
+    "A basic rule to the web pool, with a rewrite to the API",
     "A path-based rule, /api/* to the API pool",
-    "A redirect rule to the API"
+    "A redirect rule to the API",
+    "Two listeners on the same port 443, one per pool"
    ],
-   "a": 2
+   "a": 1
   },
   {
    "l": "WAF policy mode:",
@@ -390,12 +390,12 @@ AZ.questions.push(
   {
    "l": "AppGW1 subnet:",
    "o": [
-    "Subnet-Web",
-    "AzureBastionSubnet",
+    "AzureBastionSubnet, which has room",
     "A new dedicated 10.10.8.0/24 subnet",
-    "GatewaySubnet"
+    "Subnet-Web, next to the web VMs",
+    "GatewaySubnet, shared with a VPN gateway"
    ],
-   "a": 2
+   "a": 1
   }
  ],
  "expl": "<b>Certificate.</b> Application Gateway supports only <b>user-assigned</b> managed identities to read Key Vault. With the RBAC model, the identity needs a role (Key Vault Secrets User, since the certificate is read as a secret), not an access policy. AppGW1 then polls the vault every 4 hours and picks up the new version: renewal is automatic, unlike an uploaded PFX.<b>Routing.</b> One host name and two back ends by path: a path-based rule, with /api/* to the API pool and everything else to the web pool.<b>WAF.</b> Only Prevention mode blocks; Detection only logs.<b>Subnet.</b> Application Gateway v2 requires a dedicated subnet with no other resource; Microsoft recommends /24 for scaling. GatewaySubnet and AzureBastionSubnet are reserved.",
@@ -437,40 +437,40 @@ AZ.questions.push(
   {
    "l": "Requirement 1:",
    "o": [
-    "A network rule with a service tag",
+    "A network rule with the site IP",
     "An application rule with an FQDN",
-    "A DNAT rule",
-    "A network rule with the site IP"
+    "A network rule with a service tag",
+    "A DNAT rule"
    ],
    "a": 1
   },
   {
    "l": "Requirement 2:",
    "o": [
-    "An application rule",
-    "A DNAT rule",
     "A network rule",
-    "None: allowed by default"
-   ],
-   "a": 2
-  },
-  {
-   "l": "Requirement 3:",
-   "o": [
-    "A DNAT rule",
+    "None: allowed by default",
     "An application rule",
-    "An inbound network rule",
-    "A public IP on VM-Web"
+    "A DNAT rule"
    ],
    "a": 0
   },
   {
+   "l": "Requirement 3:",
+   "o": [
+    "An inbound network rule",
+    "An application rule",
+    "A public IP on VM-Web",
+    "A DNAT rule"
+   ],
+   "a": 3
+  },
+  {
    "l": "Requirement 4, prerequisite:",
    "o": [
-    "Upgrade AzFW1 to Premium",
-    "An application rule on port 1433",
-    "Enable AzFW1's DNS proxy and set it as the virtual networks' DNS",
-    "A private DNS zone partenaire.com"
+    "Upgrade AzFW1 to Premium for FQDNs in network rules",
+    "An application rule on port 1433 with the FQDN",
+    "Enable AzFW1's DNS proxy and use it as the VNets' DNS",
+    "A private DNS zone partenaire.com linked to VNet-Hub, with an A record"
    ],
    "a": 2
   }
@@ -499,7 +499,7 @@ AZ.questions.push(
    ],
    [
     "Requirement 4, prerequisite",
-    "Enable AzFW1's DNS proxy and set it as the virtual networks' DNS"
+    "Enable AzFW1's DNS proxy and use it as the VNets' DNS"
    ]
   ]
  },
@@ -514,42 +514,42 @@ AZ.questions.push(
   {
    "l": "Incident A:",
    "o": [
-    "Next hop",
-    "IP flow verify",
+    "Packet capture",
     "Connection monitor",
-    "Packet capture"
+    "IP flow verify",
+    "Next hop"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "Incident B:",
    "o": [
-    "Next hop",
     "Topology",
+    "Next hop",
     "IP flow verify",
     "VPN troubleshoot"
    ],
-   "a": 0
+   "a": 1
   },
   {
    "l": "Incident C:",
    "o": [
+    "Flow logs",
     "Connection troubleshoot",
     "Connection monitor",
-    "Next hop",
-    "Flow logs"
+    "Next hop"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "Incident D:",
    "o": [
-    "NSG flow logs",
-    "Virtual network flow logs",
+    "Effective security rules diagnostics",
+    "NSG flow logs with Traffic Analytics",
     "Packet capture",
-    "Security group view"
+    "Virtual network flow logs"
    ],
-   "a": 1
+   "a": 3
   }
  ],
  "expl": "<b>A.</b> IP flow verify tests a 5-tuple (IP, port, protocol, direction) and returns Allow or Deny with the name of the NSG rule responsible.<b>B.</b> Next hop returns the type (virtual appliance, peering, None…) and the ID of the route table used: ideal after adding a user-defined route.<b>C.</b> Connection monitor continuously measures latency and failures between a source and a destination, with thresholds and alerts. Connection troubleshoot only runs a one-off test.<b>D.</b> <b>Virtual network</b> flow logs cover the whole network and feed Traffic Analytics. NSG flow logs can no longer be created since June 2025 and will be retired: Microsoft recommends migrating to virtual network flow logs.",
@@ -591,30 +591,30 @@ AZ.questions.push(
   {
    "l": "Cause of the association error:",
    "o": [
+    "A load balancer is missing",
     "NATGW1 has no zone",
     "VM-Legacy's Basic public IP",
-    "Subnet-Batch has more than 16 VMs",
-    "A load balancer is missing"
+    "Subnet-Batch has more than 16 VMs"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "Peak-time failures:",
    "o": [
     "Add public IP addresses to NATGW1",
-    "Create a second NAT gateway on the same subnet",
+    "Enable accelerated networking on the VMs",
     "Raise the idle timeout to 120 minutes",
-    "Enable accelerated networking on the VMs"
+    "Create a second NAT gateway on the same subnet"
    ],
    "a": 0
   },
   {
    "l": "Outbound traffic initiated by VM-Report:",
    "o": [
-    "Uses VM-Report's public IP",
+    "Is blocked",
     "Uses NATGW1's IP",
     "Is split between both IPs",
-    "Is blocked"
+    "Uses VM-Report's public IP"
    ],
    "a": 1
   }
@@ -654,32 +654,32 @@ AZ.questions.push(
   {
    "l": "For stlogs:",
    "o": [
-    "A private endpoint in Subnet-App",
-    "A Microsoft.Storage service endpoint on Subnet-App and a virtual network rule on stlogs",
-    "An IP rule on stlogs with Subnet-App's public IP",
+    "A private endpoint in Subnet-App and a linked privatelink zone",
+    "An IP rule on stlogs with Subnet-App's outbound public address, with no other change",
+    "A Microsoft.Storage service endpoint and a virtual network rule",
     "A NAT gateway"
-   ],
-   "a": 1
-  },
-  {
-   "l": "For sql-litware:",
-   "o": [
-    "A Microsoft.Sql service endpoint",
-    "A firewall rule with the site's public IP",
-    "A private endpoint and DNS resolution to the private address",
-    "ExpressRoute Microsoft peering"
    ],
    "a": 2
   },
   {
-   "l": "To limit reachable accounts:",
+   "l": "For sql-litware:",
    "o": [
-    "A service endpoint policy",
-    "An NSG with the Storage tag",
-    "A firewall rule on stpartner",
-    "Azure Policy"
+    "A private endpoint and DNS resolution to the private address",
+    "A server firewall rule with the on-premises site's public IP address",
+    "A Microsoft.Sql service endpoint on Subnet-App and the site",
+    "ExpressRoute Microsoft peering"
    ],
    "a": 0
+  },
+  {
+   "l": "To limit reachable accounts:",
+   "o": [
+    "A firewall rule on stpartner",
+    "A service endpoint policy",
+    "Azure Policy",
+    "An NSG with the Storage tag"
+   ],
+   "a": 1
   }
  ],
  "expl": "<b>stlogs.</b> A service endpoint keeps traffic on the Microsoft network, with no private IP for the account and no data processing charges; the virtual network rule restricts the account to Subnet-App. A private endpoint would give a private IP and is billed per GB.<b>sql-litware.</b> A service endpoint is only usable from the virtual network, not from on-premises. A private endpoint gives a private IP reachable over ExpressRoute (private peering), with matching DNS resolution.<b>Reachable accounts.</b> A service endpoint policy limits, from a subnet, the storage accounts reachable through the endpoint (by account, resource group, or subscription). An NSG's Storage tag covers every account in the region, stpartner included.",
@@ -694,7 +694,7 @@ AZ.questions.push(
   "rows": [
    [
     "*For stlogs",
-    "A Microsoft.Storage service endpoint on Subnet-App and a virtual network rule on stlogs"
+    "A Microsoft.Storage service endpoint and a virtual network rule"
    ],
    [
     "For sql-litware",

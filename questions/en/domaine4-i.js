@@ -9,32 +9,32 @@ AZ.questions.push(
   {
    "l": "On VNet-Spoke subnets:",
    "o": [
-    "A 0.0.0.0/0 route, next hop Internet",
-    "A 0.0.0.0/0 route, next hop Virtual network gateway",
+    "A NAT gateway",
+    "A 0.0.0.0/0 route to the virtual network gateway",
     "An NSG denying Internet",
-    "A NAT gateway"
+    "A 0.0.0.0/0 route, next hop Internet, with an NSG to the proxy"
    ],
    "a": 1
   },
   {
    "l": "For Windows activation:",
    "o": [
-    "Open TCP 1688 in the NSG",
-    "/32 routes to Azure KMS addresses, next hop Internet",
     "Disable route propagation",
+    "Open outbound TCP 1688 in the spoke NSG to AzureCloud",
+    "/32 routes to Azure KMS addresses, next hop Internet",
     "A public IP on each VM"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "For AzureBastionSubnet:",
    "o": [
     "Associate the same route table",
+    "An NSG denying GatewayManager",
     "Associate no route table",
-    "A 0.0.0.0/0 route to VPNGW1",
-    "An NSG denying GatewayManager"
+    "A 0.0.0.0/0 route to VPNGW1"
    ],
-   "a": 1
+   "a": 2
   }
  ],
  "expl": "<b>Forced tunneling.</b> With no default route advertised over BGP, create a 0.0.0.0/0 route with next hop “Virtual network gateway” (route-based gateway). The spoke uses the hub gateway, so the route is valid.<b>KMS.</b> Activation uses azkms.core.windows.net (TCP 1688) to known Azure addresses. With forced tunneling, that traffic goes to headquarters and is blocked. /32 routes to those addresses with next hop Internet, more specific than 0.0.0.0/0, send it out directly.<b>Bastion.</b> User-defined routes aren't supported on AzureBastionSubnet: Bastion must reach the Azure control plane directly. Don't associate the table with it.",
@@ -49,7 +49,7 @@ AZ.questions.push(
   "rows": [
    [
     "*On VNet-Spoke subnets",
-    "A 0.0.0.0/0 route, next hop Virtual network gateway"
+    "A 0.0.0.0/0 route to the virtual network gateway"
    ],
    [
     "For Windows activation",
@@ -74,30 +74,30 @@ AZ.questions.push(
    "o": [
     "Add the prefix to LNG-Paris",
     "Add a route on GatewaySubnet",
-    "Reset VPNGW1",
-    "Add an NSG rule"
+    "Add an NSG rule",
+    "Reset VPNGW1"
    ],
    "a": 0
   },
   {
    "l": "ASN 65515 for headquarters:",
    "o": [
-    "Accept",
-    "Refuse: 65515 is reserved by Azure",
     "Accept if VPNGW1 also uses 65515",
-    "Refuse: only public ASNs are accepted"
+    "Accept",
+    "Refuse: only public ASNs are accepted",
+    "Refuse: 65515 is reserved by Azure"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "IKE logs:",
    "o": [
-    "IP flow verify",
-    "Network Watcher VPN troubleshoot",
     "Connection monitor",
-    "Activity log"
+    "VPN connection activity log",
+    "VPN troubleshoot",
+    "IP flow verify on the gateway"
    ],
-   "a": 1
+   "a": 2
   }
  ],
  "expl": "<b>New VLAN.</b> Without BGP, Azure only knows the site through the local network gateway prefixes. 192.168.50.0/24 isn't in 192.168.0.0/20 (192.168.0.0 to 192.168.15.255): add it to LNG-Paris (and to the firewall's encryption domain).<b>ASN.</b> Azure reserves 65515 (its default ASN), plus 65517 to 65520, 8074, 8075, and 12076. Headquarters must use another private ASN.<b>Logs.</b> Network Watcher VPN troubleshoot tests the gateway and connection and writes detailed logs (IKE included) to a storage account.",
@@ -120,7 +120,7 @@ AZ.questions.push(
    ],
    [
     "IKE logs",
-    "Network Watcher VPN troubleshoot"
+    "VPN troubleshoot"
    ]
   ]
  },
@@ -135,42 +135,42 @@ AZ.questions.push(
   {
    "l": "In NSG-AGW:",
    "o": [
+    "Allow AzureCloud on TCP 443, priority 100",
+    "Delete rule 4096",
     "Allow GatewayManager on TCP 65200-65535",
-    "Allow Internet on 3389",
-    "Allow AzureCloud on 443",
-    "Delete rule 4096"
+    "Allow Internet on TCP 443 and 80 only"
    ],
-   "a": 0
+   "a": 2
   },
   {
    "l": "For app-pool:",
    "o": [
-    "Add a public IP to the app",
-    "Pick the host name from the back end in the backend settings and probe",
-    "Disable HTTPS on the app",
-    "Move AppGW2 to WAF_v2"
+    "Move AppGW2 to WAF_v2",
+    "Add the app's outbound IP address to the pool",
+    "Disable HTTPS on the app and probe over HTTP",
+    "Back-end host name (settings and probe)"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "For the reports pool:",
    "o": [
-    "Enable cookie-based affinity",
     "Raise the backend settings request timeout",
     "Add a second instance",
-    "Enable connection draining"
+    "Enable connection draining",
+    "Enable cookie-based affinity for the reports pool"
    ],
-   "a": 1
+   "a": 0
   },
   {
    "l": "For HTTP to HTTPS:",
    "o": [
-    "A redirect rule from the port 80 listener to the 443 listener",
-    "A URL rewrite rule",
     "A second pool",
+    "A redirect from listener 80 to listener 443",
+    "A URL rewrite rule replacing http with https",
     "A WAF policy"
    ],
-   "a": 0
+   "a": 1
   }
  ],
  "expl": "<b>NSG.</b> Application Gateway v2 requires allowing the GatewayManager tag inbound on TCP 65200-65535 (infrastructure management), plus AzureLoadBalancer. A “Deny all” rule without these exceptions breaks the gateway.<b>App Service.</b> App Service routes requests by Host header. AppGW2 sends the listener name by default, unknown to the app. Override the host name with the back end's (“Pick host name from backend target”), in the backend settings and the probe.<b>502.</b> The request timeout defaults to 20 seconds; beyond it, the gateway returns 502. Raise it (for example to 60 seconds).<b>Redirect.</b> A permanent redirect rule on the HTTP listener, to the HTTPS listener.",
@@ -189,7 +189,7 @@ AZ.questions.push(
    ],
    [
     "For app-pool",
-    "Pick the host name from the back end in the backend settings and probe"
+    "Back-end host name (settings and probe)"
    ],
    [
     "For the reports pool",
@@ -197,7 +197,7 @@ AZ.questions.push(
    ],
    [
     "For HTTP to HTTPS",
-    "A redirect rule from the port 80 listener to the 443 listener"
+    "A redirect from listener 80 to listener 443"
    ]
   ]
  },
@@ -212,40 +212,40 @@ AZ.questions.push(
   {
    "l": "For partner addresses:",
    "o": [
-    "A public IP address prefix",
-    "Dynamic public IPs",
+    "Reserved dynamic public IPs",
     "A NAT gateway with no IP",
+    "A public IP address prefix",
     "Service tags"
    ],
-   "a": 0
+   "a": 2
   },
   {
    "l": "For LB-Web:",
    "o": [
-    "Change the IP's zone to “zone-redundant”",
-    "Create a zone-redundant IP and replace the frontend configuration",
+    "Move the IP to Basic",
+    "Create a zone-redundant IP and swap the frontend",
     "Add zones 2 and 3 to the existing IP",
-    "Move the IP to Basic"
+    "Change the existing IP's zone to “zone-redundant”"
    ],
    "a": 1
   },
   {
    "l": "For VM5:",
    "o": [
+    "Create a Standard IP and ask support for the same address",
     "Upgrade the IP directly",
-    "Set the IP to static, disassociate it, upgrade it to Standard, then reassociate it",
-    "Create a Standard IP and request the same address",
-    "Delete the IP and recreate it as Standard"
+    "Delete the IP and recreate it as Standard",
+    "Set static, disassociate, upgrade, reassociate"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "For VM6:",
    "o": [
     "Set the address inside Windows",
-    "Set the network interface IP configuration to static",
-    "Reserve the address on a DHCP server",
-    "Use a static public IP"
+    "Static allocation on the Azure NIC",
+    "Use a static public IP",
+    "Reserve the address on a DHCP server"
    ],
    "a": 1
   }
@@ -266,15 +266,15 @@ AZ.questions.push(
    ],
    [
     "For LB-Web",
-    "Create a zone-redundant IP and replace the frontend configuration"
+    "Create a zone-redundant IP and swap the frontend"
    ],
    [
     "For VM5",
-    "Set the IP to static, disassociate it, upgrade it to Standard, then reassociate it"
+    "Set static, disassociate, upgrade, reassociate"
    ],
    [
     "For VM6",
-    "Set the network interface IP configuration to static"
+    "Static allocation on the Azure NIC"
    ]
   ]
  },
@@ -289,30 +289,30 @@ AZ.questions.push(
   {
    "l": "For outbound:",
    "o": [
-    "Raise rule 443's idle timeout",
-    "A second frontend IP, an outbound rule with 8,000 ports per instance, and implicit SNAT disabled on rule 443",
-    "A public IP per VM",
+    "Raise rule 443's idle timeout and enable TCP reset",
+    "A Standard public IP on each of the 8 VMs",
+    "An outbound rule (8,000 ports/VM), 2nd frontend IP",
     "Enable floating IP"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "For RDP:",
    "o": [
-    "Eight load-balancing rules",
-    "An inbound NAT rule targeting the pool, with a frontend port range",
     "An outbound rule",
-    "A public IP per VM"
+    "A Standard public IP on each of the 8 VMs",
+    "An inbound NAT rule on the pool, port range",
+    "Eight load-balancing rules, one per port 50001 to 50008"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "To restrict RDP to headquarters:",
    "o": [
     "An NSG rule on Subnet-App: 203.0.113.10 to 3389",
-    "An NSG rule: 203.0.113.10 to 50001-50008",
-    "A filter on the NAT rule",
-    "An access restriction"
+    "A source address filter on the inbound NAT rule",
+    "An access restriction",
+    "An NSG rule: 203.0.113.10 to 50001-50008"
    ],
    "a": 0
   }
@@ -329,11 +329,11 @@ AZ.questions.push(
   "rows": [
    [
     "*For outbound",
-    "A second frontend IP, an outbound rule with 8,000 ports per instance, and implicit SNAT disabled on rule 443"
+    "An outbound rule (8,000 ports/VM), 2nd frontend IP"
    ],
    [
     "For RDP",
-    "An inbound NAT rule targeting the pool, with a frontend port range"
+    "An inbound NAT rule on the pool, port range"
    ],
    [
     "To restrict RDP to headquarters",
@@ -352,42 +352,42 @@ AZ.questions.push(
   {
    "l": "On the Litware side:",
    "o": [
-    "A private endpoint to LB-Int",
-    "A Private Link service on LB-Int's frontend configuration",
+    "A Private Link service on LB-Int's frontend",
     "A service endpoint",
+    "A private endpoint to LB-Int in VNet-Litware",
     "A public IP on LB-Int"
-   ],
-   "a": 1
-  },
-  {
-   "l": "On the Fabrikam side:",
-   "o": [
-    "A peering with VNet-Litware",
-    "A private endpoint to the service alias",
-    "A VPN gateway",
-    "An NSG rule"
-   ],
-   "a": 1
-  },
-  {
-   "l": "Connection validation:",
-   "o": [
-    "Manual approval in the Private Link service",
-    "An auto-approval list with Fabrikam's subscription",
-    "An NSG on LB-Int",
-    "Azure Policy"
    ],
    "a": 0
   },
   {
-   "l": "Source address seen by the API:",
+   "l": "On the Fabrikam side:",
    "o": [
-    "The Fabrikam client's private IP",
-    "A NAT IP from the Private Link service subnet",
-    "Fabrikam's public IP",
-    "168.63.129.16"
+    "A private endpoint to the service alias",
+    "An NSG rule",
+    "A VPN gateway",
+    "A peering with VNet-Litware after readdressing"
+   ],
+   "a": 0
+  },
+  {
+   "l": "Connection validation:",
+   "o": [
+    "Azure Policy",
+    "Manual approval in the Private Link service",
+    "An NSG on LB-Int",
+    "An auto-approval list with Fabrikam's subscription"
    ],
    "a": 1
+  },
+  {
+   "l": "Source address seen by the API:",
+   "o": [
+    "A NAT IP of the Private Link service",
+    "168.63.129.16",
+    "The Fabrikam client's private IP, unchanged",
+    "Fabrikam's public IP"
+   ],
+   "a": 0
   }
  ],
  "expl": "<b>Private Link service.</b> It exposes a service behind a <b>Standard internal</b> load balancer. The customer creates a <b>private endpoint</b> to the service alias: traffic stays on Microsoft's network with no peering, and the overlapping 10.0.0.0/16 ranges aren't an issue.<b>Validation.</b> By default, each connection request waits for the service owner's approval; the auto-approval list would bypass it.<b>Source.</b> The service translates the source address to a NAT address from a VNet-Litware subnet. To learn the real client, you can enable proxy protocol v2 (TCP).",
@@ -402,7 +402,7 @@ AZ.questions.push(
   "rows": [
    [
     "*On the Litware side",
-    "A Private Link service on LB-Int's frontend configuration"
+    "A Private Link service on LB-Int's frontend"
    ],
    [
     "On the Fabrikam side",
@@ -414,7 +414,7 @@ AZ.questions.push(
    ],
    [
     "Source address seen by the API",
-    "A NAT IP from the Private Link service subnet"
+    "A NAT IP of the Private Link service"
    ]
   ]
  },
@@ -429,32 +429,32 @@ AZ.questions.push(
   {
    "l": "VNet-A ↔ VNet-B peering:",
    "o": [
-    "Not possible across tenants",
-    "Create both peering links, one on each side",
     "Create a single link from VNet-A",
+    "Not possible across two different Microsoft Entra tenants",
+    "Create both peering links, one on each side",
     "A VPN is mandatory"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "Can VNet-B VMs reach LB-Old?",
    "o": [
-    "Yes",
-    "No: a Basic load balancer isn't reachable over global peering",
+    "No: cross-tenant peerings block load balancers",
+    "No: no Basic load balancer over global peering",
     "Yes, if gateway transit is enabled",
-    "No: cross-tenant peerings block load balancers"
+    "Yes"
    ],
    "a": 1
   },
   {
    "l": "VNet-A ↔ VNet-C peering:",
    "o": [
-    "Possible with “Allow forwarded traffic”",
-    "Not possible: address spaces overlap",
     "Possible with global peering only",
-    "Possible if VNet-C moves to the Contoso tenant"
+    "Possible with “Allow forwarded traffic”",
+    "Possible if VNet-C moves to the Contoso tenant",
+    "Not possible: address spaces overlap"
    ],
-   "a": 1
+   "a": 3
   }
  ],
  "expl": "<b>Across tenants.</b> Peering is possible across tenants; create one link on each side, with rights (Network Contributor or a peering permission) on each network, for example as a B2B guest.<b>LB-Old.</b> VNet-A and VNet-B are in two regions: that's global peering. Resources behind a <b>Basic</b> load balancer aren't reachable over global peering; upgrade LB-Old to Standard.<b>VNet-C.</b> Two networks with overlapping address spaces can't be peered, whatever the tenant. Readdress one of them.",
@@ -473,7 +473,7 @@ AZ.questions.push(
    ],
    [
     "Can VNet-B VMs reach LB-Old?",
-    "No: a Basic load balancer isn't reachable over global peering"
+    "No: no Basic load balancer over global peering"
    ],
    [
     "VNet-A ↔ VNet-C peering",
@@ -492,42 +492,42 @@ AZ.questions.push(
   {
    "l": "Requirement 1:",
    "o": [
-    "Azure Firewall Premium TLS inspection, CA certificate in Key Vault",
-    "Application rules on Standard",
-    "The DNS proxy",
-    "A WAF on Application Gateway"
+    "A WAF on Application Gateway",
+    "HTTPS application rules on Standard",
+    "Premium TLS inspection",
+    "The DNS proxy"
    ],
-   "a": 0
+   "a": 2
   },
   {
    "l": "Requirement 2:",
    "o": [
-    "Threat intelligence-based filtering",
-    "Azure Firewall Premium IDPS in Alert and deny mode",
+    "Threat intelligence filtering in Alert and deny mode",
     "Network rules",
-    "Microsoft Defender for Cloud"
+    "Microsoft Defender for Cloud",
+    "Azure Firewall Premium IDPS in Alert and deny mode"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "Requirement 3:",
    "o": [
-    "A parent firewall policy, inherited by three child policies",
-    "Copy the rules into each policy",
+    "Azure Policy",
     "A management group",
-    "Azure Policy"
+    "Copy the baseline rules into each policy",
+    "A parent policy, three child policies"
    ],
-   "a": 0
+   "a": 3
   },
   {
    "l": "Requirement 4:",
    "o": [
-    "Basic DDoS protection (included)",
-    "A DDoS Network Protection plan associated with the virtual networks",
+    "Infrastructure DDoS protection (included)",
     "A WAF",
+    "A DDoS Network Protection plan",
     "NSGs"
    ],
-   "a": 1
+   "a": 2
   }
  ],
  "expl": "<b>TLS.</b> Decrypting outbound traffic is a <b>Premium</b> feature; the intermediate CA certificate is stored in Key Vault and read by a managed identity.<b>IDPS.</b> Signature-based detection is Premium's IDPS. Threat intelligence filtering (Standard) blocks known IPs and domains, not attack signatures.<b>Common baseline.</b> With Azure Firewall Manager, a parent policy is inherited by child policies: they add rules but don't change the parent's.<b>DDoS.</b> Basic infrastructure protection offers no per-application tuning or DDoS Rapid Response access. A DDoS Network Protection plan, associated with the virtual networks, protects their public IPs and provides that access.",
@@ -542,7 +542,7 @@ AZ.questions.push(
   "rows": [
    [
     "*Requirement 1",
-    "Azure Firewall Premium TLS inspection, CA certificate in Key Vault"
+    "Premium TLS inspection"
    ],
    [
     "Requirement 2",
@@ -550,11 +550,11 @@ AZ.questions.push(
    ],
    [
     "Requirement 3",
-    "A parent firewall policy, inherited by three child policies"
+    "A parent policy, three child policies"
    ],
    [
     "Requirement 4",
-    "A DDoS Network Protection plan associated with the virtual networks"
+    "A DDoS Network Protection plan"
    ]
   ]
  },
@@ -569,8 +569,8 @@ AZ.questions.push(
   {
    "l": "To attach NIC-Mgmt:",
    "o": [
-    "Hot-attach it with the VM running",
-    "Stop (deallocate) VM7, attach the interface, restart",
+    "Hot-attach it with the VM running, then restart",
+    "Deallocate VM7, attach, restart",
     "Redeploy VM7",
     "Recreate VM7"
    ],
@@ -579,32 +579,32 @@ AZ.questions.push(
   {
    "l": "NIC-Mgmt in VNet-Mgmt:",
    "o": [
-    "Possible with a peering",
-    "Not possible: all of a VM's interfaces are in the same virtual network",
     "Possible if VNet-Mgmt is in the same region",
-    "Possible with IP forwarding"
+    "Possible with IP forwarding",
+    "Not possible: all NICs share one virtual network",
+    "Possible with a peering between VNet-Prod and VNet-Mgmt"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "For the production interface:",
    "o": [
-    "Enable accelerated networking",
+    "Add a second IP configuration",
     "Enable IP forwarding",
     "Add a public IP",
-    "Add a second IP configuration"
+    "Enable accelerated networking"
    ],
-   "a": 0
+   "a": 3
   },
   {
    "l": "Third interface:",
    "o": [
+    "Add an IP configuration to NIC-Mgmt for backup",
     "Possible with no change",
-    "Resize VM7 to a size that supports 3 interfaces",
-    "Not possible on Azure",
-    "Add an IP configuration to NIC-Mgmt"
+    "Resize VM7 (a size with 3+ NICs)",
+    "Not possible on Azure"
    ],
-   "a": 1
+   "a": 2
   }
  ],
  "expl": "<b>Attach.</b> You add or remove a network interface only when the VM is stopped (deallocated).<b>Network.</b> A VM's interfaces can be in different subnets, but all in the <b>same virtual network</b>.<b>Performance.</b> Accelerated networking (SR-IOV) bypasses the host virtual switch: lower latency, higher throughput, less CPU. It's supported on D4s_v5.<b>Third interface.</b> The number of interfaces depends on size: D4s_v5 supports 2. A larger size is needed (for example D8s_v5, 4 interfaces). A second IP configuration isn't a separate interface.",
@@ -619,11 +619,11 @@ AZ.questions.push(
   "rows": [
    [
     "*To attach NIC-Mgmt",
-    "Stop (deallocate) VM7, attach the interface, restart"
+    "Deallocate VM7, attach, restart"
    ],
    [
     "NIC-Mgmt in VNet-Mgmt",
-    "Not possible: all of a VM's interfaces are in the same virtual network"
+    "Not possible: all NICs share one virtual network"
    ],
    [
     "For the production interface",
@@ -631,7 +631,7 @@ AZ.questions.push(
    ],
    [
     "Third interface",
-    "Resize VM7 to a size that supports 3 interfaces"
+    "Resize VM7 (a size with 3+ NICs)"
    ]
   ]
  },

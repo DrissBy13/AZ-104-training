@@ -9,32 +9,32 @@ AZ.questions.push(
   {
    "l": "For NSG-PE to apply:",
    "o": [
-    "Associate NSG-PE with each endpoint's interface",
-    "Enable private endpoint network policies (NSG) on Subnet-PE",
     "Move NSG-PE to priority 100",
-    "Add an ASG"
+    "Add an ASG",
+    "Associate NSG-PE directly with each endpoint's network interface",
+    "Enable NSG network policies on Subnet-PE"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "To send traffic through AzFW1:",
    "o": [
-    "Nothing: 0.0.0.0/0 is enough",
-    "Enable network policies (route tables) on Subnet-PE and a route to the Subnet-PE prefix via 10.0.1.4 in the spokes",
-    "A /32 route per endpoint on Subnet-PE",
-    "A peering between spokes"
+    "A peering between spokes",
+    "Routing policies, route to Subnet-PE via 10.0.1.4",
+    "Nothing: 0.0.0.0/0 to 10.0.1.4 already covers the endpoints",
+    "A /32 route per endpoint, in Subnet-PE's route tables"
    ],
    "a": 1
   },
   {
    "l": "Addresses per endpoint:",
    "o": [
-    "One private IP address (for one sub-resource)",
-    "A whole /28",
     "One address per client",
+    "One private IP address",
+    "A whole /28 reserved for the endpoint",
     "None"
    ],
-   "a": 0
+   "a": 1
   }
  ],
  "expl": "<b>NSG.</b> By default, network policies are disabled for private endpoints: the subnet's NSGs don't apply to their traffic. Enable the property (privateEndpointNetworkPolicies) on Subnet-PE.<b>Routing.</b> Each endpoint creates a /32 system route, more specific than 0.0.0.0/0: traffic bypasses the firewall. Once route table policies are enabled, a user route to the Subnet-PE prefix (wider than /32) overrides those /32s, with no per-endpoint route to maintain.<b>Addresses.</b> A private endpoint uses one IP address from the subnet for the target sub-resource (some services, such as Cosmos DB, use one per region).",
@@ -49,15 +49,15 @@ AZ.questions.push(
   "rows": [
    [
     "*For NSG-PE to apply",
-    "Enable private endpoint network policies (NSG) on Subnet-PE"
+    "Enable NSG network policies on Subnet-PE"
    ],
    [
     "To send traffic through AzFW1",
-    "Enable network policies (route tables) on Subnet-PE and a route to the Subnet-PE prefix via 10.0.1.4 in the spokes"
+    "Routing policies, route to Subnet-PE via 10.0.1.4"
    ],
    [
     "Addresses per endpoint",
-    "One private IP address (for one sub-resource)"
+    "One private IP address"
    ]
   ]
  },
@@ -72,32 +72,32 @@ AZ.questions.push(
   {
    "l": "AzFW1 private ranges (no SNAT):",
    "o": [
-    "IANA private ranges (default)",
-    "IANA private ranges + 52.10.0.0/16, without 172.16.0.0/12",
     "0.0.0.0/0",
-    "255.255.255.255/32"
+    "Default IANA private ranges, unchanged",
+    "255.255.255.255/32",
+    "IANA + 52.10.0.0/16 − 172.16.0.0/12"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "Effect on the partner:",
    "o": [
     "Its traffic is no longer translated",
-    "Its traffic is translated to AzFW1's private IP",
-    "Its traffic is translated to AzFW1's public IP",
-    "Its traffic is blocked"
+    "It's translated to AzFW1's private IP",
+    "Its traffic is blocked",
+    "Its traffic is translated to AzFW1's public IP"
    ],
    "a": 1
   },
   {
    "l": "For AzFW1's internet traffic:",
    "o": [
-    "A 0.0.0.0/0 route to the gateway on AzureFirewallSubnet, with no other change",
-    "Forced tunneling, with AzureFirewallManagementSubnet and a management public IP",
+    "Forced tunneling with a management subnet and IP",
     "A NAT gateway on AzureFirewallSubnet",
+    "A 0.0.0.0/0 route to the gateway on AzureFirewallSubnet, with no other change",
     "Disable AzFW1's public IP"
    ],
-   "a": 1
+   "a": 0
   }
  ],
  "expl": "<b>SNAT.</b> Azure Firewall doesn't translate traffic whose destination is in its “private” ranges (by default, IANA RFC 1918 ranges and 100.64.0.0/10) for network rules. 52.10.0.0/16 is public: it's translated. Add it to the list.<b>Partner.</b> 172.20.0.0/16 is part of 172.16.0.0/12; by removing that range from the list, traffic to the partner is translated to the firewall's private address (VPN side).<b>Forced tunneling.</b> The firewall needs direct access for management: forced tunneling requires AzureFirewallManagementSubnet (/26) with its own public IP. A plain 0.0.0.0/0 route on AzureFirewallSubnet without a management NIC would break the firewall.",
@@ -112,15 +112,15 @@ AZ.questions.push(
   "rows": [
    [
     "*AzFW1 private ranges (no SNAT)",
-    "IANA private ranges + 52.10.0.0/16, without 172.16.0.0/12"
+    "IANA + 52.10.0.0/16 − 172.16.0.0/12"
    ],
    [
     "Effect on the partner",
-    "Its traffic is translated to AzFW1's private IP"
+    "It's translated to AzFW1's private IP"
    ],
    [
     "For AzFW1's internet traffic",
-    "Forced tunneling, with AzureFirewallManagementSubnet and a management public IP"
+    "Forced tunneling with a management subnet and IP"
    ]
   ]
  },
@@ -136,8 +136,8 @@ AZ.questions.push(
    "l": "VPNGW1 SKU:",
    "o": [
     "Basic",
-    "VpnGw1 (recreate the gateway)",
-    "VpnGw1 (resize in place)",
+    "VpnGw1 (recreate it)",
+    "VpnGw1 (resize it in place)",
     "VpnGw3"
    ],
    "a": 1
@@ -145,30 +145,30 @@ AZ.questions.push(
   {
    "l": "Client address pool:",
    "o": [
-    "10.0.200.0/24",
-    "192.168.200.0/24",
     "172.16.200.0/24",
-    "10.5.200.0/24"
+    "10.5.200.0/24",
+    "192.168.200.0/24",
+    "10.0.200.0/24"
    ],
-   "a": 2
+   "a": 0
   },
   {
    "l": "For VNet-Spoke5:",
    "o": [
-    "Add a route on each computer",
-    "Download and reinstall the VPN client profile",
     "Enable gateway transit on Spoke5",
-    "Restart VPNGW1"
+    "Add a route to 10.5.0.0/16 on each computer",
+    "Restart VPNGW1",
+    "Reinstall the VPN client profile"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "Sales staff access to Lyon headquarters:",
    "o": [
-    "Works: the site-to-site uses BGP",
+    "Already works, thanks to BGP",
     "Not possible point-to-site",
-    "Requires a second tunnel",
-    "Requires a peering"
+    "Requires a peering",
+    "Requires a second dedicated tunnel"
    ],
    "a": 0
   }
@@ -185,7 +185,7 @@ AZ.questions.push(
   "rows": [
    [
     "*VPNGW1 SKU",
-    "VpnGw1 (recreate the gateway)"
+    "VpnGw1 (recreate it)"
    ],
    [
     "Client address pool",
@@ -193,11 +193,11 @@ AZ.questions.push(
    ],
    [
     "For VNet-Spoke5",
-    "Download and reinstall the VPN client profile"
+    "Reinstall the VPN client profile"
    ],
    [
     "Sales staff access to Lyon headquarters",
-    "Works: the site-to-site uses BGP"
+    "Already works, thanks to BGP"
    ]
   ]
  },
@@ -212,32 +212,32 @@ AZ.questions.push(
   {
    "l": "For the app hang:",
    "o": [
-    "Shorten the TCP probe interval",
-    "Replace the probe with an HTTPS probe on a /health page that tests the app",
     "Enable session persistence",
-    "Add an inbound NAT rule"
+    "Add an inbound NAT rule",
+    "Shorten the TCP 443 probe's interval and threshold",
+    "An HTTPS probe on /health that tests the app"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "For VM-B's update:",
    "o": [
-    "Remove VM-B from the pool",
-    "Make the probe fail on VM-B (established flows continue)",
-    "Stop VM-B",
-    "Delete the load-balancing rule"
+    "Delete the load-balancing rule",
+    "Remove VM-B from LB-App's backend pool",
+    "Make the probe fail on VM-B",
+    "Stop VM-B"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "For VM-A:",
    "o": [
+    "Disable Windows Firewall",
     "Allow 168.63.129.16 in Windows Firewall",
     "Allow the AzureLoadBalancer tag in Windows Firewall",
-    "Disable Windows Firewall",
     "Change the probe port"
    ],
-   "a": 0
+   "a": 1
   }
  ],
  "expl": "<b>Hang.</b> A TCP probe only checks that the port is open. An HTTP(S) probe on a page that really tests the app (database, dependencies) removes the instance as soon as it stops returning 200.<b>Update.</b> On a Standard load balancer, when the probe fails, new flows stop going to the instance, but established TCP connections continue. Removing the VM from the pool would cut existing flows.<b>Guest firewall.</b> Probes come from 168.63.129.16. In the guest OS, allow that address; the AzureLoadBalancer tag only exists in NSGs.",
@@ -252,11 +252,11 @@ AZ.questions.push(
   "rows": [
    [
     "*For the app hang",
-    "Replace the probe with an HTTPS probe on a /health page that tests the app"
+    "An HTTPS probe on /health that tests the app"
    ],
    [
     "For VM-B's update",
-    "Make the probe fail on VM-B (established flows continue)"
+    "Make the probe fail on VM-B"
    ],
    [
     "For VM-A",
@@ -275,10 +275,10 @@ AZ.questions.push(
   {
    "l": "Need 1:",
    "o": [
-    "An NSG",
     "Azure Firewall application rules",
+    "Azure Firewall threat intelligence",
     "The Application Gateway WAF policy",
-    "Azure Firewall threat intelligence"
+    "An NSG"
    ],
    "a": 2
   },
@@ -295,22 +295,22 @@ AZ.questions.push(
   {
    "l": "Need 3:",
    "o": [
-    "An NSG",
     "Azure Firewall application rules",
-    "The Application Gateway WAF policy",
-    "Azure Firewall threat intelligence"
+    "An NSG",
+    "Azure Firewall threat intelligence",
+    "The Application Gateway WAF policy"
    ],
-   "a": 0
+   "a": 1
   },
   {
    "l": "Need 4:",
    "o": [
+    "Azure Firewall threat intelligence",
     "An NSG",
-    "Azure Firewall application rules",
     "The Application Gateway WAF policy",
-    "Azure Firewall threat intelligence in Alert and deny mode"
+    "Azure Firewall application rules"
    ],
-   "a": 3
+   "a": 0
   }
  ],
  "expl": "<b>1.</b> HTTP application attacks (OWASP: SQL injection, XSS) are the <b>WAF</b>'s job.<b>2.</b> Outbound FQDN filtering uses Azure Firewall application rules; an NSG only knows addresses and tags.<b>3.</b> Traffic between two subnets of the same virtual network doesn't go through the hub: an NSG (or a user route, which the requirement excludes) filters it port by port.<b>4.</b> Azure Firewall threat intelligence filtering uses Microsoft's feed of malicious addresses and domains; it's Alert only by default, hence Alert and deny.",
@@ -337,7 +337,7 @@ AZ.questions.push(
    ],
    [
     "Need 4",
-    "Azure Firewall threat intelligence in Alert and deny mode"
+    "Azure Firewall threat intelligence"
    ]
   ]
  },
@@ -352,40 +352,40 @@ AZ.questions.push(
   {
    "l": "Cause of the current failure:",
    "o": [
-    "The peering blocks DNS",
-    "Azure-provided DNS only resolves host names within the same virtual network",
-    "An NSG rule on UDP 53 is missing",
-    "DNS is disabled on VNet-A"
+    "An outbound NSG rule on UDP 53 to VNet-A is missing",
+    "DNS is disabled on VNet-A",
+    "Azure DNS only resolves names within one VNet",
+    "The peering doesn't pass DNS queries between networks"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "a.internal link to VNet-A:",
    "o": [
+    "No link",
     "With auto-registration",
-    "Without auto-registration",
-    "No link"
-   ],
-   "a": 0
-  },
-  {
-   "l": "a.internal link to VNet-B:",
-   "o": [
-    "With auto-registration",
-    "Without auto-registration (resolution only)",
-    "No link: the peering is enough"
+    "Without auto-registration"
    ],
    "a": 1
   },
   {
-   "l": "Deleting a VNet-A VM:",
+   "l": "a.internal link to VNet-B:",
    "o": [
-    "Its record is deleted automatically",
-    "The record must be deleted manually",
-    "The record expires after 30 days",
-    "The link must be disabled"
+    "Without auto-registration",
+    "With auto-registration",
+    "No link: the peering is enough for resolution"
    ],
    "a": 0
+  },
+  {
+   "l": "Deleting a VNet-A VM:",
+   "o": [
+    "The record must be deleted manually",
+    "Its record is deleted automatically",
+    "The link must be disabled",
+    "The record expires after 30 days"
+   ],
+   "a": 1
   }
  ],
  "expl": "<b>Cause.</b> Azure DNS host name resolution only works within the same virtual network; peering doesn't extend it.<b>VNet-A.</b> A link with auto-registration creates A records for VNet-A VMs.<b>VNet-B.</b> VNet-B already registers in b.internal, and a virtual network can register in only one zone: the link to a.internal must be resolution only, which meets the need.<b>Deletion.</b> Records created by auto-registration are deleted with the VM.",
@@ -400,7 +400,7 @@ AZ.questions.push(
   "rows": [
    [
     "*Cause of the current failure",
-    "Azure-provided DNS only resolves host names within the same virtual network"
+    "Azure DNS only resolves names within one VNet"
    ],
    [
     "a.internal link to VNet-A",
@@ -408,7 +408,7 @@ AZ.questions.push(
    ],
    [
     "a.internal link to VNet-B",
-    "Without auto-registration (resolution only)"
+    "Without auto-registration"
    ],
    [
     "Deleting a VNet-A VM",
@@ -427,32 +427,32 @@ AZ.questions.push(
   {
    "l": "Cause:",
    "o": [
-    "Probes go through the firewall",
-    "Asymmetric routing: inbound comes through LB-Web, the reply goes to AzFW1",
-    "LB-Web doesn't support user routes",
-    "AzFW1 blocks inbound port 443"
+    "AzFW1 blocks inbound port 443",
+    "Asymmetric routing: the reply goes to AzFW1",
+    "LB-Web's probes go through AzFW1 and are denied",
+    "LB-Web doesn't support user routes"
    ],
    "a": 1
   },
   {
    "l": "Recommended fix:",
    "o": [
-    "Publish the site through an AzFW1 DNAT rule to an internal load balancer frontend IP",
-    "Remove the route table",
+    "An AzFW1 DNAT rule to an internal load balancer",
     "Add a public IP to each VM",
-    "Enable floating IP on LB-Web"
+    "Enable floating IP on LB-Web",
+    "Remove Subnet-Web's route table and filter with NSGs"
    ],
    "a": 0
   },
   {
    "l": "With a DNAT rule:",
    "o": [
-    "A network rule allowing the translated traffic is also needed",
     "Translated traffic is allowed implicitly",
     "An application rule is needed",
-    "Traffic is inspected by the WAF"
+    "Traffic is inspected by the WAF",
+    "A network rule allowing the translated traffic is also needed"
    ],
-   "a": 1
+   "a": 0
   }
  ],
  "expl": "<b>Asymmetry.</b> The request enters through LB-Web's public IP and reaches the VM; the reply follows the 0.0.0.0/0 route to AzFW1, which never saw the session open and denies the SYN-ACK.<b>Fix.</b> Bring traffic in through the firewall itself: a DNAT rule on AzFW1's public IP to an <b>internal</b> load balancer (or the VMs). Both directions then go through the same firewall. Removing the route table would remove outbound inspection.<b>Implicit rule.</b> A DNAT rule automatically adds a network rule allowing the translated traffic.",
@@ -467,11 +467,11 @@ AZ.questions.push(
   "rows": [
    [
     "*Cause",
-    "Asymmetric routing: inbound comes through LB-Web, the reply goes to AzFW1"
+    "Asymmetric routing: the reply goes to AzFW1"
    ],
    [
     "Recommended fix",
-    "Publish the site through an AzFW1 DNAT rule to an internal load balancer frontend IP"
+    "An AzFW1 DNAT rule to an internal load balancer"
    ],
    [
     "With a DNAT rule",
@@ -490,30 +490,30 @@ AZ.questions.push(
   {
    "l": "“Not provisioned” status:",
    "o": [
-    "Delete and recreate the circuit",
-    "Wait for the carrier to finish provisioning, using the service key sent to it",
+    "Delete and recreate the circuit with the right provider",
+    "Enable Global Reach",
     "Configure private peering now",
-    "Enable Global Reach"
+    "Wait for the carrier to provision it"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "Private peering subnets (IPv4):",
    "o": [
-    "One /29",
-    "Two /30s, one for the primary link and one for the secondary",
-    "One /24",
-    "None"
+    "Two /30s, one per link",
+    "None",
+    "One /29 shared by both links",
+    "One /24"
    ],
-   "a": 1
+   "a": 0
   },
   {
    "l": "Connect VNet-App to the circuit:",
    "o": [
-    "Give the App team Contributor on Sub-Network",
-    "Create an authorization on the circuit, then a connection in Sub-App with the circuit ID and key",
     "Move the circuit to Sub-App",
-    "Peer VNet-App with a Sub-Network network"
+    "A circuit authorization, then a connection with the key",
+    "Give the App team Contributor on Sub-Network",
+    "Peer VNet-App with a Sub-Network network linked to the circuit"
    ],
    "a": 1
   }
@@ -530,15 +530,15 @@ AZ.questions.push(
   "rows": [
    [
     "*“Not provisioned” status",
-    "Wait for the carrier to finish provisioning, using the service key sent to it"
+    "Wait for the carrier to provision it"
    ],
    [
     "Private peering subnets (IPv4)",
-    "Two /30s, one for the primary link and one for the secondary"
+    "Two /30s, one per link"
    ],
    [
     "Connect VNet-App to the circuit",
-    "Create an authorization on the circuit, then a connection in Sub-App with the circuit ID and key"
+    "A circuit authorization, then a connection with the key"
    ]
   ]
  },
@@ -553,30 +553,30 @@ AZ.questions.push(
   {
    "l": "Recommended migration tool:",
    "o": [
-    "The PowerShell module that upgrades Basic load balancers to Standard",
-    "Change the SKU in the portal",
-    "Azure Migrate",
-    "Recreate the load balancer by hand"
-   ],
-   "a": 0
-  },
-  {
-   "l": "The site no longer answers:",
-   "o": [
-    "The probe must switch to HTTPS",
-    "Standard is closed by default: associate an NSG allowing TCP 80",
-    "One IP per VM is needed",
-    "The pool must be recreated"
+    "Change the SKU in the portal, with no downtime",
+    "The PowerShell load balancer upgrade module",
+    "Recreate the load balancer by hand",
+    "Azure Migrate"
    ],
    "a": 1
   },
   {
+   "l": "The site no longer answers:",
+   "o": [
+    "One IP per VM is needed",
+    "The probe must switch to HTTPS on port 443",
+    "The pool must be recreated",
+    "Associate an NSG allowing TCP 80"
+   ],
+   "a": 3
+  },
+  {
    "l": "VM updates:",
    "o": [
-    "They come back on their own",
-    "Add an outbound rule (or a NAT gateway)",
+    "Add a probe",
+    "An outbound rule or a NAT gateway",
     "Open 443 inbound",
-    "Add a probe"
+    "They come back on their own after sync"
    ],
    "a": 1
   }
@@ -593,15 +593,15 @@ AZ.questions.push(
   "rows": [
    [
     "*Recommended migration tool",
-    "The PowerShell module that upgrades Basic load balancers to Standard"
+    "The PowerShell load balancer upgrade module"
    ],
    [
     "The site no longer answers",
-    "Standard is closed by default: associate an NSG allowing TCP 80"
+    "Associate an NSG allowing TCP 80"
    ],
    [
     "VM updates",
-    "Add an outbound rule (or a NAT gateway)"
+    "An outbound rule or a NAT gateway"
    ]
   ]
  },
@@ -616,32 +616,32 @@ AZ.questions.push(
   {
    "l": "Spoke4:",
    "o": [
+    "Enable gateway transit on Spoke4",
     "Enable the option directly",
-    "Delete VPNGW4 first",
     "Disable BGP on VPNGW4",
-    "Enable gateway transit on Spoke4"
+    "Delete VPNGW4 first"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "Spoke5:",
    "o": [
-    "Enable “Use remote gateways” on both peerings",
+    "Possible with Basic Virtual WAN",
     "Only one peering can use a remote gateway",
-    "Possible if both gateways use BGP",
-    "Possible with Basic Virtual WAN"
+    "Enable “Use remote gateways” on both peerings",
+    "Possible if both gateways use BGP"
    ],
    "a": 1
   },
   {
    "l": "Spoke6:",
    "o": [
-    "Supported: gateway transit works over global peering",
-    "Not possible over global peering",
     "Requires a gateway in Spoke6",
+    "Supported over global peering",
+    "Not possible: transit requires the same region",
     "Requires ExpressRoute"
    ],
-   "a": 0
+   "a": 1
   }
  ],
  "expl": "<b>Spoke4.</b> You can't use a remote gateway if the virtual network already has its own gateway: delete VPNGW4.<b>Spoke5.</b> A virtual network can use the remote gateway of only one peering. For cross-region redundancy, another design is needed (active-active gateways, Standard Virtual WAN…).<b>Spoke6.</b> Gateway transit is supported over global peering, across regions.",
@@ -664,7 +664,7 @@ AZ.questions.push(
    ],
    [
     "Spoke6",
-    "Supported: gateway transit works over global peering"
+    "Supported over global peering"
    ]
   ]
  },

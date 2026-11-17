@@ -19,32 +19,32 @@ AZ.questions.push(
   {
    "l": "AzureBastionSubnet :",
    "o": [
+    "Le sous-réseau des VM",
     "10.0.11.0/28",
     "Un /26 pris dans 10.0.10.0/24",
-    "Un sous-réseau dans VNet-Spoke",
-    "Le sous-réseau des VM"
+    "Un sous-réseau dans VNet-Spoke"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "Pour les VM de VNet-Spoke :",
    "o": [
-    "Un second Bastion dans VNet-Spoke",
+    "Un second Bastion dans VNet-Spoke, car le peering ne suffit pas",
     "Rien : Bastion joint les VM des réseaux appairés",
     "Activer le transit par passerelle",
-    "Une règle NSG depuis Internet sur 3389"
+    "Une règle NSG depuis AzureBastionSubnet sur 3389 dans le spoke"
    ],
    "a": 1
   },
   {
    "l": "Option pour le besoin 1 :",
    "o": [
-    "Lien partageable",
+    "Connexion basée sur l'adresse IP",
+    "Copier/coller",
     "Prise en charge du client natif",
-    "Tunneling IP vers un port",
-    "Copier/coller"
+    "Lien partageable avec mstsc"
    ],
-   "a": 1
+   "a": 2
   }
  ],
  "expl": "<b>Niveau.</b> Le client natif et le lien partageable demandent au moins Standard, mais l'<b>enregistrement des sessions</b> n'existe qu'en <b>Premium</b> : c'est le besoin le plus exigeant qui fixe le niveau.<b>Sous-réseau.</b> AzureBastionSubnet doit faire au moins /26 ; le /28 libre est trop petit.<b>Spoke.</b> Bastion se connecte aux VM des réseaux appairés, sans second déploiement.<b>Client natif.</b> L'option « Prise en charge du client natif » permet az network bastion rdp, qui lance mstsc. Le lien partageable (besoin 2) s'active aussi, mais c'est une autre option.",
@@ -116,12 +116,12 @@ AZ.questions.push(
   {
    "l": "Pour VNet2 :",
    "o": [
-    "Supprimer et recréer le peering",
     "Synchroniser le peering côté VNet2",
+    "Ajouter une route vers 10.21.0.0/16",
     "Redémarrer les VM de VNet2",
-    "Ajouter une route vers 10.21.0.0/16"
+    "Supprimer et recréer le peering"
    ],
-   "a": 1
+   "a": 0
   }
  ],
  "expl": "<b>Subnet-App.</b> Azure réserve 5 adresses par sous-réseau : 72 + 5 = 77. Un /26 n'en offre que 64, un /25 en offre 128 : c'est le plus petit qui convient.<b>Pare-feu.</b> AzureFirewallSubnet doit faire au moins /26.<b>Passerelle.</b> Pour faire coexister ExpressRoute et un VPN, GatewaySubnet doit faire /27 ou plus (Microsoft recommande /27 dans tous les cas pour laisser de la marge).<b>Peering.</b> Après une modification de l'espace d'adressage d'un réseau appairé, le peering de l'autre côté passe à l'état « Synchronisation requise ». Il suffit de le synchroniser, sans interruption ni recréation.",
@@ -163,46 +163,46 @@ AZ.questions.push(
   {
    "l": "10.50.1.20 :",
    "o": [
+    "Internet",
+    "Peering de réseau virtuel",
     "Appliance virtuelle 10.0.1.4",
-    "Passerelle de réseau virtuel",
+    "Aucun (paquet abandonné)",
+    "Passerelle de réseau virtuel"
+   ],
+   "a": 4
+  },
+  {
+   "l": "10.50.2.20 :",
+   "o": [
     "Peering de réseau virtuel",
     "Aucun (paquet abandonné)",
+    "Passerelle de réseau virtuel",
+    "Appliance virtuelle 10.0.1.4",
     "Internet"
    ],
    "a": 1
   },
   {
-   "l": "10.50.2.20 :",
-   "o": [
-    "Appliance virtuelle 10.0.1.4",
-    "Passerelle de réseau virtuel",
-    "Peering de réseau virtuel",
-    "Aucun (paquet abandonné)",
-    "Internet"
-   ],
-   "a": 3
-  },
-  {
    "l": "10.60.3.4 :",
    "o": [
-    "Appliance virtuelle 10.0.1.4",
-    "Passerelle de réseau virtuel",
-    "Peering de réseau virtuel",
+    "Internet",
     "Aucun (paquet abandonné)",
-    "Internet"
+    "Peering de réseau virtuel",
+    "Passerelle de réseau virtuel",
+    "Appliance virtuelle 10.0.1.4"
    ],
    "a": 2
   },
   {
    "l": "8.8.8.8 :",
    "o": [
-    "Appliance virtuelle 10.0.1.4",
-    "Passerelle de réseau virtuel",
     "Peering de réseau virtuel",
-    "Aucun (paquet abandonné)",
-    "Internet"
+    "Appliance virtuelle 10.0.1.4",
+    "Internet",
+    "Passerelle de réseau virtuel",
+    "Aucun (paquet abandonné)"
    ],
-   "a": 0
+   "a": 1
   }
  ],
  "expl": "<p>Azure choisit d'abord le <b>préfixe le plus long</b>. À longueur égale seulement, l'ordre est : route utilisateur, puis BGP, puis route système.</p><b>10.50.1.20.</b> La route BGP 10.50.1.0/24 est plus précise que la route utilisateur 10.50.0.0/16 : passerelle de réseau virtuel.<b>10.50.2.20.</b> Seule 10.50.0.0/16 (Aucun) correspond : le paquet est abandonné.<b>10.60.3.4.</b> La route système du peering (10.60.0.0/16) est plus précise que 0.0.0.0/0 : peering de réseau virtuel. Pour forcer ce trafic dans le pare-feu, il faudrait une route 10.60.0.0/16 vers 10.0.1.4.<b>8.8.8.8.</b> Seule 0.0.0.0/0 correspond, et la route utilisateur remplace la route système Internet : appliance virtuelle.",
@@ -244,42 +244,42 @@ AZ.questions.push(
   {
    "l": "Pour corp.local depuis Azure :",
    "o": [
-    "Un point de terminaison entrant",
+    "Un point de terminaison entrant et une zone corp.local liée",
     "Une zone privée corp.local",
-    "Un point de terminaison sortant et un ensemble de règles de transfert vers 192.168.1.10 et .11",
-    "Les serveurs DNS 192.168.1.10 sur les réseaux virtuels"
+    "Les serveurs DNS 192.168.1.10 et .11 sur les trois réseaux virtuels",
+    "Un point sortant et des règles vers 192.168.1.10 et .11"
    ],
-   "a": 2
+   "a": 3
   },
   {
    "l": "L'ensemble de règles doit être lié à :",
    "o": [
     "VNet-Hub seulement",
-    "VNet-Hub, VNet-Spoke1 et VNet-Spoke2",
     "La passerelle ExpressRoute",
-    "Aucun réseau : il s'applique au résolveur"
+    "Aucun réseau : il s'applique au résolveur",
+    "VNet-Hub, VNet-Spoke1 et VNet-Spoke2"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "Sur les DNS du site :",
    "o": [
-    "Un redirecteur conditionnel vers 168.63.129.16",
-    "Une zone secondaire privatelink",
-    "Un redirecteur conditionnel vers l'IP du point de terminaison entrant",
-    "Rien"
+    "Une zone secondaire privatelink.blob.core.windows.net sur les DNS",
+    "Rien",
+    "Un redirecteur conditionnel vers le point de terminaison entrant",
+    "Un redirecteur conditionnel vers 168.63.129.16"
    ],
    "a": 2
   },
   {
    "l": "Sous-réseaux du résolveur :",
    "o": [
-    "Un sous-réseau dédié et délégué par point de terminaison",
-    "Un seul sous-réseau partagé avec les VM",
     "GatewaySubnet",
+    "Un sous-réseau dédié et délégué par point de terminaison",
+    "Un seul sous-réseau /28 partagé avec les VM d'administration",
     "AzureFirewallSubnet"
    ],
-   "a": 0
+   "a": 1
   }
  ],
  "expl": "<b>Azure vers corp.local.</b> Le <b>point de terminaison sortant</b> envoie les requêtes, et l'<b>ensemble de règles de transfert</b> dit lesquelles (corp.local → 192.168.1.10 et .11). Les réseaux gardent le DNS Azure.<b>Liens.</b> Un ensemble de règles ne s'applique qu'aux réseaux virtuels qui lui sont liés ; on peut le lier aux spokes de la même région, sans déployer d'autre résolveur.<b>Site vers Azure.</b> 168.63.129.16 n'est pas joignable depuis le site. Le <b>point de terminaison entrant</b> donne une IP privée de VNet-Hub, vers laquelle les DNS du site transfèrent les zones privatelink (ou les zones publiques correspondantes, comme blob.core.windows.net).<b>Sous-réseaux.</b> Chaque point de terminaison exige son propre sous-réseau (au moins /28), délégué à Microsoft.Network/dnsResolvers et sans autre ressource.",
@@ -294,7 +294,7 @@ AZ.questions.push(
   "rows": [
    [
     "*Pour corp.local depuis Azure",
-    "Un point de terminaison sortant et un ensemble de règles de transfert vers 192.168.1.10 et .11"
+    "Un point sortant et des règles vers 192.168.1.10 et .11"
    ],
    [
     "L'ensemble de règles doit être lié à",
@@ -302,7 +302,7 @@ AZ.questions.push(
    ],
    [
     "Sur les DNS du site",
-    "Un redirecteur conditionnel vers l'IP du point de terminaison entrant"
+    "Un redirecteur conditionnel vers le point de terminaison entrant"
    ],
    [
     "Sous-réseaux du résolveur",
@@ -321,42 +321,42 @@ AZ.questions.push(
   {
    "l": "Règle web vers application :",
    "o": [
-    "Source VirtualNetwork, destination VirtualNetwork",
-    "Source ASG-Web, destination ASG-App",
     "Source les sous-réseaux web, destination les sous-réseaux app",
-    "Source Internet, destination ASG-App"
+    "Source Internet, destination ASG-App",
+    "Source ASG-Web, destination ASG-App",
+    "Source VirtualNetwork, destination VirtualNetwork"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "Pour le reste du trafic interne :",
    "o": [
-    "Supprimer la règle par défaut AllowVnetInBound",
-    "Autoriser AzureLoadBalancer (3900), puis Refuser VirtualNetwork → VirtualNetwork (4000)",
-    "Une règle Refuser Any → Any de priorité 100",
+    "Autoriser AzureLoadBalancer (3900), puis refuser VirtualNetwork (4000)",
+    "Refuser Any → Any (100), puis autoriser ASG-Web → ASG-App (200)",
+    "Supprimer la règle par défaut AllowVnetInBound et ajouter des autorisations",
     "Une règle Refuser AzureLoadBalancer"
-   ],
-   "a": 1
-  },
-  {
-   "l": "Sortie des VM d'application :",
-   "o": [
-    "Autoriser Sql.FranceCentral, puis refuser Internet",
-    "Autoriser Sql, puis refuser Internet",
-    "Autoriser AzureCloud",
-    "Refuser Internet seulement"
    ],
    "a": 0
   },
   {
+   "l": "Sortie des VM d'application :",
+   "o": [
+    "Autoriser la balise Sql (toutes régions), puis refuser Internet",
+    "Refuser Internet seulement",
+    "Autoriser Sql.FranceCentral, puis refuser Internet",
+    "Autoriser AzureCloud"
+   ],
+   "a": 2
+  },
+  {
    "l": "VM web de VNet-Partner :",
    "o": [
+    "Créer un second ASG-Web dans VNet-Partner et l'ajouter à la règle",
+    "Activer le transit par passerelle",
     "L'ajouter à ASG-Web",
-    "Impossible avec un ASG : utiliser son adresse IP",
-    "Créer ASG-Web dans VNet-Partner",
-    "Activer le transit par passerelle"
+    "Impossible avec un ASG : utiliser son adresse IP"
    ],
-   "a": 1
+   "a": 3
   }
  ],
  "expl": "<b>ASG.</b> Les groupes de sécurité d'application regroupent les cartes réseau par rôle : une règle ASG-Web → ASG-App suit automatiquement les nouvelles VM ajoutées aux groupes, quel que soit leur sous-réseau.<b>Trafic interne.</b> Les règles par défaut ne se suppriment pas ; on les masque par une règle Refuser VirtualNetwork → VirtualNetwork avec un numéro plus petit (4000), placée après les autorisations. Or la balise VirtualNetwork inclut l'adresse virtuelle de l'hôte (168.63.129.16), d'où viennent les sondes : il faut donc autoriser explicitement AzureLoadBalancer juste avant (3900). Un Refuser Any → Any en priorité 100 bloquerait tout.<b>SQL.</b> La balise régionale Sql.FranceCentral limite aux adresses Azure SQL de la région ; il faut ensuite refuser Internet, sinon AllowInternetOutBound laisse tout passer.<b>VNet-Partner.</b> Toutes les cartes réseau d'un ASG doivent appartenir au même réseau virtuel ; une VM d'un réseau appairé ne peut pas y entrer.",
@@ -375,7 +375,7 @@ AZ.questions.push(
    ],
    [
     "Pour le reste du trafic interne",
-    "Autoriser AzureLoadBalancer (3900), puis Refuser VirtualNetwork → VirtualNetwork (4000)"
+    "Autoriser AzureLoadBalancer (3900), puis refuser VirtualNetwork (4000)"
    ],
    [
     "Sortie des VM d'application",
@@ -398,42 +398,42 @@ AZ.questions.push(
   {
    "l": "Chez le registraire :",
    "o": [
-    "Un enregistrement CNAME vers la zone Azure",
-    "Remplacer les serveurs de noms par les quatre serveurs NS de la zone Azure",
+    "Remplacer les serveurs de noms par ceux de la zone Azure",
     "Un enregistrement TXT de vérification",
-    "Un transfert de zone vers Azure"
+    "Un transfert de zone (AXFR) du registraire vers Azure DNS",
+    "Un enregistrement CNAME contoso.com vers le nom de la zone Azure"
    ],
-   "a": 1
+   "a": 0
   },
   {
    "l": "Pour l'apex :",
    "o": [
+    "Un enregistrement alias vers la ressource IP publique",
     "Un enregistrement CNAME @",
-    "Un enregistrement A statique",
-    "Un jeu d'enregistrements alias vers la ressource IP publique",
+    "Un enregistrement A statique, mis à jour par un script",
     "Un enregistrement SRV"
    ],
-   "a": 2
+   "a": 0
   },
   {
    "l": "Pour dev.contoso.com :",
    "o": [
-    "Des enregistrements NS « dev » dans contoso.com vers les serveurs de la zone dev",
-    "Un enregistrement CNAME « dev »",
-    "Le rôle Contributeur de zone DNS sur contoso.com",
-    "Une zone privée"
+    "Des enregistrements NS « dev » vers les serveurs de la zone dev",
+    "Un enregistrement CNAME « dev » vers la zone de l'équipe Dev",
+    "Une zone privée",
+    "Le rôle Contributeur de zone DNS sur contoso.com pour l'équipe Dev"
    ],
    "a": 0
   },
   {
    "l": "Protection de la zone :",
    "o": [
+    "Le rôle Lecteur pour les administrateurs DNS",
     "Un verrou Lecture seule sur la zone",
-    "Un verrou Suppression impossible sur la zone",
-    "Le rôle Lecteur pour les administrateurs",
-    "Une stratégie Deny"
+    "Une stratégie Deny",
+    "Un verrou Suppression impossible sur la zone"
    ],
-   "a": 1
+   "a": 3
   }
  ],
  "expl": "<b>Délégation.</b> La zone devient faisant autorité quand le registraire publie les serveurs de noms d'Azure DNS (ns1-xx.azure-dns.com, etc.).<b>Apex.</b> Un CNAME est interdit à l'apex. Un enregistrement <b>alias</b> pointe vers la ressource IP publique elle-même : si l'adresse change, l'enregistrement suit.<b>Sous-domaine.</b> On délègue dev.contoso.com en créant, dans la zone parente, un jeu NS « dev » avec les serveurs de la zone enfant.<b>Verrou.</b> Suppression impossible empêche de supprimer la zone mais laisse modifier les enregistrements. Lecture seule bloquerait aussi les modifications.",
@@ -448,15 +448,15 @@ AZ.questions.push(
   "rows": [
    [
     "*Chez le registraire",
-    "Remplacer les serveurs de noms par les quatre serveurs NS de la zone Azure"
+    "Remplacer les serveurs de noms par ceux de la zone Azure"
    ],
    [
     "Pour l'apex",
-    "Un jeu d'enregistrements alias vers la ressource IP publique"
+    "Un enregistrement alias vers la ressource IP publique"
    ],
    [
     "Pour dev.contoso.com",
-    "Des enregistrements NS « dev » dans contoso.com vers les serveurs de la zone dev"
+    "Des enregistrements NS « dev » vers les serveurs de la zone dev"
    ],
    [
     "Protection de la zone",
@@ -475,42 +475,42 @@ AZ.questions.push(
   {
    "l": "Équilibreur :",
    "o": [
-    "Standard interne",
     "De base interne",
     "Standard public",
+    "Standard interne",
     "Équilibreur de passerelle"
    ],
-   "a": 0
+   "a": 2
   },
   {
    "l": "Règle d'équilibrage :",
    "o": [
-    "Une règle TCP 443",
     "Ports HA",
     "Des règles NAT entrantes",
-    "Une règle de trafic sortant"
+    "Une règle de trafic sortant",
+    "Une règle TCP 443"
    ],
-   "a": 1
+   "a": 0
   },
   {
    "l": "Tronçon suivant des routes des spokes :",
    "o": [
     "Appliance virtuelle : IP frontale de l'équilibreur",
-    "Appliance virtuelle : 10.0.1.5",
+    "Internet",
     "Passerelle de réseau virtuel",
-    "Internet"
+    "Appliance virtuelle : 10.0.1.4 puis 10.0.1.5 en secours"
    ],
    "a": 0
   },
   {
    "l": "Sur les cartes réseau de NVA1 et NVA2 :",
    "o": [
-    "La mise en réseau accélérée",
     "Le transfert IP",
-    "Une IP publique",
-    "Un ASG"
+    "Un ASG",
+    "La mise en réseau accélérée",
+    "Une IP publique"
    ],
-   "a": 1
+   "a": 0
   }
  ],
  "expl": "<b>Équilibreur.</b> Les ports HA n'existent que sur un équilibreur <b>Standard interne</b>. L'équilibreur de passerelle sert à chaîner des appliances de manière transparente derrière un équilibreur public, ce n'est pas le modèle décrit.<b>Ports HA.</b> Une seule règle couvre tous les ports TCP et UDP ; la sonde retire l'appliance en panne.<b>Routes.</b> Le tronçon suivant des routes devient l'adresse frontale de l'équilibreur interne, type « Appliance virtuelle ».<b>Transfert IP.</b> Sans le transfert IP sur la carte réseau Azure, la plateforme abandonne les paquets dont l'adresse de destination n'est pas celle de la VM.",
@@ -552,32 +552,32 @@ AZ.questions.push(
   {
    "l": "Pour VNet-Asia :",
    "o": [
+    "Rien : Standard couvre toutes les régions",
     "Passer le circuit de Paris en Premium",
     "Un peering de VNet-Asia vers VNet-Hub, avec transit",
-    "Un circuit Local",
-    "Rien : Standard couvre toutes les régions"
-   ],
-   "a": 0
-  },
-  {
-   "l": "Entre Paris et Lyon :",
-   "o": [
-    "Un VPN site à site entre les sites",
-    "ExpressRoute Global Reach entre les deux circuits",
-    "Le peering Microsoft",
-    "Un peering de réseau virtuel"
+    "Un circuit Local"
    ],
    "a": 1
   },
   {
+   "l": "Entre Paris et Lyon :",
+   "o": [
+    "Un peering de réseau virtuel",
+    "Un VPN site à site entre les pare-feu des deux sites",
+    "Le peering Microsoft",
+    "ExpressRoute Global Reach entre les deux circuits"
+   ],
+   "a": 3
+  },
+  {
    "l": "Secours Internet :",
    "o": [
-    "Une passerelle VPN dans le même GatewaySubnet, avec une connexion site à site",
     "Une seconde passerelle ExpressRoute",
-    "Une passerelle VPN dans un autre réseau virtuel",
-    "Une passerelle NAT"
+    "Une passerelle VPN dans un autre réseau virtuel, appairé au hub",
+    "Une passerelle NAT",
+    "Une passerelle VPN dans le même GatewaySubnet, en site à site"
    ],
-   "a": 0
+   "a": 3
   }
  ],
  "expl": "<b>Japan East.</b> Un circuit Standard ne relie que les réseaux virtuels de la même zone géopolitique. Pour une autre zone, il faut l'extension <b>Premium</b>.<b>Paris ↔ Lyon.</b> Global Reach relie deux circuits ExpressRoute pour que les sites communiquent par le réseau de Microsoft.<b>Secours.</b> La coexistence ExpressRoute + VPN se fait avec une passerelle VPN dans le même GatewaySubnet (/27 minimum, c'est le cas). Les routes ExpressRoute sont préférées ; si le circuit tombe, le trafic bascule sur le VPN. Un réseau virtuel n'a qu'une passerelle de chaque type.",
@@ -600,7 +600,7 @@ AZ.questions.push(
    ],
    [
     "Secours Internet",
-    "Une passerelle VPN dans le même GatewaySubnet, avec une connexion site à site"
+    "Une passerelle VPN dans le même GatewaySubnet, en site à site"
    ]
   ]
  },
@@ -623,32 +623,32 @@ AZ.questions.push(
   {
    "l": "Hubs :",
    "o": [
+    "Un hub par agence",
     "Un hub virtuel par région",
     "Un hub pour les deux régions",
-    "Un hub par agence",
     "Un hub par réseau virtuel"
-   ],
-   "a": 0
-  },
-  {
-   "l": "Inspection :",
-   "o": [
-    "Des routes utilisateur 0.0.0.0/0 dans chaque spoke",
-    "Des hubs sécurisés avec l'intention de routage (trafic privé et Internet)",
-    "Un pare-feu dans chaque spoke",
-    "Des NSG sur les connexions"
    ],
    "a": 1
   },
   {
+   "l": "Inspection :",
+   "o": [
+    "Des NSG sur les connexions",
+    "Des routes utilisateur 0.0.0.0/0 vers le pare-feu du hub dans chaque spoke",
+    "Des hubs sécurisés avec l'intention de routage",
+    "Un pare-feu dans chaque spoke"
+   ],
+   "a": 2
+  },
+  {
    "l": "Spokes :",
    "o": [
-    "Des connexions de réseau virtuel au hub de leur région",
-    "Un peering avec chaque autre spoke",
+    "Un circuit ExpressRoute par spoke",
+    "Une connexion de réseau virtuel au hub régional",
     "Une passerelle VPN par spoke",
-    "Un circuit ExpressRoute par spoke"
+    "Un peering global avec chacun des autres spokes"
    ],
-   "a": 0
+   "a": 1
   }
  ],
  "expl": "<b>Standard.</b> Le WAN virtuel De base ne gère que le VPN site à site ; ExpressRoute, le transit entre réseaux virtuels et entre hubs, et Azure Firewall exigent Standard.<b>Hubs.</b> Un hub par région ; les hubs d'un même WAN Standard sont maillés automatiquement.<b>Intention de routage.</b> Avec un hub sécurisé (Azure Firewall dans le hub), les stratégies de routage pour le trafic privé et Internet envoient tout au pare-feu, sans table de routage dans les spokes.<b>Spokes.</b> Une connexion de réseau virtuel relie chaque spoke à son hub, qui fournit les passerelles.",
@@ -671,11 +671,11 @@ AZ.questions.push(
    ],
    [
     "Inspection",
-    "Des hubs sécurisés avec l'intention de routage (trafic privé et Internet)"
+    "Des hubs sécurisés avec l'intention de routage"
    ],
    [
     "Spokes",
-    "Des connexions de réseau virtuel au hub de leur région"
+    "Une connexion de réseau virtuel au hub régional"
    ]
   ]
  },
@@ -690,32 +690,32 @@ AZ.questions.push(
   {
    "l": "Service 1 :",
    "o": [
+    "Azure Front Door (niveau Premium)",
     "Azure Traffic Manager",
-    "Un équilibreur de charge interrégional (niveau Global)",
-    "Azure Front Door",
-    "Application Gateway"
+    "Une Application Gateway v2 par région",
+    "Un équilibreur interrégional"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "Service 2 :",
    "o": [
     "Azure Traffic Manager",
-    "Un équilibreur de charge interrégional (niveau Global)",
-    "Azure Front Door",
-    "Application Gateway"
+    "Un équilibreur interrégional",
+    "Une Application Gateway v2 par région",
+    "Azure Front Door (niveau Premium)"
    ],
-   "a": 2
+   "a": 3
   },
   {
    "l": "Service 3 :",
    "o": [
+    "Azure Front Door (niveau Premium)",
     "Azure Traffic Manager",
-    "Un équilibreur de charge interrégional (niveau Global)",
-    "Azure Front Door",
-    "Application Gateway"
+    "Un équilibreur interrégional",
+    "Une Application Gateway v2 par région"
    ],
-   "a": 0
+   "a": 1
   }
  ],
  "expl": "<b>Service 1.</b> TCP non HTTP, une IP anycast unique et une bascule rapide : l'équilibreur <b>interrégional</b> (niveau Global) place les équilibreurs Standard régionaux derrière une seule IP. Traffic Manager dépend du cache DNS des clients, donc bascule plus lentement.<b>Service 2.</b> HTTP(S) mondial avec WAF, cache et accélération : <b>Azure Front Door</b>. Application Gateway est régional.<b>Service 3.</b> Un point de terminaison hors d'Azure et une bascule DNS acceptable : <b>Traffic Manager</b>, avec un point de terminaison externe.",
@@ -730,11 +730,11 @@ AZ.questions.push(
   "rows": [
    [
     "*Service 1",
-    "Un équilibreur de charge interrégional (niveau Global)"
+    "Un équilibreur interrégional"
    ],
    [
     "Service 2",
-    "Azure Front Door"
+    "Azure Front Door (niveau Premium)"
    ],
    [
     "Service 3",

@@ -9,32 +9,32 @@ AZ.questions.push(
   {
    "l": "Sur les sous-réseaux de VNet-Spoke :",
    "o": [
-    "Une route 0.0.0.0/0, tronçon Internet",
-    "Une route 0.0.0.0/0, tronçon Passerelle de réseau virtuel",
+    "Une passerelle NAT",
+    "Une route 0.0.0.0/0 vers la passerelle de réseau virtuel",
     "Un NSG qui refuse Internet",
-    "Une passerelle NAT"
+    "Une route 0.0.0.0/0, tronçon Internet, et le proxy en règle NSG"
    ],
    "a": 1
   },
   {
    "l": "Pour l'activation Windows :",
    "o": [
-    "Ouvrir TCP 1688 dans le NSG",
-    "Des routes /32 vers les adresses KMS d'Azure, tronçon Internet",
     "Désactiver la propagation des routes",
+    "Ouvrir TCP 1688 sortant dans le NSG des spokes vers AzureCloud",
+    "Des routes /32 vers les IP KMS d'Azure, tronçon Internet",
     "Une IP publique sur chaque VM"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "Pour AzureBastionSubnet :",
    "o": [
     "Lui associer la même table de routage",
+    "Un NSG qui refuse GatewayManager",
     "Ne lui associer aucune table de routage",
-    "Une route 0.0.0.0/0 vers VPNGW1",
-    "Un NSG qui refuse GatewayManager"
+    "Une route 0.0.0.0/0 vers VPNGW1 pour rester cohérent"
    ],
-   "a": 1
+   "a": 2
   }
  ],
  "expl": "<b>Tunnel forcé.</b> Sans route par défaut annoncée en BGP, on crée une route 0.0.0.0/0 avec le tronçon « Passerelle de réseau virtuel » (passerelle basée sur des routes). Le spoke utilise la passerelle du hub, la route est donc valide.<b>KMS.</b> L'activation passe par azkms.core.windows.net (TCP 1688) vers des adresses Azure connues. Avec le tunnel forcé, ce trafic part au siège et est bloqué. Des routes /32 vers ces adresses avec le tronçon Internet, plus précises que 0.0.0.0/0, le font sortir directement.<b>Bastion.</b> Les routes utilisateur ne sont pas prises en charge sur AzureBastionSubnet : Bastion doit joindre directement le plan de contrôle Azure. On ne lui associe donc pas la table.",
@@ -49,11 +49,11 @@ AZ.questions.push(
   "rows": [
    [
     "*Sur les sous-réseaux de VNet-Spoke",
-    "Une route 0.0.0.0/0, tronçon Passerelle de réseau virtuel"
+    "Une route 0.0.0.0/0 vers la passerelle de réseau virtuel"
    ],
    [
     "Pour l'activation Windows",
-    "Des routes /32 vers les adresses KMS d'Azure, tronçon Internet"
+    "Des routes /32 vers les IP KMS d'Azure, tronçon Internet"
    ],
    [
     "Pour AzureBastionSubnet",
@@ -74,30 +74,30 @@ AZ.questions.push(
    "o": [
     "Ajouter le préfixe à LNG-Paris",
     "Ajouter une route sur GatewaySubnet",
-    "Réinitialiser VPNGW1",
-    "Ajouter une règle NSG"
+    "Ajouter une règle NSG",
+    "Réinitialiser VPNGW1"
    ],
    "a": 0
   },
   {
    "l": "ASN 65515 pour le siège :",
    "o": [
-    "Accepter",
-    "Refuser : 65515 est réservé par Azure",
     "Accepter si VPNGW1 utilise aussi 65515",
-    "Refuser : seuls les ASN publics sont acceptés"
+    "Accepter",
+    "Refuser : seuls les ASN publics sont acceptés",
+    "Refuser : 65515 est réservé par Azure"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "Journaux IKE :",
    "o": [
-    "Vérification du flux IP",
-    "Résolution des problèmes de VPN de Network Watcher",
     "Moniteur de connexion",
-    "Journal d'activité"
+    "Journal d'activité de la connexion VPN",
+    "Résolution des problèmes de VPN",
+    "Vérification du flux IP sur la passerelle"
    ],
-   "a": 1
+   "a": 2
   }
  ],
  "expl": "<b>Nouveau VLAN.</b> Sans BGP, Azure ne connaît le site que par les préfixes de la passerelle de réseau local. 192.168.50.0/24 n'est pas dans 192.168.0.0/20 (192.168.0.0 à 192.168.15.255) : il faut l'ajouter à LNG-Paris (et au domaine de chiffrement du pare-feu).<b>ASN.</b> Azure réserve 65515 (son ASN par défaut), ainsi que 65517 à 65520, 8074, 8075 et 12076. Le siège doit prendre un autre ASN privé.<b>Journaux.</b> La résolution des problèmes de VPN de Network Watcher teste la passerelle et la connexion, et écrit les journaux détaillés (IKE inclus) dans un compte de stockage.",
@@ -120,7 +120,7 @@ AZ.questions.push(
    ],
    [
     "Journaux IKE",
-    "Résolution des problèmes de VPN de Network Watcher"
+    "Résolution des problèmes de VPN"
    ]
   ]
  },
@@ -135,42 +135,42 @@ AZ.questions.push(
   {
    "l": "Dans NSG-AGW :",
    "o": [
+    "Autoriser AzureCloud sur TCP 443, priorité 100",
+    "Supprimer la règle 4096",
     "Autoriser GatewayManager sur TCP 65200-65535",
-    "Autoriser Internet sur 3389",
-    "Autoriser AzureCloud sur 443",
-    "Supprimer la règle 4096"
+    "Autoriser Internet sur TCP 443 et 80 seulement"
    ],
-   "a": 0
+   "a": 2
   },
   {
    "l": "Pour app-pool :",
    "o": [
-    "Ajouter une IP publique à l'application",
-    "Choisir le nom d'hôte du back-end dans les paramètres de back-end et la sonde",
-    "Désactiver HTTPS sur l'application",
-    "Passer AppGW2 en WAF_v2"
+    "Passer AppGW2 en WAF_v2",
+    "Ajouter l'adresse IP sortante de l'application au pool",
+    "Désactiver HTTPS sur l'application et sonder en HTTP",
+    "Nom d'hôte du back-end (paramètres et sonde)"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "Pour le pool rapports :",
    "o": [
-    "Activer l'affinité basée sur les cookies",
-    "Augmenter le délai d'expiration de la requête des paramètres de back-end",
-    "Ajouter une seconde instance",
-    "Activer le drainage des connexions"
+    "Augmenter le délai d'expiration de la requête",
+    "Ajouter une seconde instance d'AppGW2 pour la charge",
+    "Activer le drainage des connexions",
+    "Activer l'affinité basée sur les cookies du pool rapports"
    ],
-   "a": 1
+   "a": 0
   },
   {
    "l": "Pour HTTP vers HTTPS :",
    "o": [
-    "Une règle de redirection de l'écouteur 80 vers l'écouteur 443",
-    "Une règle de réécriture d'URL",
     "Un second pool",
+    "Une redirection de l'écouteur 80 vers l'écouteur 443",
+    "Une règle de réécriture d'URL qui remplace http par https",
     "Une stratégie WAF"
    ],
-   "a": 0
+   "a": 1
   }
  ],
  "expl": "<b>NSG.</b> Application Gateway v2 exige d'autoriser en entrée la balise GatewayManager sur TCP 65200-65535 (gestion de l'infrastructure), ainsi qu'AzureLoadBalancer. Une règle « Refuser tout » sans ces exceptions casse la passerelle.<b>App Service.</b> App Service route les requêtes selon l'en-tête Host. AppGW2 envoie par défaut le nom de l'écouteur, inconnu de l'application. Il faut remplacer le nom d'hôte par celui du back-end (option « Choisir le nom d'hôte à partir de la cible principale »), dans les paramètres de back-end et dans la sonde.<b>502.</b> Le délai d'expiration de la requête vaut 20 secondes par défaut ; au-delà, la passerelle renvoie 502. Il faut l'augmenter (par exemple à 60 secondes).<b>Redirection.</b> Une règle de redirection de type permanent sur l'écouteur HTTP, vers l'écouteur HTTPS.",
@@ -189,15 +189,15 @@ AZ.questions.push(
    ],
    [
     "Pour app-pool",
-    "Choisir le nom d'hôte du back-end dans les paramètres de back-end et la sonde"
+    "Nom d'hôte du back-end (paramètres et sonde)"
    ],
    [
     "Pour le pool rapports",
-    "Augmenter le délai d'expiration de la requête des paramètres de back-end"
+    "Augmenter le délai d'expiration de la requête"
    ],
    [
     "Pour HTTP vers HTTPS",
-    "Une règle de redirection de l'écouteur 80 vers l'écouteur 443"
+    "Une redirection de l'écouteur 80 vers l'écouteur 443"
    ]
   ]
  },
@@ -212,40 +212,40 @@ AZ.questions.push(
   {
    "l": "Pour les adresses des partenaires :",
    "o": [
-    "Un préfixe d'adresses IP publiques",
-    "Des IP publiques dynamiques",
+    "Des IP publiques dynamiques réservées",
     "Une passerelle NAT sans IP",
+    "Un préfixe d'adresses IP publiques",
     "Des balises de service"
    ],
-   "a": 0
+   "a": 2
   },
   {
    "l": "Pour LB-Web :",
    "o": [
-    "Changer la zone de l'IP en « redondante interzone »",
-    "Créer une IP redondante interzone et remplacer la configuration frontale",
+    "Passer l'IP en De base",
+    "Créer une IP redondante interzone et changer le front-end",
     "Ajouter les zones 2 et 3 à l'IP existante",
-    "Passer l'IP en De base"
+    "Changer la zone de l'IP existante en « redondante interzone »"
    ],
    "a": 1
   },
   {
    "l": "Pour VM5 :",
    "o": [
+    "Créer une IP Standard et demander la même adresse au support",
     "Mettre l'IP à niveau directement",
-    "Passer l'IP en statique, la dissocier, la mettre à niveau en Standard puis la réassocier",
-    "Créer une IP Standard et demander la même adresse",
-    "Supprimer l'IP puis la recréer en Standard"
+    "Supprimer l'IP puis la recréer en Standard",
+    "Statique, dissociée, mise à niveau, puis réassociée"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "Pour VM6 :",
    "o": [
     "Fixer l'adresse dans Windows",
-    "Passer la configuration IP de la carte réseau en statique",
-    "Réserver l'adresse dans un serveur DHCP",
-    "Utiliser une IP publique statique"
+    "Allocation statique sur la carte réseau Azure",
+    "Utiliser une IP publique statique",
+    "Réserver l'adresse dans un serveur DHCP du réseau"
    ],
    "a": 1
   }
@@ -266,15 +266,15 @@ AZ.questions.push(
    ],
    [
     "Pour LB-Web",
-    "Créer une IP redondante interzone et remplacer la configuration frontale"
+    "Créer une IP redondante interzone et changer le front-end"
    ],
    [
     "Pour VM5",
-    "Passer l'IP en statique, la dissocier, la mettre à niveau en Standard puis la réassocier"
+    "Statique, dissociée, mise à niveau, puis réassociée"
    ],
    [
     "Pour VM6",
-    "Passer la configuration IP de la carte réseau en statique"
+    "Allocation statique sur la carte réseau Azure"
    ]
   ]
  },
@@ -289,30 +289,30 @@ AZ.questions.push(
   {
    "l": "Pour la sortie :",
    "o": [
-    "Augmenter le délai d'inactivité de la règle 443",
-    "Une seconde IP frontale, une règle de trafic sortant avec 8 000 ports par instance, et le SNAT implicite désactivé sur la règle 443",
+    "Augmenter le délai d'inactivité de la règle 443 et activer la réinitialisation TCP",
     "Une IP publique par VM",
+    "Une règle de trafic sortant (8 000 ports par VM) sur une seconde IP frontale",
     "Activer le port flottant"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "Pour RDP :",
    "o": [
-    "Huit règles d'équilibrage",
-    "Une règle NAT entrante ciblant le pool, avec une plage de ports frontaux",
     "Une règle de trafic sortant",
-    "Une IP publique par VM"
+    "Une IP publique par VM",
+    "Une règle NAT entrante sur le pool, plage de ports",
+    "Huit règles d'équilibrage, une par port de 50001 à 50008"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "Pour limiter RDP au siège :",
    "o": [
-    "Une règle de NSG sur Subnet-App : 203.0.113.10 vers 3389",
-    "Une règle de NSG : 203.0.113.10 vers 50001-50008",
-    "Un filtre sur la règle NAT",
-    "Une restriction d'accès"
+    "NSG sur Subnet-App : 203.0.113.10 vers 3389",
+    "Un filtre d'adresse source sur la règle NAT entrante",
+    "Une restriction d'accès",
+    "Une règle de NSG : 203.0.113.10 vers 50001-50008"
    ],
    "a": 0
   }
@@ -329,15 +329,15 @@ AZ.questions.push(
   "rows": [
    [
     "*Pour la sortie",
-    "Une seconde IP frontale, une règle de trafic sortant avec 8 000 ports par instance, et le SNAT implicite désactivé sur la règle 443"
+    "Une règle de trafic sortant (8 000 ports par VM) sur une seconde IP frontale"
    ],
    [
     "Pour RDP",
-    "Une règle NAT entrante ciblant le pool, avec une plage de ports frontaux"
+    "Une règle NAT entrante sur le pool, plage de ports"
    ],
    [
     "Pour limiter RDP au siège",
-    "Une règle de NSG sur Subnet-App : 203.0.113.10 vers 3389"
+    "NSG sur Subnet-App : 203.0.113.10 vers 3389"
    ]
   ]
  },
@@ -352,42 +352,42 @@ AZ.questions.push(
   {
    "l": "Côté Litware :",
    "o": [
-    "Un point de terminaison privé vers LB-Int",
-    "Un service Private Link sur la configuration frontale de LB-Int",
+    "Un service Private Link sur le front-end de LB-Int",
     "Un point de terminaison de service",
+    "Un point de terminaison privé vers LB-Int dans VNet-Litware",
     "Une IP publique sur LB-Int"
-   ],
-   "a": 1
-  },
-  {
-   "l": "Côté Fabrikam :",
-   "o": [
-    "Un peering avec VNet-Litware",
-    "Un point de terminaison privé vers l'alias du service",
-    "Une passerelle VPN",
-    "Une règle de NSG"
-   ],
-   "a": 1
-  },
-  {
-   "l": "Validation des connexions :",
-   "o": [
-    "Approbation manuelle dans le service Private Link",
-    "Une liste d'approbation automatique avec l'abonnement de Fabrikam",
-    "Un NSG sur LB-Int",
-    "Azure Policy"
    ],
    "a": 0
   },
   {
-   "l": "Adresse source vue par l'API :",
+   "l": "Côté Fabrikam :",
    "o": [
-    "L'IP privée du client Fabrikam",
-    "Une IP NAT du sous-réseau du service Private Link",
-    "L'IP publique de Fabrikam",
-    "168.63.129.16"
+    "Un point de terminaison privé vers l'alias",
+    "Une règle de NSG",
+    "Une passerelle VPN",
+    "Un peering avec VNet-Litware après réadressage"
+   ],
+   "a": 0
+  },
+  {
+   "l": "Validation des connexions :",
+   "o": [
+    "Azure Policy",
+    "Approbation manuelle dans le service Private Link",
+    "Un NSG sur LB-Int",
+    "Une liste d'approbation automatique avec l'abonnement de Fabrikam"
    ],
    "a": 1
+  },
+  {
+   "l": "Adresse source vue par l'API :",
+   "o": [
+    "Une IP NAT du service Private Link",
+    "168.63.129.16",
+    "L'adresse IP privée du client Fabrikam, inchangée",
+    "L'IP publique de Fabrikam"
+   ],
+   "a": 0
   }
  ],
  "expl": "<b>Private Link service.</b> Il expose un service derrière un équilibreur <b>Standard interne</b>. Le client crée un <b>point de terminaison privé</b> vers l'alias du service : le trafic reste sur le réseau Microsoft, sans peering, et le chevauchement des plages 10.0.0.0/16 n'est pas un problème.<b>Validation.</b> Par défaut, chaque demande de connexion attend l'approbation du propriétaire du service ; la liste d'approbation automatique la contournerait.<b>Source.</b> Le service traduit l'adresse source vers une adresse NAT prise dans un sous-réseau de VNet-Litware. Pour connaître le client réel, on peut activer le proxy protocol v2 (TCP).",
@@ -402,11 +402,11 @@ AZ.questions.push(
   "rows": [
    [
     "*Côté Litware",
-    "Un service Private Link sur la configuration frontale de LB-Int"
+    "Un service Private Link sur le front-end de LB-Int"
    ],
    [
     "Côté Fabrikam",
-    "Un point de terminaison privé vers l'alias du service"
+    "Un point de terminaison privé vers l'alias"
    ],
    [
     "Validation des connexions",
@@ -414,7 +414,7 @@ AZ.questions.push(
    ],
    [
     "Adresse source vue par l'API",
-    "Une IP NAT du sous-réseau du service Private Link"
+    "Une IP NAT du service Private Link"
    ]
   ]
  },
@@ -429,32 +429,32 @@ AZ.questions.push(
   {
    "l": "Peering VNet-A ↔ VNet-B :",
    "o": [
-    "Impossible entre deux locataires",
-    "Créer les deux liens de peering, un de chaque côté",
     "Créer un seul lien depuis VNet-A",
+    "Impossible entre deux locataires Microsoft Entra différents",
+    "Créer un lien de peering de chaque côté",
     "Passer par un VPN obligatoirement"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "Les VM de VNet-B joignent-elles LB-Old ?",
    "o": [
-    "Oui",
-    "Non : un équilibreur De base n'est pas joignable par un peering global",
+    "Non : les peerings entre locataires bloquent les équilibreurs",
+    "Non : pas d'équilibreur De base en peering global",
     "Oui, si le transit par passerelle est activé",
-    "Non : les peerings entre locataires bloquent les équilibreurs"
+    "Oui"
    ],
    "a": 1
   },
   {
    "l": "Peering VNet-A ↔ VNet-C :",
    "o": [
-    "Possible avec « Autoriser le trafic transféré »",
-    "Impossible : les espaces d'adressage se chevauchent",
     "Possible en peering global uniquement",
-    "Possible si VNet-C passe dans le locataire Contoso"
+    "Possible avec « Autoriser le trafic transféré »",
+    "Possible si VNet-C passe dans le locataire Contoso",
+    "Impossible : les espaces se chevauchent"
    ],
-   "a": 1
+   "a": 3
   }
  ],
  "expl": "<b>Entre locataires.</b> Le peering est possible entre locataires ; il faut créer un lien de chaque côté, avec des droits (Contributeur de réseau ou une permission de peering) sur chacun des réseaux, par exemple en invité B2B.<b>LB-Old.</b> VNet-A et VNet-B sont dans deux régions : c'est un peering global. Les ressources derrière un équilibreur <b>De base</b> ne sont pas joignables par un peering global ; il faut passer LB-Old en Standard.<b>VNet-C.</b> Deux réseaux dont les espaces d'adressage se chevauchent ne peuvent pas être appairés, quel que soit le locataire. Il faut réadresser l'un d'eux.",
@@ -469,15 +469,15 @@ AZ.questions.push(
   "rows": [
    [
     "*Peering VNet-A ↔ VNet-B",
-    "Créer les deux liens de peering, un de chaque côté"
+    "Créer un lien de peering de chaque côté"
    ],
    [
     "Les VM de VNet-B joignent-elles LB-Old ?",
-    "Non : un équilibreur De base n'est pas joignable par un peering global"
+    "Non : pas d'équilibreur De base en peering global"
    ],
    [
     "Peering VNet-A ↔ VNet-C",
-    "Impossible : les espaces d'adressage se chevauchent"
+    "Impossible : les espaces se chevauchent"
    ]
   ]
  },
@@ -492,42 +492,42 @@ AZ.questions.push(
   {
    "l": "Exigence 1 :",
    "o": [
-    "Inspection TLS d'Azure Firewall Premium, certificat de l'AC dans Key Vault",
-    "Règles d'application en Standard",
-    "Le proxy DNS",
-    "Un WAF sur Application Gateway"
+    "Un WAF sur Application Gateway",
+    "Des règles d'application HTTPS en Standard",
+    "L'inspection TLS d'Azure Firewall Premium",
+    "Le proxy DNS"
    ],
-   "a": 0
+   "a": 2
   },
   {
    "l": "Exigence 2 :",
    "o": [
-    "Le filtrage basé sur le renseignement sur les menaces",
-    "L'IDPS d'Azure Firewall Premium en mode Alerter et refuser",
+    "Le filtrage par renseignement sur les menaces en Alerter et refuser",
     "Des règles de réseau",
-    "Microsoft Defender pour le cloud"
+    "Microsoft Defender pour le cloud",
+    "L'IDPS d'Azure Firewall Premium en mode Alerter et refuser"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "Exigence 3 :",
    "o": [
-    "Une stratégie de pare-feu parente, héritée par trois stratégies enfants",
-    "Copier les règles dans chaque stratégie",
+    "Azure Policy",
     "Un groupe d'administration",
-    "Azure Policy"
+    "Copier les règles du socle dans chaque stratégie",
+    "Une stratégie parente héritée par trois enfants"
    ],
-   "a": 0
+   "a": 3
   },
   {
    "l": "Exigence 4 :",
    "o": [
-    "La protection DDoS de base (incluse)",
-    "Un plan DDoS Network Protection associé aux réseaux virtuels",
+    "La protection DDoS de l'infrastructure (incluse)",
     "Un WAF",
+    "Un plan DDoS Network Protection sur les VNets",
     "Des NSG"
    ],
-   "a": 1
+   "a": 2
   }
  ],
  "expl": "<b>TLS.</b> Le déchiffrement du trafic sortant est une fonction <b>Premium</b> ; le certificat de l'AC intermédiaire est stocké dans Key Vault et lu par une identité managée.<b>IDPS.</b> La détection par signatures est l'IDPS de Premium. Le filtrage par renseignement sur les menaces (Standard) bloque des IP et domaines connus, pas des signatures d'attaque.<b>Socle commun.</b> Avec Azure Firewall Manager, une stratégie parente est héritée par les stratégies enfants : celles-ci ajoutent des règles mais ne modifient pas celles du parent.<b>DDoS.</b> La protection d'infrastructure de base n'offre ni réglage par application ni accès à la DDoS Rapid Response. Un plan DDoS Network Protection, associé aux réseaux virtuels, protège leurs IP publiques et donne cet accès.",
@@ -542,7 +542,7 @@ AZ.questions.push(
   "rows": [
    [
     "*Exigence 1",
-    "Inspection TLS d'Azure Firewall Premium, certificat de l'AC dans Key Vault"
+    "L'inspection TLS d'Azure Firewall Premium"
    ],
    [
     "Exigence 2",
@@ -550,11 +550,11 @@ AZ.questions.push(
    ],
    [
     "Exigence 3",
-    "Une stratégie de pare-feu parente, héritée par trois stratégies enfants"
+    "Une stratégie parente héritée par trois enfants"
    ],
    [
     "Exigence 4",
-    "Un plan DDoS Network Protection associé aux réseaux virtuels"
+    "Un plan DDoS Network Protection sur les VNets"
    ]
   ]
  },
@@ -569,8 +569,8 @@ AZ.questions.push(
   {
    "l": "Pour attacher NIC-Mgmt :",
    "o": [
-    "L'attacher à chaud, VM démarrée",
-    "Arrêter (libérer) VM7, attacher la carte, redémarrer",
+    "L'attacher à chaud, VM démarrée, puis redémarrer",
+    "Libérer VM7, attacher la carte, redémarrer",
     "Redéployer VM7",
     "Recréer VM7"
    ],
@@ -579,32 +579,32 @@ AZ.questions.push(
   {
    "l": "NIC-Mgmt dans VNet-Mgmt :",
    "o": [
-    "Possible avec un peering",
-    "Impossible : toutes les cartes d'une VM sont dans le même réseau virtuel",
     "Possible si VNet-Mgmt est dans la même région",
-    "Possible avec le transfert IP"
+    "Possible avec le transfert IP",
+    "Impossible : un seul réseau virtuel par VM",
+    "Possible avec un peering entre VNet-Prod et VNet-Mgmt"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "Pour la carte de production :",
    "o": [
-    "Activer la mise en réseau accélérée",
+    "Ajouter une seconde configuration IP",
     "Activer le transfert IP",
     "Ajouter une IP publique",
-    "Ajouter une seconde configuration IP"
+    "Activer la mise en réseau accélérée"
    ],
-   "a": 0
+   "a": 3
   },
   {
    "l": "Troisième carte :",
    "o": [
+    "Ajouter une configuration IP à NIC-Mgmt pour la sauvegarde",
     "Possible sans changement",
-    "Redimensionner VM7 vers une taille qui accepte 3 cartes",
-    "Impossible sur Azure",
-    "Ajouter une configuration IP à NIC-Mgmt"
+    "Redimensionner VM7 (taille à 3 cartes ou plus)",
+    "Impossible sur Azure"
    ],
-   "a": 1
+   "a": 2
   }
  ],
  "expl": "<b>Attacher.</b> On ajoute ou retire une carte réseau seulement quand la VM est arrêtée (libérée).<b>Réseau.</b> Les cartes d'une VM peuvent être dans des sous-réseaux différents, mais toutes dans le <b>même réseau virtuel</b>.<b>Performances.</b> La mise en réseau accélérée (SR-IOV) contourne le commutateur virtuel de l'hôte : latence plus faible, débit plus élevé, moins de CPU. Elle est prise en charge sur D4s_v5.<b>Troisième carte.</b> Le nombre de cartes dépend de la taille : D4s_v5 en accepte 2. Il faut une taille plus grande (par exemple D8s_v5, 4 cartes). Une seconde configuration IP n'est pas une carte séparée.",
@@ -619,11 +619,11 @@ AZ.questions.push(
   "rows": [
    [
     "*Pour attacher NIC-Mgmt",
-    "Arrêter (libérer) VM7, attacher la carte, redémarrer"
+    "Libérer VM7, attacher la carte, redémarrer"
    ],
    [
     "NIC-Mgmt dans VNet-Mgmt",
-    "Impossible : toutes les cartes d'une VM sont dans le même réseau virtuel"
+    "Impossible : un seul réseau virtuel par VM"
    ],
    [
     "Pour la carte de production",
@@ -631,7 +631,7 @@ AZ.questions.push(
    ],
    [
     "Troisième carte",
-    "Redimensionner VM7 vers une taille qui accepte 3 cartes"
+    "Redimensionner VM7 (taille à 3 cartes ou plus)"
    ]
   ]
  },

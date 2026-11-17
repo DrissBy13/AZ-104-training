@@ -9,32 +9,32 @@ AZ.questions.push(
   {
    "l": "Pour que NSG-PE s'applique :",
    "o": [
-    "Associer NSG-PE à la carte de chaque point de terminaison",
-    "Activer les stratégies réseau (NSG) des points de terminaison privés sur Subnet-PE",
     "Passer NSG-PE en priorité 100",
-    "Ajouter un ASG"
+    "Ajouter un ASG",
+    "Associer NSG-PE directement à la carte réseau de chaque point de terminaison",
+    "Activer les stratégies réseau NSG sur Subnet-PE"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "Pour faire passer le trafic par AzFW1 :",
    "o": [
-    "Rien : 0.0.0.0/0 suffit",
-    "Activer les stratégies réseau (tables de routage) sur Subnet-PE et une route vers le préfixe de Subnet-PE via 10.0.1.4 dans les spokes",
-    "Une route /32 par point de terminaison sur Subnet-PE",
-    "Un peering entre les spokes"
+    "Un peering entre les spokes",
+    "Stratégies de routage, route vers Subnet-PE via 10.0.1.4",
+    "Rien : 0.0.0.0/0 vers 10.0.1.4 couvre déjà les points de terminaison",
+    "Une route /32 par point de terminaison, dans les tables de Subnet-PE"
    ],
    "a": 1
   },
   {
    "l": "Adresses par point de terminaison :",
    "o": [
-    "Une adresse IP privée (pour une sous-ressource)",
-    "Un /28 complet",
     "Une adresse par client",
+    "Une adresse IP privée",
+    "Un /28 complet réservé au point de terminaison",
     "Aucune"
    ],
-   "a": 0
+   "a": 1
   }
  ],
  "expl": "<b>NSG.</b> Par défaut, les stratégies réseau sont désactivées pour les points de terminaison privés : les NSG du sous-réseau ne s'appliquent pas à leur trafic. Il faut activer la propriété (privateEndpointNetworkPolicies) sur Subnet-PE.<b>Routage.</b> Chaque point de terminaison crée une route système /32, plus précise que 0.0.0.0/0 : le trafic contourne le pare-feu. Une fois les stratégies de tables de routage activées, une route utilisateur vers le préfixe de Subnet-PE (plus large que /32) l'emporte sur ces /32, sans maintenir une route par point de terminaison.<b>Adresses.</b> Un point de terminaison privé utilise une adresse IP du sous-réseau pour la sous-ressource ciblée (certains services, comme Cosmos DB, en utilisent une par région).",
@@ -49,15 +49,15 @@ AZ.questions.push(
   "rows": [
    [
     "*Pour que NSG-PE s'applique",
-    "Activer les stratégies réseau (NSG) des points de terminaison privés sur Subnet-PE"
+    "Activer les stratégies réseau NSG sur Subnet-PE"
    ],
    [
     "Pour faire passer le trafic par AzFW1",
-    "Activer les stratégies réseau (tables de routage) sur Subnet-PE et une route vers le préfixe de Subnet-PE via 10.0.1.4 dans les spokes"
+    "Stratégies de routage, route vers Subnet-PE via 10.0.1.4"
    ],
    [
     "Adresses par point de terminaison",
-    "Une adresse IP privée (pour une sous-ressource)"
+    "Une adresse IP privée"
    ]
   ]
  },
@@ -72,32 +72,32 @@ AZ.questions.push(
   {
    "l": "Plages privées (sans SNAT) d'AzFW1 :",
    "o": [
-    "Plages IANA privées (par défaut)",
-    "Plages IANA privées + 52.10.0.0/16, sans 172.16.0.0/12",
     "0.0.0.0/0",
-    "255.255.255.255/32"
+    "Plages IANA privées par défaut, sans modification",
+    "255.255.255.255/32",
+    "IANA + 52.10.0.0/16, sans 172.16.0.0/12"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "Effet sur le partenaire :",
    "o": [
     "Son trafic n'est plus traduit",
     "Son trafic est traduit vers l'IP privée d'AzFW1",
-    "Son trafic est traduit vers l'IP publique d'AzFW1",
-    "Son trafic est bloqué"
+    "Son trafic est bloqué",
+    "Son trafic est traduit vers l'IP publique d'AzFW1"
    ],
    "a": 1
   },
   {
    "l": "Pour le trafic Internet d'AzFW1 :",
    "o": [
-    "Une route 0.0.0.0/0 vers la passerelle sur AzureFirewallSubnet, sans autre changement",
     "Le tunnel forcé, avec AzureFirewallManagementSubnet et une IP publique de gestion",
     "Une passerelle NAT sur AzureFirewallSubnet",
+    "Une route 0.0.0.0/0 vers la passerelle sur AzureFirewallSubnet, sans autre changement",
     "Désactiver l'IP publique d'AzFW1"
    ],
-   "a": 1
+   "a": 0
   }
  ],
  "expl": "<b>SNAT.</b> Azure Firewall ne traduit pas le trafic dont la destination est dans ses plages « privées » (par défaut, les plages IANA RFC 1918 et 100.64.0.0/10) pour les règles de réseau. 52.10.0.0/16 est public : il est traduit. On l'ajoute à la liste.<b>Partenaire.</b> 172.20.0.0/16 fait partie de 172.16.0.0/12 ; en retirant cette plage de la liste, le trafic vers le partenaire est traduit vers l'adresse privée du pare-feu (côté VPN).<b>Tunnel forcé.</b> Le pare-feu a besoin d'un accès direct pour sa gestion : le tunnel forcé exige le sous-réseau AzureFirewallManagementSubnet (/26) avec sa propre IP publique. Une simple route 0.0.0.0/0 sur AzureFirewallSubnet sans carte de gestion casserait le pare-feu.",
@@ -112,7 +112,7 @@ AZ.questions.push(
   "rows": [
    [
     "*Plages privées (sans SNAT) d'AzFW1",
-    "Plages IANA privées + 52.10.0.0/16, sans 172.16.0.0/12"
+    "IANA + 52.10.0.0/16, sans 172.16.0.0/12"
    ],
    [
     "Effet sur le partenaire",
@@ -145,30 +145,30 @@ AZ.questions.push(
   {
    "l": "Pool d'adresses clients :",
    "o": [
-    "10.0.200.0/24",
-    "192.168.200.0/24",
     "172.16.200.0/24",
-    "10.5.200.0/24"
+    "10.5.200.0/24",
+    "192.168.200.0/24",
+    "10.0.200.0/24"
    ],
-   "a": 2
+   "a": 0
   },
   {
    "l": "Pour VNet-Spoke5 :",
    "o": [
-    "Ajouter une route sur chaque poste",
-    "Télécharger et réinstaller le profil du client VPN",
     "Activer le transit par passerelle sur Spoke5",
-    "Redémarrer VPNGW1"
+    "Ajouter une route vers 10.5.0.0/16 sur chaque poste",
+    "Redémarrer VPNGW1",
+    "Réinstaller le profil du client VPN"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "Accès des commerciaux au siège de Lyon :",
    "o": [
-    "Fonctionne : le site à site utilise BGP",
+    "Fonctionne déjà, grâce à BGP",
     "Impossible en point à site",
-    "Exige un second tunnel",
-    "Exige un peering"
+    "Exige un peering",
+    "Exige un second tunnel site à site dédié"
    ],
    "a": 0
   }
@@ -193,11 +193,11 @@ AZ.questions.push(
    ],
    [
     "Pour VNet-Spoke5",
-    "Télécharger et réinstaller le profil du client VPN"
+    "Réinstaller le profil du client VPN"
    ],
    [
     "Accès des commerciaux au siège de Lyon",
-    "Fonctionne : le site à site utilise BGP"
+    "Fonctionne déjà, grâce à BGP"
    ]
   ]
  },
@@ -212,32 +212,32 @@ AZ.questions.push(
   {
    "l": "Pour le blocage applicatif :",
    "o": [
-    "Réduire l'intervalle de la sonde TCP",
-    "Remplacer la sonde par une sonde HTTPS sur une page /health qui teste l'application",
     "Activer la persistance de session",
-    "Ajouter une règle NAT entrante"
+    "Ajouter une règle NAT entrante",
+    "Réduire l'intervalle et le seuil de la sonde TCP sur 443",
+    "Une sonde HTTPS sur /health qui teste l'application"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "Pour la mise à jour de VM-B :",
    "o": [
-    "Retirer VM-B du pool",
-    "Faire échouer la sonde sur VM-B (les flux établis continuent)",
-    "Arrêter VM-B",
-    "Supprimer la règle d'équilibrage"
+    "Supprimer la règle d'équilibrage",
+    "Retirer VM-B du pool principal de LB-App",
+    "Faire échouer la sonde sur VM-B",
+    "Arrêter VM-B"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "Pour VM-A :",
    "o": [
+    "Désactiver le pare-feu Windows",
     "Autoriser 168.63.129.16 dans le pare-feu Windows",
     "Autoriser la balise AzureLoadBalancer dans le pare-feu Windows",
-    "Désactiver le pare-feu Windows",
     "Changer le port de la sonde"
    ],
-   "a": 0
+   "a": 1
   }
  ],
  "expl": "<b>Blocage.</b> Une sonde TCP ne vérifie que l'ouverture du port. Une sonde HTTP(S) sur une page qui teste réellement l'application (base, dépendances) retire l'instance dès qu'elle ne répond plus 200.<b>Mise à jour.</b> Sur un équilibreur Standard, quand la sonde échoue, les nouveaux flux ne sont plus envoyés à l'instance, mais les connexions TCP établies continuent. Retirer la VM du pool couperait les flux existants.<b>Pare-feu invité.</b> Les sondes viennent de 168.63.129.16. Dans le système invité, il faut autoriser cette adresse ; la balise AzureLoadBalancer n'existe que dans les NSG.",
@@ -252,11 +252,11 @@ AZ.questions.push(
   "rows": [
    [
     "*Pour le blocage applicatif",
-    "Remplacer la sonde par une sonde HTTPS sur une page /health qui teste l'application"
+    "Une sonde HTTPS sur /health qui teste l'application"
    ],
    [
     "Pour la mise à jour de VM-B",
-    "Faire échouer la sonde sur VM-B (les flux établis continuent)"
+    "Faire échouer la sonde sur VM-B"
    ],
    [
     "Pour VM-A",
@@ -275,10 +275,10 @@ AZ.questions.push(
   {
    "l": "Besoin 1 :",
    "o": [
-    "Un NSG",
-    "Azure Firewall, règles d'application",
-    "La stratégie WAF de l'Application Gateway",
-    "Le renseignement sur les menaces d'Azure Firewall"
+    "Azure Firewall, règles d'application avec catégories web",
+    "Le renseignement sur les menaces d'Azure Firewall",
+    "La stratégie WAF de l'Application Gateway, en mode Prévention",
+    "Un NSG"
    ],
    "a": 2
   },
@@ -286,8 +286,8 @@ AZ.questions.push(
    "l": "Besoin 2 :",
    "o": [
     "Un NSG",
-    "Azure Firewall, règles d'application",
-    "La stratégie WAF de l'Application Gateway",
+    "Azure Firewall, règles d'application avec catégories web",
+    "La stratégie WAF de l'Application Gateway, en mode Prévention",
     "Le renseignement sur les menaces d'Azure Firewall"
    ],
    "a": 1
@@ -295,22 +295,22 @@ AZ.questions.push(
   {
    "l": "Besoin 3 :",
    "o": [
+    "Azure Firewall, règles d'application avec catégories web",
     "Un NSG",
-    "Azure Firewall, règles d'application",
-    "La stratégie WAF de l'Application Gateway",
-    "Le renseignement sur les menaces d'Azure Firewall"
+    "Le renseignement sur les menaces d'Azure Firewall",
+    "La stratégie WAF de l'Application Gateway, en mode Prévention"
    ],
-   "a": 0
+   "a": 1
   },
   {
    "l": "Besoin 4 :",
    "o": [
+    "Le renseignement sur les menaces d'Azure Firewall",
     "Un NSG",
-    "Azure Firewall, règles d'application",
-    "La stratégie WAF de l'Application Gateway",
-    "Le renseignement sur les menaces d'Azure Firewall en mode Alerter et refuser"
+    "La stratégie WAF de l'Application Gateway, en mode Prévention",
+    "Azure Firewall, règles d'application avec catégories web"
    ],
-   "a": 3
+   "a": 0
   }
  ],
  "expl": "<b>1.</b> Les attaques applicatives HTTP (OWASP : injection SQL, XSS) relèvent du <b>WAF</b>.<b>2.</b> Le filtrage par FQDN en sortie se fait par les règles d'application d'Azure Firewall ; un NSG ne connaît que des adresses et des balises.<b>3.</b> Le trafic entre deux sous-réseaux d'un même réseau virtuel ne passe pas par le hub : un NSG (ou une route utilisateur, mais l'exigence l'exclut) le filtre au port près.<b>4.</b> Le filtrage par renseignement sur les menaces d'Azure Firewall utilise le flux Microsoft d'adresses et de domaines malveillants ; il est en mode Alerter seulement par défaut, d'où le mode Alerter et refuser.",
@@ -325,11 +325,11 @@ AZ.questions.push(
   "rows": [
    [
     "*Besoin 1",
-    "La stratégie WAF de l'Application Gateway"
+    "La stratégie WAF de l'Application Gateway, en mode Prévention"
    ],
    [
     "Besoin 2",
-    "Azure Firewall, règles d'application"
+    "Azure Firewall, règles d'application avec catégories web"
    ],
    [
     "Besoin 3",
@@ -337,7 +337,7 @@ AZ.questions.push(
    ],
    [
     "Besoin 4",
-    "Le renseignement sur les menaces d'Azure Firewall en mode Alerter et refuser"
+    "Le renseignement sur les menaces d'Azure Firewall"
    ]
   ]
  },
@@ -352,40 +352,40 @@ AZ.questions.push(
   {
    "l": "Cause de l'échec actuel :",
    "o": [
-    "Le peering bloque le DNS",
-    "Le DNS fourni par Azure ne résout les noms d'hôte qu'au sein d'un même réseau virtuel",
-    "Il manque une règle NSG sur UDP 53",
-    "Le DNS est désactivé sur VNet-A"
+    "Il manque une règle NSG sortante sur UDP 53 vers VNet-A",
+    "Le DNS est désactivé sur VNet-A",
+    "Le DNS Azure ne résout les noms qu'au sein d'un VNet",
+    "Le peering ne transmet pas les requêtes DNS entre réseaux"
    ],
-   "a": 1
+   "a": 2
   },
   {
    "l": "Lien de a.internal vers VNet-A :",
    "o": [
+    "Aucun lien",
     "Avec l'inscription automatique",
-    "Sans l'inscription automatique",
-    "Aucun lien"
-   ],
-   "a": 0
-  },
-  {
-   "l": "Lien de a.internal vers VNet-B :",
-   "o": [
-    "Avec l'inscription automatique",
-    "Sans l'inscription automatique (résolution seule)",
-    "Aucun lien : le peering suffit"
+    "Sans l'inscription automatique"
    ],
    "a": 1
   },
   {
-   "l": "Suppression d'une VM de VNet-A :",
+   "l": "Lien de a.internal vers VNet-B :",
    "o": [
-    "Son enregistrement est supprimé automatiquement",
-    "Il faut supprimer l'enregistrement à la main",
-    "L'enregistrement expire après 30 jours",
-    "Il faut désactiver le lien"
+    "Sans l'inscription automatique",
+    "Avec l'inscription automatique",
+    "Aucun lien : le peering suffit pour la résolution"
    ],
    "a": 0
+  },
+  {
+   "l": "Suppression d'une VM de VNet-A :",
+   "o": [
+    "Il faut supprimer l'enregistrement à la main",
+    "Son enregistrement est supprimé automatiquement",
+    "Il faut désactiver puis réactiver le lien de VNet-A",
+    "L'enregistrement expire après 30 jours"
+   ],
+   "a": 1
   }
  ],
  "expl": "<b>Cause.</b> La résolution des noms d'hôte par le DNS d'Azure ne fonctionne qu'au sein d'un même réseau virtuel ; le peering ne l'étend pas.<b>VNet-A.</b> Un lien avec inscription automatique crée les enregistrements A des VM de VNet-A.<b>VNet-B.</b> VNet-B est déjà inscrit dans b.internal, et un réseau virtuel ne peut s'inscrire que dans une seule zone : le lien vers a.internal doit être de résolution seule, ce qui suffit au besoin.<b>Suppression.</b> Les enregistrements créés par l'inscription automatique sont supprimés avec la VM.",
@@ -400,7 +400,7 @@ AZ.questions.push(
   "rows": [
    [
     "*Cause de l'échec actuel",
-    "Le DNS fourni par Azure ne résout les noms d'hôte qu'au sein d'un même réseau virtuel"
+    "Le DNS Azure ne résout les noms qu'au sein d'un VNet"
    ],
    [
     "Lien de a.internal vers VNet-A",
@@ -408,7 +408,7 @@ AZ.questions.push(
    ],
    [
     "Lien de a.internal vers VNet-B",
-    "Sans l'inscription automatique (résolution seule)"
+    "Sans l'inscription automatique"
    ],
    [
     "Suppression d'une VM de VNet-A",
@@ -427,32 +427,32 @@ AZ.questions.push(
   {
    "l": "Cause :",
    "o": [
-    "Les sondes passent par le pare-feu",
-    "Routage asymétrique : l'entrée arrive par LB-Web, la réponse part vers AzFW1",
-    "LB-Web ne prend pas en charge les routes utilisateur",
-    "AzFW1 bloque le port 443 entrant"
+    "AzFW1 bloque le port 443 entrant",
+    "Routage asymétrique : la réponse part vers AzFW1",
+    "Les sondes de LB-Web passent par AzFW1 et sont refusées",
+    "LB-Web ne prend pas en charge les routes utilisateur"
    ],
    "a": 1
   },
   {
    "l": "Solution recommandée :",
    "o": [
-    "Publier le site par une règle DNAT d'AzFW1 vers l'IP frontale d'un équilibreur interne",
-    "Retirer la table de routage",
+    "Une règle DNAT d'AzFW1 vers un équilibreur interne",
     "Ajouter une IP publique sur chaque VM",
-    "Activer le port flottant sur LB-Web"
+    "Activer le port flottant sur LB-Web",
+    "Retirer la table de routage de Subnet-Web et filtrer par NSG"
    ],
    "a": 0
   },
   {
    "l": "Avec une règle DNAT :",
    "o": [
-    "Il faut aussi une règle de réseau qui autorise le trafic traduit",
     "Le trafic traduit est autorisé implicitement",
     "Il faut une règle d'application",
-    "Le trafic est inspecté par le WAF"
+    "Le trafic est inspecté par le WAF",
+    "Il faut aussi une règle de réseau qui autorise le trafic traduit"
    ],
-   "a": 1
+   "a": 0
   }
  ],
  "expl": "<b>Asymétrie.</b> La requête entre par l'IP publique de LB-Web et atteint la VM ; la réponse suit la route 0.0.0.0/0 vers AzFW1, qui n'a jamais vu l'ouverture de la session et refuse le SYN-ACK.<b>Correction.</b> On fait entrer le trafic par le pare-feu lui-même : une règle DNAT sur l'IP publique d'AzFW1 vers un équilibreur <b>interne</b> (ou les VM). Aller et retour passent alors par le même pare-feu. Retirer la table de routage supprimerait l'inspection de la sortie.<b>Règle implicite.</b> Une règle DNAT ajoute automatiquement une règle de réseau qui autorise le trafic traduit.",
@@ -467,11 +467,11 @@ AZ.questions.push(
   "rows": [
    [
     "*Cause",
-    "Routage asymétrique : l'entrée arrive par LB-Web, la réponse part vers AzFW1"
+    "Routage asymétrique : la réponse part vers AzFW1"
    ],
    [
     "Solution recommandée",
-    "Publier le site par une règle DNAT d'AzFW1 vers l'IP frontale d'un équilibreur interne"
+    "Une règle DNAT d'AzFW1 vers un équilibreur interne"
    ],
    [
     "Avec une règle DNAT",
@@ -490,30 +490,30 @@ AZ.questions.push(
   {
    "l": "État « Non approvisionné » :",
    "o": [
-    "Supprimer et recréer le circuit",
-    "Attendre que l'opérateur termine l'approvisionnement, avec la clé de service transmise",
+    "Supprimer et recréer le circuit avec le bon fournisseur",
+    "Activer Global Reach",
     "Configurer le peering privé maintenant",
-    "Activer Global Reach"
+    "Attendre l'approvisionnement par l'opérateur"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "Sous-réseaux du peering privé (IPv4) :",
    "o": [
-    "Un /29",
-    "Deux /30, un pour le lien principal et un pour le secondaire",
-    "Un /24",
-    "Aucun"
+    "Deux /30, un par lien",
+    "Aucun",
+    "Un /29 partagé par les deux liens",
+    "Un /24"
    ],
-   "a": 1
+   "a": 0
   },
   {
    "l": "Relier VNet-App au circuit :",
    "o": [
-    "Donner Contributeur sur Sub-Network à l'équipe App",
-    "Créer une autorisation sur le circuit, puis une connexion dans Sub-App avec l'ID du circuit et la clé",
     "Déplacer le circuit dans Sub-App",
-    "Appairer VNet-App à un réseau de Sub-Network"
+    "Une autorisation, puis une connexion avec la clé",
+    "Donner Contributeur sur Sub-Network à l'équipe App",
+    "Appairer VNet-App à un réseau de Sub-Network relié au circuit"
    ],
    "a": 1
   }
@@ -530,15 +530,15 @@ AZ.questions.push(
   "rows": [
    [
     "*État « Non approvisionné »",
-    "Attendre que l'opérateur termine l'approvisionnement, avec la clé de service transmise"
+    "Attendre l'approvisionnement par l'opérateur"
    ],
    [
     "Sous-réseaux du peering privé (IPv4)",
-    "Deux /30, un pour le lien principal et un pour le secondaire"
+    "Deux /30, un par lien"
    ],
    [
     "Relier VNet-App au circuit",
-    "Créer une autorisation sur le circuit, puis une connexion dans Sub-App avec l'ID du circuit et la clé"
+    "Une autorisation, puis une connexion avec la clé"
    ]
   ]
  },
@@ -553,30 +553,30 @@ AZ.questions.push(
   {
    "l": "Outil de migration recommandé :",
    "o": [
-    "Le module PowerShell de mise à niveau des équilibreurs De base vers Standard",
-    "Changer la référence SKU dans le portail",
-    "Azure Migrate",
-    "Recréer l'équilibreur à la main"
-   ],
-   "a": 0
-  },
-  {
-   "l": "Le site ne répond plus :",
-   "o": [
-    "La sonde doit passer en HTTPS",
-    "Standard est fermé par défaut : associer un NSG qui autorise TCP 80",
-    "Il faut une IP par VM",
-    "Le pool doit être recréé"
+    "Changer la référence SKU dans le portail, sans interruption",
+    "Le module PowerShell de mise à niveau des équilibreurs",
+    "Recréer l'équilibreur à la main",
+    "Azure Migrate"
    ],
    "a": 1
   },
   {
+   "l": "Le site ne répond plus :",
+   "o": [
+    "Il faut une IP par VM",
+    "La sonde doit passer en HTTPS sur le port 443",
+    "Le pool doit être recréé",
+    "Associer un NSG qui autorise TCP 80"
+   ],
+   "a": 3
+  },
+  {
    "l": "Mises à jour des VM :",
    "o": [
-    "Elles reviennent seules",
-    "Ajouter une règle de trafic sortant (ou une passerelle NAT)",
+    "Ajouter une sonde",
+    "Règle de trafic sortant ou passerelle NAT",
     "Ouvrir 443 en entrée",
-    "Ajouter une sonde"
+    "Elles reviennent seules après la synchronisation"
    ],
    "a": 1
   }
@@ -593,15 +593,15 @@ AZ.questions.push(
   "rows": [
    [
     "*Outil de migration recommandé",
-    "Le module PowerShell de mise à niveau des équilibreurs De base vers Standard"
+    "Le module PowerShell de mise à niveau des équilibreurs"
    ],
    [
     "Le site ne répond plus",
-    "Standard est fermé par défaut : associer un NSG qui autorise TCP 80"
+    "Associer un NSG qui autorise TCP 80"
    ],
    [
     "Mises à jour des VM",
-    "Ajouter une règle de trafic sortant (ou une passerelle NAT)"
+    "Règle de trafic sortant ou passerelle NAT"
    ]
   ]
  },
@@ -616,32 +616,32 @@ AZ.questions.push(
   {
    "l": "Spoke4 :",
    "o": [
+    "Activer le transit par passerelle sur Spoke4",
     "Activer l'option directement",
-    "Supprimer d'abord VPNGW4",
     "Désactiver BGP sur VPNGW4",
-    "Activer le transit par passerelle sur Spoke4"
+    "Supprimer d'abord VPNGW4"
    ],
-   "a": 1
+   "a": 3
   },
   {
    "l": "Spoke5 :",
    "o": [
-    "Activer « Utiliser la passerelle distante » sur les deux peerings",
+    "Possible avec Virtual WAN De base",
     "Un seul peering peut utiliser une passerelle distante",
-    "Possible si les deux passerelles utilisent BGP",
-    "Possible avec Virtual WAN De base"
+    "Activer « Utiliser la passerelle distante » sur les deux peerings",
+    "Possible si les deux passerelles utilisent BGP"
    ],
    "a": 1
   },
   {
    "l": "Spoke6 :",
    "o": [
-    "Pris en charge : le transit par passerelle fonctionne en peering global",
-    "Impossible en peering global",
     "Exige une passerelle dans Spoke6",
+    "Pris en charge en peering global",
+    "Impossible : le transit exige des régions identiques",
     "Exige ExpressRoute"
    ],
-   "a": 0
+   "a": 1
   }
  ],
  "expl": "<b>Spoke4.</b> On ne peut pas utiliser une passerelle distante si le réseau virtuel a déjà sa propre passerelle : il faut supprimer VPNGW4.<b>Spoke5.</b> Un réseau virtuel ne peut utiliser la passerelle distante que d'un seul peering. Pour la redondance entre régions, il faut une autre architecture (passerelles actif-actif, Virtual WAN Standard…).<b>Spoke6.</b> Le transit par passerelle est pris en charge en peering global, entre régions.",
@@ -664,7 +664,7 @@ AZ.questions.push(
    ],
    [
     "Spoke6",
-    "Pris en charge : le transit par passerelle fonctionne en peering global"
+    "Pris en charge en peering global"
    ]
   ]
  },
